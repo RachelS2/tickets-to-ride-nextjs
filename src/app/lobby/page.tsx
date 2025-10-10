@@ -22,7 +22,7 @@ const Hero = () => {
         </div>
         
         <h1 className="font-serif font-bold text-5xl md:text-7xl mb-6 text-foreground">
-          Ticket to Ride
+          EM CONSTRUÇÃO - LOBBY
         </h1>
         
         <p className="font-sans text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-8 font-light">

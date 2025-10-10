@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tickets To Ride",
-  description: "Projeto da disciplina 'Projeto de Software' da UFF, feito em 2025.2",
+  title: "Tickets To Ride - Lobby",
+  description: "Tela onde jogador pode configurar o jogo antes de iniciar a partida",
 };
 
 export default function RootLayout({

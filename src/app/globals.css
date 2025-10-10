@@ -1,8 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: hsl(42 45% 96%);
+  --foreground: hsl(20 14% 20%);
+  
+  --primary: hsl(358 65% 42%);
+  --primary-foreground: hsl(42 45% 96%);
+
+  --secondary: hsl(42 82% 55%);
+  --secondary-foreground: hsl(20 14% 20%);
+
+  --accent: hsl(45 100% 51%);
+  --accent-foreground: hsl(20 14% 20%);
+
+  --radius: 0.75rem;
+
+  --gradient-hero: linear-gradient(135deg, hsl(358 65% 42%) 0%, hsl(15 55% 48%) 100%);
+  --gradient-accent: linear-gradient(135deg, hsl(42 82% 55%) 0%, hsl(45 100% 51%) 100%);
+
+  --shadow-elegant: 0 20px 40px -12px hsl(358 65% 42% / 0.25);
 }
 
 @theme inline {
@@ -10,6 +26,16 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --border-radius: var(--radius);
+  --gradient-hero: var(--gradient-hero);
+  --gradient-accent: var(--gradient-accent);
+  --shadow-elegant: var(--shadow-elegant);
 }
 
 @media (prefers-color-scheme: dark) {
