@@ -1,14 +1,9 @@
-// src/utils/myClass.ts
 import {Player} from "./player";
 
-// Declaração da classe
-
 export class Board {
-  // Propriedades com tipos
   private Round: number
   private Players: Player[]
 
-  // Construtor para inicializar a classe
   constructor(round: number, player: Player[]) {
     this.Round = round;
     this.Players = player;
@@ -27,8 +22,7 @@ export class Board {
     return this.Players.filter(player => player.getRoundToPlay() == nextPlayerIndex)[0];
   }
 
-
-
-
-
+  public getPlayers(): Player[] {
+    return this.Players;
+  }
 }
