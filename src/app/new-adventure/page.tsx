@@ -9,26 +9,24 @@ import Link from "next/link";
 import { Player } from "@/app/lib/player";
 import { useBoard } from "@/app/lib/board-context";
 import { generateUserId } from "@/app/lib/actions"; // ajuste conforme seu util
-import { BoardProvider } from "@/app/context/BoardContext";
 
-const LobbyPage = () => {
+const NewAdventurePage = () => {
   const [currentPlayerName, setCurrentPlayerName] = useState("");
   const [players, setPlayers] = useState<Player[]>([]);
-  //const { toast } = useToast();
 
   const boardRef = useBoard();
 
   const handleAddPlayer = () => {
-    const name = currentPlayerName?.trim();
+    const name : string = currentPlayerName?.trim();
     if (!name) {
       return;
     }
 
-    if (players.find((p) => p.getName().toLowerCase() === name.toLowerCase())) {
+    if (players.find((p) => p.getName().toLowerCase() === name.toLowerCase())) { // se o nome já existe na lista de jogadores..
       return; 
     }
 
-    const newPlayer = new Player(name, generateUserId(), players.length + 1, 45);
+    const newPlayer : Player = new Player(name, generateUserId(), players.length + 1, boardRef);
 
     setPlayers((prev) => {
       const next = [...prev, newPlayer];
@@ -38,7 +36,7 @@ const LobbyPage = () => {
     console.log(newPlayer)
     boardRef.addPlayer(newPlayer);
 
-    setCurrentPlayerName(""); // limpa input
+    setCurrentPlayerName(""); 
   };
 
   const handleRemovePlayer = (playerId: string) => {
@@ -47,7 +45,7 @@ const LobbyPage = () => {
     console.log(boardRef.getPlayers())
   };
 
-  const handleStartGame = () => {
+  const handleStartGame = async () => {
     if (players.length < 2) {
       return;
     }
@@ -55,6 +53,8 @@ const LobbyPage = () => {
     if (players.length > 5) {
       return;
     }
+
+    await boardRef.startGame();
 
   };
 
@@ -175,4 +175,4 @@ const LobbyPage = () => {
   );
 };
 
-export default LobbyPage;
+export default NewAdventurePage;

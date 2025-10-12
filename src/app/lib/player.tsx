@@ -1,39 +1,56 @@
+import { TrainCard, DestinyTicket  } from "./game-cards"
+import { useBoard } from "@/app/lib/board-context";
+import {Board} from "./board"
 
 export class Player {
-  public Id: string
-  private Name: string
+  private Id: string
+  public readonly Name: string
   private RoundToPlay: number
-  private TrainsAmount: number
+  private TrainsAmount: number = 45
 
+  private HandTrainCards: TrainCard[] = []
+  private HandDestinyTickets: DestinyTicket[] = []
 
-  constructor(name: string, Id: string, roundToPlay: number, trainsAmount: number) {
-    console.log("Argumentos recebidos:", { name, Id, roundToPlay, trainsAmount });
+  private Board: Board; 
+
+  constructor(name: string, Id: string, roundToPlay: number, board: Board) {
+    console.log("Argumentos recebidos:", { name, Id, roundToPlay });
     this.RoundToPlay = roundToPlay;
-    this.TrainsAmount = trainsAmount;
     this.Name = name;
     this.Id = Id;
+    this.Board = board;
 
   }
 
-  getId(): string {
+  private removeTrain() : void {
+    this.TrainsAmount -= 1;
+  }
+
+  public getId(): string {
         return this.Id;
     }
 
-  getName(): string {
+  public getName(): string {
     return this.Name;
   }
 
-  getRoundToPlay(): number {
+  public getRoundToPlay(): number {
     return this.RoundToPlay;
   }
 
-  getTrainsAmount(): number {
+  public getTrainsAmount(): number {
     return this.TrainsAmount;
   }
 
-  // Método da classe
-  saudacao(): string {
-    return `Olá, meu nome é ${this.Name}`;
+  public addTrainCard(card: TrainCard): void {
+    this.HandTrainCards.push(card);
+    //console.log(this.HandTrainCards)
+  }
+
+  public addDestinyTicket(card: DestinyTicket): void {
+    this.HandDestinyTickets.push(card);
+    //console.log("Jogador(a): ", this.Name, "Tickets de Destino:", this.HandDestinyTickets)
+
   }
 
   
