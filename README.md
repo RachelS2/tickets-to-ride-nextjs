@@ -2,6 +2,21 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+First, you'll need Node JS installed in your computer. You can find more information about Node in: 
+https://www.nodejs.tech/pt-br/download
+
+Then, you'll need to download the project's dependencies by executing:
+
+```bash
+pnpm install
+#or
+npm install
+```
+
+in the command prompt or PowerShell.
+
+
+
 First, run the development server:
 
 ```bash
