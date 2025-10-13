@@ -21,7 +21,7 @@ const Hero = () => {
         </div>
         
         <h1 className="font-serif font-bold text-5xl md:text-7xl mb-6 text-foreground">
-          Ticket to Rio
+          Ticket to Ride
         </h1>
         
         <p className="font-sans text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-8 font-light">
@@ -29,7 +29,7 @@ const Hero = () => {
         </p>
         
         <div className="flex flex-row sm:flex-row gap-4 justify-center ">
-          <Link href="/new-adventure" className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground font-semibold text-lg shadow-elegant hover:shadow-xl transition-all duration-300"
+          <Link href="/nova-aventura" className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground font-semibold text-lg shadow-elegant hover:shadow-xl transition-all duration-300"
           >
             Iniciar Aventura
           </Link>

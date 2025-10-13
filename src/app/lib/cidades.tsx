@@ -1,5 +1,5 @@
 
-export type CityNames =
+export type NomesDeCidades =
   | "Rio de Janeiro"
   | "Niteroi"
   | "Sao Goncalo"
@@ -43,9 +43,9 @@ export type CityNames =
 
 
 
-export const DestinyTicketsCities: Record<
+export const DestinosCidades: Record<
   number,
-  Partial<Record<CityNames, CityNames>>
+  Partial<Record<NomesDeCidades, NomesDeCidades>>
 > = {
   1: {
     "Nilopolis": "Nova Iguacu",     
@@ -99,7 +99,7 @@ export const DestinyTicketsCities: Record<
 };
 
 
-export const PathCities: Record<number, Partial<Record<CityNames, CityNames[]>>> = {
+export const RotaCidades: Record<number, Partial<Record<NomesDeCidades, NomesDeCidades[]>>> = {
   1: {
     "Rio de Janeiro": ["Niteroi", "Marica"],
     "Niteroi": ["Sao Goncalo"],

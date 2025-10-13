@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tickets To Ride",
-  description: "Projeto da disciplina 'Projeto de Software' da UFF, feito em 2025.2",
+  title: "Ticket To Ride",
+  description: "Projeto da disciplina 'Projeto de Software' da UFF, feito em 2025.2, por Rachel Barino, Daniel Izu, Caio Lima, Gabrielle, Gabriel Machado e Vinícius.",
 };
 
 export default function RootLayout({
