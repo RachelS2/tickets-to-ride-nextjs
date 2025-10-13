@@ -25,7 +25,7 @@ const NovaAventuraPagina = () => {
       return; 
     }
 
-    const novoJogador : Jogador = new Jogador(nome, gerarIdUsuario(), jogadores.length + 1, tabuleiro);
+    const novoJogador : Jogador = new Jogador(nome, gerarIdUsuario(), jogadores.length + 1, tabuleiro, "Amarelo"); //mudar cor dps
 
     defineJogador((prev) => {
       const next = [...prev, novoJogador];

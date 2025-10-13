@@ -10,28 +10,37 @@ export function gerarIdUsuario() {
   return i;
 }
 
+export type CoresDeTrem = "Azul" | "Vermelho" | "Amarelo" | "Verde" | "Preto";
+
 export class Jogador {
-  private Id: string
+  private readonly Id: string
   public readonly Nome: string
-  private RodadaAJogar: number
+  private readonly RodadaAJogar: number
   private QtdeTrens: number = 45
 
   private CartasVagaoMaos: CartaVagao[] = []
   private BilhetesDestinoMaos: BilheteDestino[] = []
 
+  private readonly CorDoTrem: CoresDeTrem
+
   private Pontos: number = 0
   private Tabuleiro: Tabuleiro; 
 
-  constructor(nome: string, Id: string, rodadaAJogar: number, tabuleiro: Tabuleiro) {
-    console.log("Argumentos recebidos:", { nome, Id, rodadaAJogar });
+  constructor(nome: string, id: string, rodadaAJogar: number, tabuleiro: Tabuleiro, corDoTrem: CoresDeTrem) {
+    console.log("Argumentos recebidos:", { nome, Id: id, rodadaAJogar });
     this.RodadaAJogar = rodadaAJogar;
     this.Nome = nome;
-    this.Id = Id;
+    this.Id = id;
     this.Tabuleiro = tabuleiro;
+    this.CorDoTrem = corDoTrem;
 
   }
 
-  private removerTrem(qtde: number) : void {
+  public pegarCorDoTrem(): CoresDeTrem {
+    return this.CorDoTrem;
+  }
+
+  public removerTrem(qtde: number) : void {
     this.QtdeTrens -= qtde;
   }
 
