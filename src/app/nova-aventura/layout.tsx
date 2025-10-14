@@ -1,9 +1,9 @@
-import { ProvedorTabuleiro } from "@/app/lib/contexto-tabuleiro";
+import { ProvedorJogo } from "@/app/lib/contexto-jogo";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-        <ProvedorTabuleiro>
+        <ProvedorJogo>
           {children}
-        </ProvedorTabuleiro>
+        </ProvedorJogo>
   );
 }

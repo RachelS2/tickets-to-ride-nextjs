@@ -5,9 +5,7 @@ import { customAlphabet } from "nanoid";
 // cria IDs numéricos com 5 dígitos
 const nanoid = customAlphabet('1234567890', 5);
 export function gerarIdUsuario() {
-  const i = nanoid()
-  console.log(i)
-  return i;
+  return nanoid();
 }
 
 export type CoresDeTrem = "Azul" | "Vermelho" | "Amarelo" | "Verde" | "Preto";
@@ -24,23 +22,28 @@ export class Jogador {
   private readonly CorDoTrem: CoresDeTrem
 
   private Pontos: number = 0
-  private Tabuleiro: Tabuleiro; 
+  private Tabuleiro!: Tabuleiro; 
 
-  constructor(nome: string, id: string, rodadaAJogar: number, tabuleiro: Tabuleiro, corDoTrem: CoresDeTrem) {
-    console.log("Argumentos recebidos:", { nome, Id: id, rodadaAJogar });
+  constructor(nome: string, id: string, rodadaAJogar: number, corDoTrem: CoresDeTrem) {
     this.RodadaAJogar = rodadaAJogar;
     this.Nome = nome;
     this.Id = id;
-    this.Tabuleiro = tabuleiro;
     this.CorDoTrem = corDoTrem;
+  }
 
+  public defineTabuleiro(tabuleiro: Tabuleiro) : void {
+    if (this.Tabuleiro) throw new Error("Tabuleiro já definido para este jogador!");
+    this.Tabuleiro = tabuleiro;
   }
 
   public pegarCorDoTrem(): CoresDeTrem {
     return this.CorDoTrem;
   }
 
-  public removerTrem(qtde: number) : void {
+  public pegarTrem(qtde: number) : void {
+    if (this.QtdeTrens == 0 || this.QtdeTrens - qtde < 0) 
+        throw new Error("Quantidade de trens insuficiente para pegar.");
+
     this.QtdeTrens -= qtde;
   }
 

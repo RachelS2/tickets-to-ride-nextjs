@@ -7,7 +7,7 @@ import { Label } from "@/app/components/label";
 import Input from "@/app/components/input";
 import Link from "next/link";
 import { Jogador, CoresDeTrem, gerarIdUsuario } from "@/app/lib/jogador";
-import { usarTabuleiro } from "@/app/lib/contexto-tabuleiro";
+import { usarJogo } from "@/app/lib/contexto-jogo";
 
 const PLAYER_COLORS: { value: CoresDeTrem; hex: string }[] = [
   { value: "Vermelho", hex: "#DC2626" },
@@ -22,7 +22,7 @@ const NovaAventuraPagina = () => {
   const [jogadores, defineJogador] = useState<Jogador[]>([]);
   const [selectedColor, setSelectedColor] = useState<CoresDeTrem | null>(PLAYER_COLORS[0].value);
 
-  const tabuleiro = usarTabuleiro();
+  const jogo = usarJogo();
 
   const findFirstAvailableColor = (existingPlayers: Jogador[]) => {
     return PLAYER_COLORS.find((c) => !existingPlayers.some((p) => p.pegarCorDoTrem() === c.value))?.value ?? null;
@@ -59,7 +59,6 @@ const NovaAventuraPagina = () => {
       nome,
       gerarIdUsuario(),
       jogadores.length + 1,
-      tabuleiro,
       selectedColor 
     );
 
@@ -68,7 +67,7 @@ const NovaAventuraPagina = () => {
       return next;
     });
 
-    tabuleiro.adicionaJogador(novoJogador);
+    jogo.adicionaJogador(novoJogador);
     defineJogadorAtual("");
 
     // escolhe a próxima cor disponível (ou null se esgotadas)
@@ -78,13 +77,13 @@ const NovaAventuraPagina = () => {
 
   const handleRemoveJogador = (playerId: string) => {
     defineJogador((prev) => prev.filter((p) => p.pegarId() !== playerId));
-    tabuleiro.removeJogador(playerId);
+    jogo.removeJogador(playerId);
   };
 
   const handleStartGame = async () => {
     if (jogadores.length < 2) return;
     if (jogadores.length > 5) return;
-    await tabuleiro.iniciarJogo();
+    await jogo.iniciaJogo();
   };
 
   return (
