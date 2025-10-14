@@ -1,77 +1,101 @@
 'use client';
-import { useState, useRef } from "react";
-import { Plus, Users, X, Play, Train } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Users, X, Play } from "lucide-react";
 import { Card, CardTitle, CardContent, CardHeader } from "@/app/components/card";
-import {Button} from "@/app/components/button";
-import {Label} from "@/app/components/label";
+import { Button } from "@/app/components/button";
+import { Label } from "@/app/components/label";
 import Input from "@/app/components/input";
 import Link from "next/link";
-import { Jogador , gerarIdUsuario } from "@/app/lib/jogador";
+import { Jogador, CoresDeTrem, gerarIdUsuario } from "@/app/lib/jogador";
 import { usarTabuleiro } from "@/app/lib/contexto-tabuleiro";
+
+const PLAYER_COLORS: { value: CoresDeTrem; hex: string }[] = [
+  { value: "Vermelho", hex: "#DC2626" },
+  { value: "Azul", hex: "#2563EB" },
+  { value: "Verde", hex: "#16A34A" },
+  { value: "Amarelo",  hex: "#EAB308" },
+  { value: "Preto", hex: "#1F2937" },
+];
 
 const NovaAventuraPagina = () => {
   const [nomeJogadorAtual, defineJogadorAtual] = useState("");
   const [jogadores, defineJogador] = useState<Jogador[]>([]);
+  const [selectedColor, setSelectedColor] = useState<CoresDeTrem | null>(PLAYER_COLORS[0].value);
 
   const tabuleiro = usarTabuleiro();
 
-  const handleAddJogador = () => {
-    const nome : string = nomeJogadorAtual?.trim();
-    if (!nome) {
+  const findFirstAvailableColor = (existingPlayers: Jogador[]) => {
+    return PLAYER_COLORS.find((c) => !existingPlayers.some((p) => p.pegarCorDoTrem() === c.value))?.value ?? null;
+  };
+
+  useEffect(() => {
+    // se selectedColor for null, tenta selecionar uma disponível
+    const available = findFirstAvailableColor(jogadores);
+    if (selectedColor === null && available !== null) {
+      setSelectedColor(available);
       return;
     }
 
-    if (jogadores.find((p) => p.pegarNome().toLowerCase() === nome.toLowerCase())) { // se o nome já existe na lista de jogadores..
-      return; 
+    // se a cor atualmente selecionada foi usada por alguém, escolhe a próxima disponível
+    if (selectedColor !== null) {
+      const isUsed = jogadores.some((p) => p.pegarCorDoTrem() === selectedColor);
+      if (isUsed) {
+        setSelectedColor(available); 
+      }
+    }
+  }, [jogadores, selectedColor]);
+
+  const handleAddJogador = () => {
+    const nome: string = nomeJogadorAtual?.trim();
+    if (!nome) return;
+
+    if (!selectedColor) return;
+
+    if (jogadores.find((p) => p.pegarNome().toLowerCase() === nome.toLowerCase())) {
+      return;
     }
 
-    const novoJogador : Jogador = new Jogador(nome, gerarIdUsuario(), jogadores.length + 1, tabuleiro, "Amarelo"); //mudar cor dps
+    const novoJogador: Jogador = new Jogador(
+      nome,
+      gerarIdUsuario(),
+      jogadores.length + 1,
+      tabuleiro,
+      selectedColor 
+    );
 
     defineJogador((prev) => {
       const next = [...prev, novoJogador];
       return next;
     });
 
-    console.log(novoJogador)
     tabuleiro.adicionaJogador(novoJogador);
+    defineJogadorAtual("");
 
-    defineJogadorAtual(""); 
+    // escolhe a próxima cor disponível (ou null se esgotadas)
+    const nextAvailable = PLAYER_COLORS.find((c) => ![...jogadores, novoJogador].some((p) => p.pegarCorDoTrem() === c.value))?.value ?? null;
+    setSelectedColor(nextAvailable);
   };
 
   const handleRemoveJogador = (playerId: string) => {
     defineJogador((prev) => prev.filter((p) => p.pegarId() !== playerId));
     tabuleiro.removeJogador(playerId);
-    console.log(tabuleiro.pegarJogadores())
   };
 
   const handleStartGame = async () => {
-    if (jogadores.length < 2) {
-      return;
-    }
-
-    if (jogadores.length > 5) {
-      return;
-    }
-
+    if (jogadores.length < 2) return;
+    if (jogadores.length > 5) return;
     await tabuleiro.iniciarJogo();
-
   };
 
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-serif font-bold text-primary mb-2">
-            Novo Jogo
-          </h1>
-          <p className="text-muted-foreground">
-            Configure os jogadores e comece a aventura
-          </p>
+          <h1 className="text-4xl font-serif font-bold text-primary mb-2">Novo Jogo</h1>
+          <p className="text-muted-foreground">Configure os jogadores e comece a aventura</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 items-start">
-          {/* Card de Adicionar Jogador */}
-
           <div className="grid md:grid-rows-2 gap-6 items-start">
             <Card className="shadow-elegant">
               <CardHeader>
@@ -94,10 +118,40 @@ const NovaAventuraPagina = () => {
                   />
                 </div>
 
+                <div>
+                  <Label>Escolha sua Cor</Label>
+                  <div className="grid grid-cols-5 gap-2 mt-1.5">
+                    {PLAYER_COLORS.map((color) => {
+                      const isUsed = jogadores.some((p) => p.pegarCorDoTrem() === color.value);
+                      const isSelected = selectedColor === color.value;
+                      return (
+                        <button
+                          key={color.value}
+                          onClick={() => !isUsed && setSelectedColor(color.value)}
+                          disabled={isUsed}
+                          className={`
+                            relative w-12 h-12 rounded-full border-2 transition-all
+                            ${isSelected ? "border-primary scale-110 ring-4 ring-primary/20" : "border-border hover:scale-105"}
+                            ${isUsed ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
+                          `}
+                          style={{ backgroundColor: color.hex }}
+                          title={color.value}
+                        >
+                          {isUsed && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <X className="w-6 h-6 text-white drop-shadow-lg" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <Button
                   onClick={handleAddJogador}
                   className="w-full cursor-pointer"
-                  disabled={jogadores.length >= 5}
+                  disabled={jogadores.length >= 5 || !selectedColor} // desativa se sem cor selecionada
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Adicionar Jogador
@@ -106,17 +160,12 @@ const NovaAventuraPagina = () => {
             </Card>
 
             <div className="mt-6 text-center">
-              <Link
-                href="/"
-                className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground font-semibold text-lg shadow-elegant hover:shadow-xl transition-all duration-300"
-              >
+              <Link href="/" className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground font-semibold text-lg shadow-elegant hover:shadow-xl transition-all duration-300">
                 Voltar para Início
               </Link>
             </div>
-
           </div>
 
-          {/* Card de Jogadores */}
           <Card className="shadow-elegant">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -133,42 +182,30 @@ const NovaAventuraPagina = () => {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {jogadores.map((jogador) => (
-                    <div
-                      key={jogador.pegarId()}
-                      className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border"
-                    >
-                      <Train className="w-10 h-10 text-primary border-border flex-shrink-0" strokeWidth={1.5} />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{jogador.pegarNome()}</p>
+                  {jogadores.map((jogador) => {
+                    const colorInfo = PLAYER_COLORS.find((c) => c.value === jogador.pegarCorDoTrem());
+                    return (
+                      <div key={jogador.pegarId()} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+                        <div className="w-10 h-10 rounded-full border-2 border-border flex-shrink-0" style={{ backgroundColor: colorInfo?.hex }} />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{jogador.pegarNome()}</p>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => handleRemoveJogador(jogador.pegarId())} className="flex-shrink-0 cursor-pointer">
+                          <X className="w-4 h-4" />
+                        </Button>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveJogador(jogador.pegarId())}
-                        className="flex-shrink-0 cursor-pointer"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
-              <Button
-                onClick={handleStartGame}
-                disabled={jogadores.length < 2}
-                className="w-full mt-6 cursor-pointer"
-                size="lg"
-              >
+              <Button onClick={handleStartGame} disabled={jogadores.length < 2} className="w-full mt-6 cursor-pointer" size="lg">
                 <Play className="w-4 h-4 mr-2" />
                 Iniciar Jogo
               </Button>
             </CardContent>
           </Card>
         </div>
-
-
       </div>
     </div>
   );

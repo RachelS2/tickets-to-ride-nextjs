@@ -25,7 +25,7 @@ const Hero = () => {
         </h1>
         
         <p className="font-sans text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-8 font-light">
-          Embarque em uma aventura ferroviária épica ao redor da cidade maravilhosa!
+          Embarque em uma aventura ferroviária épica ao redor do mundo!
         </p>
         
         <div className="flex flex-row sm:flex-row gap-4 justify-center ">
