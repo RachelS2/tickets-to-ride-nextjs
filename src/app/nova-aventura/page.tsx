@@ -159,8 +159,8 @@ const NovaAventuraPagina = () => {
             </Card>
 
             <div className="mt-6 text-center">
-              <Link href="/" className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground font-semibold text-lg shadow-elegant hover:shadow-xl transition-all duration-300">
-                Voltar para Início
+              <Link href="/" className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground text-s shadow-elegant hover:shadow-xl transition-all duration-300">
+                Voltar para o Início
               </Link>
             </div>
           </div>

@@ -158,9 +158,10 @@ export class Tabuleiro {
         }
     }
 
+    console.log("Número de cartas de vagão antes de embaralhar" + baralho.length)
     const cartasVagaoEmbaralhadas : CartaVagao[] = this.embaralharCartas(baralho);
-    console.log("qtde cartas de vagão criadas:", cartasVagaoEmbaralhadas.length);
-    console.log("cartas de vagão criadas:", cartasVagaoEmbaralhadas);
+    console.log("Número de cartas de vagão após embaralhar:", cartasVagaoEmbaralhadas.length);
+    console.log("Cartas de vagão embaralhadas:", cartasVagaoEmbaralhadas);
     return cartasVagaoEmbaralhadas;
   }
   
