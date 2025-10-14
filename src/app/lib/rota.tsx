@@ -20,8 +20,8 @@ export class Rota {
     this.Cor = cor;
   }
 
-  public ocupado(): Jogador | null {
-    return this.Dono;
+  public estaOcupada(): boolean {
+    return this.Dono == null;
   }
 
   public ocupar(jogador: Jogador): number {
