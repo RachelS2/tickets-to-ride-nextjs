@@ -1,4 +1,13 @@
+## Introduction
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+This project was used as the final work of the **Software Project** discipline, of the Information Systems course at Universidade Federal Fluminense. The goal of the project is to implement **Ticket to Ride, a board game**, using Next JS and OOP principles. 
+
+**Participants and Collaborators:** Rachel Barino, Gabrielle,
+Daniel Izu, Vinícius Jimenez, Caio Lima e Gabriel Machado.
+
+### NOTE: currently the project is being developed in dev branch
 
 ## Getting Started
 
