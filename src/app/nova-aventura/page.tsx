@@ -84,6 +84,8 @@ const NovaAventuraPagina = () => {
     if (jogadores.length < 2) return;
     if (jogadores.length > 5) return;
     await jogo.iniciaJogo();
+    <Link href="/nova-aventura/ticket-to-rio"></Link>
+
   };
 
   return (
@@ -197,10 +199,9 @@ const NovaAventuraPagina = () => {
                   })}
                 </div>
               )}
-
               <Button onClick={handleStartGame} disabled={jogadores.length < 2} className="w-full mt-6 cursor-pointer" size="lg">
                 <Play className="w-4 h-4 mr-2" />
-                Iniciar Jogo
+                  Iniciar Jogo
               </Button>
             </CardContent>
           </Card>
