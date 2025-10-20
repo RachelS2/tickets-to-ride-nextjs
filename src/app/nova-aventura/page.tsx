@@ -1,13 +1,14 @@
 'use client';
 import { useState, useEffect } from "react";
 import { Plus, Users, X, Play } from "lucide-react";
-import { Card, CardTitle, CardContent, CardHeader } from "@/app/components/card";
-import { Button } from "@/app/components/button";
-import { Label } from "@/app/components/label";
-import Input from "@/app/components/input";
+import { Card, CardTitle, CardContent, CardHeader } from "@/app/components/ui/card";
+import { Button } from "@/app/components/ui/button";
+import { Label } from "@/app/components/ui/label";
+import Input from "@/app/components/ui/input";
 import Link from "next/link";
 import { Jogador, CoresDeTrem, gerarIdUsuario } from "@/app/lib/jogador";
 import { usarJogo } from "@/app/lib/contexto-jogo";
+import { useRouter } from 'next/navigation';
 
 const PLAYER_COLORS: { value: CoresDeTrem; hex: string }[] = [
   { value: "Vermelho", hex: "#DC2626" },
@@ -21,7 +22,7 @@ const NovaAventuraPagina = () => {
   const [nomeJogadorAtual, defineJogadorAtual] = useState("");
   const [jogadores, defineJogador] = useState<Jogador[]>([]);
   const [selectedColor, setSelectedColor] = useState<CoresDeTrem | null>(PLAYER_COLORS[0].value);
-
+  const router = useRouter();
   const jogo = usarJogo();
 
   const findFirstAvailableColor = (existingPlayers: Jogador[]) => {
@@ -84,7 +85,7 @@ const NovaAventuraPagina = () => {
     if (jogadores.length < 2) return;
     if (jogadores.length > 5) return;
     await jogo.iniciaJogo();
-    <Link href="/nova-aventura/ticket-to-rio"></Link>
+    router.push('/nova-aventura/ticket-to-rio');
 
   };
 

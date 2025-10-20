@@ -69,14 +69,23 @@ export class Jogador {
 
   public addCartaVagao(carta: CartaVagao): void {
     this.CartasVagaoMaos.push(carta);
-    //console.log(this.CartasVagaoMaos)
   }
 
   public addBilheteDestino(carta: BilheteDestino): void {
     this.BilhetesDestinoMaos.push(carta);
-    //console.log("Jogador(a): ", this.Nome, "Tickets de Destino:", this.BilhetesDestinoMaos)
-
   }
 
+  public removerCartaVagao(carta: CartaVagao): void {
+    const index = this.CartasVagaoMaos.indexOf(carta);
+    if (index > -1) {
+      this.CartasVagaoMaos.splice(index, 1);
+    }
+  }
+  public removerBilheteDestino(bilhete: BilheteDestino): void {
+    const index = this.BilhetesDestinoMaos.indexOf(bilhete);
+    if (index > -1) {
+      this.CartasVagaoMaos.splice(index, 1);
+    }
+  }
   
 }

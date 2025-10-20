@@ -9,8 +9,14 @@ export class Jogo {
     private Jogadores: Jogador[] = [];
     private Rodada: number = 1;
 
+    private Iniciado: boolean = false;
+
+    public foiIniciado(): boolean {
+        return this.Iniciado;
+    }
 
     public async iniciaJogo(): Promise<void> {
+        this.Iniciado = true;
         if (!this.Jogadores || this.Jogadores.length < 2 || this.Jogadores.length > 5) {
             throw new Error("Verifique o número de jogadores antes de iniciar o jogo.");
         }
