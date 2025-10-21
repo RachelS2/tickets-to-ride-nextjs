@@ -10,8 +10,11 @@ export default function TicketToRioGame() {
     return <div>Jogo não iniciado ainda!</div>;
   }
   return (
-    <div>
-      <Tabuleiro />
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-4xl mx-auto max-h-4xl bg-white p-4 mb-6 rounded-lg shadow-md">
+
+        <Tabuleiro />
+      </div>
     </div>
   )
 }
