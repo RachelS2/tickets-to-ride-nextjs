@@ -1,14 +1,13 @@
 import {Jogador} from "./jogador";
 import {NomesDeCidades} from './cidades';
-
-export type CoresDeRota = "Cinza" | "Roxo" | "Azul" | "Laranja" | "Branco" | "Verde" | "Amarelo" | "Preto" | "Vermelho";
+import { CoresDeRota } from "./utils";
 
 export class Rota {
-  private readonly Origem: NomesDeCidades
-  private readonly Destino: NomesDeCidades
-  private readonly Cor: CoresDeRota
+  public readonly Origem: NomesDeCidades
+  public readonly Destino: NomesDeCidades
+  public readonly Cor: CoresDeRota
+  public readonly QtdeEspacos : number
   private Dono : Jogador | null = null
-  private readonly QtdeEspacos : number
 
   constructor(origem: NomesDeCidades, destino: NomesDeCidades, qtdeEspacos: number, cor: CoresDeRota) {
     if (origem == destino) {
@@ -29,35 +28,21 @@ export class Rota {
     return this.QtdeEspacos;
   }
 
-  public pegarQtdeEspacos(): number {
-    return this.QtdeEspacos;
-  }
+  // public pegarQtdeEspacos(): number {
+  //   return this.QtdeEspacos;
+  // }
 
-  public pegarCor(): CoresDeRota {
-    return this.Cor;
-  }
+  // public pegarCor(): CoresDeRota {
+  //   return this.Cor;
+  // }
 
-  public pegarOrigem(): NomesDeCidades {
-    return this.Origem;
-  }
+  // public pegarOrigem(): NomesDeCidades {
+  //   return this.Origem;
+  // }
 
-  public pegarDestino(): NomesDeCidades {
-    return this.Destino;
-  }
+  // public pegarDestino(): NomesDeCidades {
+  //   return this.Destino;
+  // }
 
 }
 
-export function corDeRotaAleatoria(): CoresDeRota {
-    const cores: CoresDeRota[] = [
-      "Cinza",
-      "Roxo",
-      "Azul",
-      "Laranja",
-      "Branco",
-      "Verde",
-      "Amarelo",
-      "Preto",
-      "Vermelho",
-    ];
-    return cores[Math.floor(Math.random() * cores.length)];
-}

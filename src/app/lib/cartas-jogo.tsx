@@ -1,16 +1,11 @@
 import {NomesDeCidades} from './cidades';
-
-export type CoresCartaVagao = "Coringa" | "Roxo" | "Azul" | "Laranja" | "Branco" | "Verde" | "Amarelo" | "Preto" | "Vermelho";
+import { CoresCartaVagao } from "./utils";
 
 export class CartaVagao {
-    private Cor: CoresCartaVagao 
+    public readonly Cor: CoresCartaVagao 
 
     constructor(cor: CoresCartaVagao) {
         this.Cor = cor;
-    }
-
-    public pegarCor(): CoresCartaVagao {
-        return this.Cor;
     }
 
     public ehLocomotiva(): boolean {
@@ -21,17 +16,20 @@ export class CartaVagao {
 
 
 export class BilheteDestino {
-    public Origem: NomesDeCidades
-    public Destino: NomesDeCidades
-    private Pontos: number
+    public readonly Origem: NomesDeCidades
+    public readonly Destino: NomesDeCidades
+    public readonly Pontos: number
 
     constructor(origin: NomesDeCidades, destino: NomesDeCidades, pontos: number) {
         this.Origem = origin;
         this.Destino = destino;
         this.Pontos = pontos;
     }
+}
 
-    public pegarPontos(): number {
-        return this.Pontos;
+export class CartaMaiorCaminhoContinuo extends BilheteDestino {
+    constructor(origin: NomesDeCidades, destino: NomesDeCidades, pontos: number) {
+        super(origin, destino, pontos);
+
     }
 }

@@ -29,7 +29,7 @@ const Hero = () => {
         </p>
         
         <div className="flex flex-row sm:flex-row gap-4 justify-center ">
-          <Link href="/nova-aventura" className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground font-semibold text-lg shadow-elegant hover:shadow-xl transition-all duration-300"
+          <Link href="/nova-aventura" className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground font-semibold text-lg shadow-rose hover:shadow-xl transition-all duration-300"
           >
             Iniciar Aventura
           </Link>

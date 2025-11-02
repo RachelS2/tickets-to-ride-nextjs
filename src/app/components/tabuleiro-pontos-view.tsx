@@ -1,3 +1,4 @@
+import { CartaVagaoView } from "./carta-vagao-view";
 
 export default function DeckArea(){
   return (
@@ -9,7 +10,7 @@ export default function DeckArea(){
       <div className="flex gap-2">
         {/* face-up cards */}
         {["red","green","blue","yellow","black"].map((c,i) => (
-          <TrainCardView key={i} color={c}/>
+          <CartaVagaoView key={i} color={c}/>
         ))}
       </div>
 

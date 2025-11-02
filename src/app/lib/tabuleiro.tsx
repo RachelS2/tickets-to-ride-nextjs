@@ -1,12 +1,15 @@
 import {Jogador} from "./jogador";
-import {Rota, corDeRotaAleatoria} from "./rota"
-import {CoresCartaVagao, CartaVagao, BilheteDestino } from "./cartas-jogo";
+import {Rota } from "./rota"
+import {CartaVagao, CartaMaiorCaminhoContinuo, BilheteDestino } from "./cartas-jogo";
 import {NomesDeCidades, RotaCidades, DestinosCidades} from './cidades';
+import { corDeRotaAleatoria, CoresCartaVagao} from "./utils";
 
 export class Tabuleiro {
   private Rotas!: Rota[]
   private BaralhoCartasVagao!: CartaVagao[] 
   private BaralhoBilhetesDestino!: BilheteDestino[]
+  
+  public CartaMaiorCaminhoContinuo!: CartaMaiorCaminhoContinuo;
 
   private CartasVagaoExpostas: CartaVagao[] = []
   private CartasVagaoDescartadas : CartaVagao[] = []
@@ -15,6 +18,7 @@ export class Tabuleiro {
     this.BaralhoCartasVagao = this.criarCartasDeVagao();
     this.Rotas = this.criarRotas();     
     this.BaralhoBilhetesDestino = this.criarBilhetesDestino();
+    this.CartaMaiorCaminhoContinuo = this.criarCartaMaiorCaminhoContinuo();
     this.darCartasAosJogadores(jogadores);
     this.exporCartasVagao()
   }
@@ -93,11 +97,7 @@ export class Tabuleiro {
   }
 
   public descartar(cartas: CartaVagao[]): void {
-    for (const carta of cartas) {
-      if (this.BaralhoCartasVagao.includes(carta)) 
-        throw new Error("Não é possível descartar cartas que ainda estão no baralho.");
 
-    }
     this.CartasVagaoDescartadas.push(...cartas);
   }
 
@@ -165,6 +165,10 @@ export class Tabuleiro {
     return cartasVagaoEmbaralhadas;
   }
   
+  private criarCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
+    return new CartaMaiorCaminhoContinuo("Sumidouro" as NomesDeCidades, "Petropolis" as NomesDeCidades, 10);
+  }
+
   private criarBilhetesDestino(): BilheteDestino[] {
     if (this.BaralhoBilhetesDestino) 
       throw new Error("Já existem Bilhetes de Destino pra esse tabuleiro!");
@@ -186,9 +190,8 @@ export class Tabuleiro {
     }
 
     // chave 9 e 10 (itatiaia a volta redonda) são repetidas 2x, totalizando 2 cartas de cada uma dessas no baralho
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 2; i++) {
       bilhetesDestino.push(new BilheteDestino("Itatiaia" as NomesDeCidades, "Volta Redonda" as NomesDeCidades, 9));
-      bilhetesDestino.push(new BilheteDestino("Sumidouro" as NomesDeCidades, "Petropolis" as NomesDeCidades, 10));
     }
     
     const bilhetesDestino2 = this.embaralharCartas(bilhetesDestino);

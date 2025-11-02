@@ -1,7 +1,7 @@
 import { Train, Ticket, CreditCard } from "lucide-react";
 import { CartaVagao, CoresCartaVagao } from "@/app/lib/cartas-jogo";
 import { Jogador } from "../lib/jogador";
-import { CartaVagaoView } from "./carta-vagao";
+import { CartaVagaoView } from "./carta-vagao-view";
 
 interface SumarioJogadorProps {
   jogador: Jogador;
@@ -12,9 +12,9 @@ export const SumarioJogador = ({
   jogador, 
   foiEliminado: isEliminated = false,
 }: SumarioJogadorProps) => {
-  const nome = jogador.pegarNome();
-  const corDoTrem = jogador.pegarCorDoTrem();
-  const qtdeTrens = jogador['QtdeTrens'];
+  const nome = jogador.Nome;
+  const corDoTrem = jogador.CorDoTrem;
+  const qtdeTrens = jogador.pegarQtdeTrens();
   const qtdeBilhetesDestino = jogador['BilhetesDestinoMaos']?.length || 0;
   const qtdeCartasVagao = jogador['CartasVagaoMaos']?.length || 0;
 

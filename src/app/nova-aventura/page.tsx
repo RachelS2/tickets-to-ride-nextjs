@@ -1,66 +1,61 @@
-'use client';
-import { useState, useEffect } from "react";
-import { Plus, Users, X, Play } from "lucide-react";
-import { Card, CardTitle, CardContent, CardHeader } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { Label } from "@/app/components/ui/label";
-import Input from "@/app/components/ui/input";
-import Link from "next/link";
-import { Jogador, CoresDeTrem, gerarIdUsuario } from "@/app/lib/jogador";
-import { usarJogo } from "@/app/lib/contexto-jogo";
-import { useRouter } from 'next/navigation';
+"use client";
 
-const PLAYER_COLORS: { value: CoresDeTrem; hex: string }[] = [
-  { value: "Vermelho", hex: "#DC2626" },
-  { value: "Azul", hex: "#2563EB" },
-  { value: "Verde", hex: "#16A34A" },
-  { value: "Amarelo",  hex: "#EAB308" },
-  { value: "Preto", hex: "#1F2937" },
-];
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/app/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
+import  Input  from "@/app/components/ui/input";
+import { Label } from "@/app/components/ui/label";
+import { Plus, X, Users, Play } from "lucide-react";
+import Link from "next/link";
+import { cn, gerarIdUsuario, CoresDeTrem } from "@/app/lib/utils"; 
+import { Jogador } from "@/app/lib/jogador"; 
+import { usarJogo } from "@/app/lib/contexto-jogo";
 
 const NovaAventuraPagina = () => {
   const [nomeJogadorAtual, defineJogadorAtual] = useState("");
   const [jogadores, defineJogador] = useState<Jogador[]>([]);
-  const [selectedColor, setSelectedColor] = useState<CoresDeTrem | null>(PLAYER_COLORS[0].value);
   const router = useRouter();
   const jogo = usarJogo();
+  
+  const CoresTremDisponiveis : CoresDeTrem[] = ["Vermelho", "Azul", "Verde", "Amarelo", "Preto"]
 
-  const findFirstAvailableColor = (existingPlayers: Jogador[]) => {
-    return PLAYER_COLORS.find((c) => !existingPlayers.some((p) => p.pegarCorDoTrem() === c.value))?.value ?? null;
-  };
+const findFirstAvailableColor = (existingPlayers: Jogador[]) => {
+  return CoresTremDisponiveis.find(
+    (cor) => !existingPlayers.some((p) => p.CorDoTrem === cor)
+  ) ?? null;
+};
 
-  useEffect(() => {
-    // se selectedColor for null, tenta selecionar uma disponível
+const [selectedColor, setSelectedColor] = useState<CoresDeTrem | null>(findFirstAvailableColor(jogadores));
+
+useEffect(() => {
     const available = findFirstAvailableColor(jogadores);
     if (selectedColor === null && available !== null) {
       setSelectedColor(available);
       return;
     }
 
-    // se a cor atualmente selecionada foi usada por alguém, escolhe a próxima disponível
     if (selectedColor !== null) {
-      const isUsed = jogadores.some((p) => p.pegarCorDoTrem() === selectedColor);
+      const isUsed = jogadores.some((p) => p.CorDoTrem === selectedColor);
       if (isUsed) {
-        setSelectedColor(available); 
+        setSelectedColor(available);
       }
     }
   }, [jogadores, selectedColor]);
 
   const handleAddJogador = () => {
-    const nome: string = nomeJogadorAtual?.trim();
-    if (!nome) return;
+    const nome = nomeJogadorAtual.trim();
+    if (!nome || !selectedColor) return;
 
-    if (!selectedColor) return;
-
-    if (jogadores.find((p) => p.pegarNome().toLowerCase() === nome.toLowerCase())) {
+    if (jogadores.find((p) => p.Nome.toLowerCase() === nome.toLowerCase())) {
       return;
     }
 
-    const novoJogador: Jogador = new Jogador(
+    const novoJogador = new Jogador(
       nome,
       gerarIdUsuario(),
       jogadores.length + 1,
-      selectedColor 
+      selectedColor
     );
 
     defineJogador((prev) => {
@@ -71,35 +66,36 @@ const NovaAventuraPagina = () => {
     jogo.adicionaJogador(novoJogador);
     defineJogadorAtual("");
 
-    // escolhe a próxima cor disponível (ou null se esgotadas)
-    const nextAvailable = PLAYER_COLORS.find((c) => ![...jogadores, novoJogador].some((p) => p.pegarCorDoTrem() === c.value))?.value ?? null;
+    const nextAvailable = findFirstAvailableColor([...jogadores, novoJogador]);
     setSelectedColor(nextAvailable);
   };
 
   const handleRemoveJogador = (playerId: string) => {
-    defineJogador((prev) => prev.filter((p) => p.pegarId() !== playerId));
+    defineJogador((prev) => prev.filter((p) => p.Id !== playerId));
     jogo.removeJogador(playerId);
   };
 
   const handleStartGame = async () => {
-    if (jogadores.length < 2) return;
-    if (jogadores.length > 5) return;
+    if (jogadores.length < 2 || jogadores.length > 5) return;
     await jogo.iniciaJogo();
-    router.push('/nova-aventura/ticket-to-rio');
-
+    router.push("/nova-aventura/ticket-to-rio");
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen p-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-serif font-bold text-primary mb-2">Novo Jogo</h1>
-          <p className="text-muted-foreground">Configure os jogadores e comece a aventura</p>
+          <p className="text-muted-foreground">
+            Configure os jogadores e comece a aventura
+          </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 items-start">
           <div className="grid md:grid-rows-2 gap-6 items-start">
-            <Card className="shadow-elegant">
+
+            {/* Adicionar jogador */}
+            <Card className="shadow-rose">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Plus className="w-5 h-5" />
@@ -123,21 +119,25 @@ const NovaAventuraPagina = () => {
                 <div>
                   <Label>Escolha sua Cor</Label>
                   <div className="grid grid-cols-5 gap-2 mt-1.5">
-                    {PLAYER_COLORS.map((color) => {
-                      const isUsed = jogadores.some((p) => p.pegarCorDoTrem() === color.value);
-                      const isSelected = selectedColor === color.value;
+                    {CoresTremDisponiveis.map((color) => {
+                      const isUsed = jogadores.some((p) => p.CorDoTrem === color);
+                      const isSelected = selectedColor === color;
+                      const corLower = color.toLowerCase();
+
                       return (
                         <button
-                          key={color.value}
-                          onClick={() => !isUsed && setSelectedColor(color.value)}
+                          key={color}
+                          onClick={() => !isUsed && setSelectedColor(color)}
                           disabled={isUsed}
-                          className={`
-                            relative w-12 h-12 rounded-full border-2 transition-all
-                            ${isSelected ? "border-primary scale-110 ring-4 ring-primary/20" : "border-border hover:scale-105"}
-                            ${isUsed ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
-                          `}
-                          style={{ backgroundColor: color.hex }}
-                          title={color.value}
+                          className={cn(
+                            `relative w-12 h-12 rounded-full border-2 transition-all`,
+                            isSelected
+                              ? "border-primary scale-110 ring-4 ring-primary/20"
+                              : "border-border hover:scale-105",
+                            isUsed ? "opacity-30 cursor-not-allowed" : "cursor-pointer",
+                            `bg-${corLower}-custom`
+                          )}
+                          title={color}
                         >
                           {isUsed && (
                             <div className="absolute inset-0 flex items-center justify-center">
@@ -153,7 +153,7 @@ const NovaAventuraPagina = () => {
                 <Button
                   onClick={handleAddJogador}
                   className="w-full cursor-pointer"
-                  disabled={jogadores.length >= 5 || !selectedColor} // desativa se sem cor selecionada
+                  disabled={jogadores.length >= 5 || !selectedColor}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Adicionar Jogador
@@ -162,13 +162,18 @@ const NovaAventuraPagina = () => {
             </Card>
 
             <div className="mt-6 text-center">
-              <Link href="/" className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground text-s shadow-elegant hover:shadow-xl transition-all duration-300">
+              <Link
+                href="/"
+                className="flex items-center justify-center rounded-md h-10 w-60 px-8 font-sans bg-primary text-primary-foreground text-s shadow-rose hover:shadow-xl transition-all duration-300"
+              >
                 Voltar para o Início
               </Link>
             </div>
+
           </div>
 
-          <Card className="shadow-elegant">
+          {/* Lista de jogadores add*/}
+          <Card className="shadow-rose">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
@@ -185,14 +190,27 @@ const NovaAventuraPagina = () => {
               ) : (
                 <div className="space-y-3">
                   {jogadores.map((jogador) => {
-                    const colorInfo = PLAYER_COLORS.find((c) => c.value === jogador.pegarCorDoTrem());
+                    const corLower = jogador.CorDoTrem.toLowerCase();
                     return (
-                      <div key={jogador.pegarId()} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
-                        <div className="w-10 h-10 rounded-full border-2 border-border flex-shrink-0" style={{ backgroundColor: colorInfo?.hex }} />
+                      <div
+                        key={jogador.Id}
+                        className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border"
+                      >
+                        <div
+                          className={cn(
+                            "w-10 h-10 rounded-full border-2 border-border flex-shrink-0",
+                            `bg-${corLower}-custom`
+                          )}
+                        />
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{jogador.pegarNome()}</p>
+                          <p className="font-medium truncate">{jogador.Nome}</p>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => handleRemoveJogador(jogador.pegarId())} className="flex-shrink-0 cursor-pointer">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemoveJogador(jogador.Id)}
+                          className="flex-shrink-0 cursor-pointer"
+                        >
                           <X className="w-4 h-4" />
                         </Button>
                       </div>
@@ -200,13 +218,20 @@ const NovaAventuraPagina = () => {
                   })}
                 </div>
               )}
-              <Button onClick={handleStartGame} disabled={jogadores.length < 2} className="w-full mt-6 cursor-pointer" size="lg">
+              <Button
+                onClick={handleStartGame}
+                disabled={jogadores.length < 2}
+                className="w-full mt-6 cursor-pointer"
+                size="lg"
+              >
                 <Play className="w-4 h-4 mr-2" />
-                  Iniciar Jogo
+                Iniciar Jogo
               </Button>
             </CardContent>
           </Card>
         </div>
+
+
       </div>
     </div>
   );

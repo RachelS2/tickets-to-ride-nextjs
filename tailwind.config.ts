@@ -35,7 +35,7 @@ const config: Config = {
         'gradient-accent': 'var(--gradient-accent)',
       },
       boxShadow: {
-        elegant: 'var(--shadow-elegant)',
+        elegant: 'var(--shadow-rose)',
       },
       borderRadius: {
         lg: 'var(--radius)',
