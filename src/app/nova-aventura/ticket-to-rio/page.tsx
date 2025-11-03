@@ -9,7 +9,7 @@ import { useRouter, notFound } from 'next/navigation';
 import Tabuleiro from "@/app/components/tabuleiro-view";
 import { CartaVagaoView } from "@/app/components/carta-vagao-view";
 import { BilhetesDestinoView } from "@/app/components/bilhetes-de-destino-view";
-import { MaiorCaminhoContinuoView } from "@/app/components/carta-maior-caminho-continuo-view.tsx";
+import {  Play } from "lucide-react";
 
 import { SumarioJogador } from "@/app/components/sumario-jogador-view";
 import { usarJogo } from "@/app/lib/contexto-jogo";
@@ -53,8 +53,8 @@ const GamePage = () => {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Sidebar */}
           <div className="col-span-2  bg-background space-y-4">
-
-            <MaiorCaminhoContinuoView maiorCaminhoContinuo={cartaMaiorCaminhoContinuo} size="md"/>
+            
+              <BilhetesDestinoView bilheteDestino={cartaMaiorCaminhoContinuo}  size="md" orientacao="horizontal"/>
 
             {/* Baralho Bilhete de Destino */}
             <Card className="p-6 bg-gradient-to-br from-secondary to-accent">
@@ -149,6 +149,7 @@ const GamePage = () => {
 
               {/* Botão ocupa toda a largura */}
               <Button className="w-full mt-6">
+                <Play className="w-4 h-4 mr-2" />
                 EXECUTAR JOGADA
               </Button>
             </Card>
