@@ -22,7 +22,7 @@ export const CartaVagaoView = ({ cartaVagao, size = "md" }: CartaVagaoProps) => 
       >
         <Train
           className={cn(
-            size === "sm" ? "w-6 h-6" : size === "md" ? "w-8 h-7" : "w-10 h-10",
+            size === "sm" ? "w-6 h-6" : size === "md" ? "w-8 h-7" : "w-10 h-10" ,
             cartaVagao.Cor === "Branco" ?  "text-black" : "text-white"
           )}
         />

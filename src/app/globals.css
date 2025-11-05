@@ -5,6 +5,9 @@
   --foreground: hsl(20 14% 20%);
   
   --primary: hsl(358 65% 42%);
+  --primary-400: hsl(358 65% 52%);
+  --primary-500: hsl(358 65% 62%);
+
   --primary-foreground: hsl(42 45% 96%);
 
   --secondary: hsl(42 82% 55%);
@@ -22,9 +25,11 @@
 
   --shadow-black: 0 20px 40px -12px hsl(0 0% 0% / 0.25);
 
+  --bg-bilhete-destino-oculto: linear-gradient(180deg, #d39b5a 0%, #b06e39 40%, #7a4823 100%);
+
   --bg-bilhete-destino: radial-gradient(
     circle at 30% 30%,
-    #fdf3e3 0%,
+    #f0ddc0 0%,
     #f5e6ca 70%,
     #e2cfb3 100%
   );
@@ -68,9 +73,17 @@
     font-family: var(--font-geist-mono);
   }
 
+  .bg-bilhete-destino-oculto {
+    background: var(--bg-bilhete-destino-oculto);
+  }
+
   .bg-primary {
     background-color: var(--primary);
   }
+  .bg-primary-400 {
+    background-color: var(--primary-400);
+  }
+  
   .text-primary-foreground {
     color: var(--primary-foreground);
   }

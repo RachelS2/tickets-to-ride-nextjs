@@ -1,7 +1,7 @@
 import {Jogador} from "./jogador";
 import {NomesDeCidades} from './cidades';
 import { Tabuleiro } from "./tabuleiro";
-import { CartaMaiorCaminhoContinuo } from "./cartas-jogo";
+import { BilheteDestino, CartaMaiorCaminhoContinuo, CartaVagao } from "./cartas-jogo";
 
 export class Jogo {
 
@@ -38,6 +38,13 @@ export class Jogo {
         }
     }
 
+    public pegarBaralhoBilhetesDestino(): BilheteDestino[] {
+        return this.Tabuleiro.pegarBaralhoBilhetesDestino();
+    }
+
+    public pegarBaralhoCartasVagao(): CartaVagao[] {
+        return this.Tabuleiro.pegarBaralhoCartasVagao();
+    }
 
     public proximoJogador(): Jogador {
         const indexProxJogador: number = (this.Rodada) % this.Jogadores.length;
@@ -69,7 +76,7 @@ export class Jogo {
     }
     
     public pegaCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
-        return this.Tabuleiro.CartaMaiorCaminhoContinuo;
+        return this.Tabuleiro.pegarCartaMaiorCaminhoContinuo();
     }
 
 

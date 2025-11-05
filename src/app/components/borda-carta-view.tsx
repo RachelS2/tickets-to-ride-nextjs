@@ -18,7 +18,7 @@ export const BordaDaCartaView = ({
   return (
     <div className={cn("relative flex items-center justify-center bg-white p-1 shadow", ehHorizontal ? "aspect-[4/2.5]" : "aspect-[2.5/4]", 
           size === "sm" && (ehHorizontal ? "w-full max-w-[120px] h-[70px]" : "w-[70px]"),
-          size === "md" && (ehHorizontal ? "w-full max-w-[290px] h-[100px]" : "w-[90px]"),
+          size === "md" && (ehHorizontal ? "w-full max-w-[350px] h-[100px]" : "w-[90px]"),
           size === "lg" && (ehHorizontal ? "w-full max-w-[300px] h-[200px]" : "w-[110px]"),
           size === "responsive" &&
             (ehHorizontal

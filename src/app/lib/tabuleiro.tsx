@@ -9,7 +9,7 @@ export class Tabuleiro {
   private BaralhoCartasVagao!: CartaVagao[] 
   private BaralhoBilhetesDestino!: BilheteDestino[]
   
-  public CartaMaiorCaminhoContinuo!: CartaMaiorCaminhoContinuo;
+  private CartaMaiorCaminhoContinuo!: CartaMaiorCaminhoContinuo;
 
   private CartasVagaoExpostas: CartaVagao[] = []
   private CartasVagaoDescartadas : CartaVagao[] = []
@@ -30,6 +30,18 @@ export class Tabuleiro {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // troca
     }
     return shuffled;
+  }
+
+  public pegarBaralhoBilhetesDestino(): BilheteDestino[] {
+    return this.BaralhoBilhetesDestino;
+  }
+
+  public pegarBaralhoCartasVagao(): CartaVagao[] {
+    return this.BaralhoCartasVagao;
+  }
+
+  public pegarCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
+    return this.CartaMaiorCaminhoContinuo;
   }
 
 
