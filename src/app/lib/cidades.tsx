@@ -42,6 +42,11 @@ export type NomesDeCidades =
   | "Valenca";
 
 
+export const MaiorCaminhoContinuo: Record<number, Partial<Record<NomesDeCidades, NomesDeCidades>>> = {
+  10: {
+    "Sumidouro": "Petropolis",
+  },
+};
 
 export const DestinosCidades: Record<
   number,
@@ -92,10 +97,7 @@ export const DestinosCidades: Record<
   },
   9: {
     "Itatiaia": "Volta Redonda",    
-  },
-  10: {
-    "Sumidouro": "Petropolis",      
-  },
+  }
 };
 
 

@@ -1,7 +1,7 @@
 import {Jogador} from "./jogador";
 import {Rota } from "./rota"
 import {CartaVagao, CartaMaiorCaminhoContinuo, BilheteDestino } from "./cartas-jogo";
-import {NomesDeCidades, RotaCidades, DestinosCidades} from './cidades';
+import {NomesDeCidades, RotaCidades, DestinosCidades, MaiorCaminhoContinuo} from './cidades';
 import { corDeRotaAleatoria, CoresCartaVagao} from "./utils";
 
 export class Tabuleiro {
@@ -18,6 +18,7 @@ export class Tabuleiro {
     this.BaralhoCartasVagao = this.criarCartasDeVagao();
     this.Rotas = this.criarRotas();     
     this.BaralhoBilhetesDestino = this.criarBilhetesDestino();
+    console.log("Baralho Bilhetes de Destino inicio do jogo:" + this.BaralhoBilhetesDestino)
     this.CartaMaiorCaminhoContinuo = this.criarCartaMaiorCaminhoContinuo();
     this.darCartasAosJogadores(jogadores);
     this.exporCartasVagao()
@@ -30,6 +31,16 @@ export class Tabuleiro {
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // troca
     }
     return shuffled;
+  }
+
+  public removerBilheteDestinoDoBaralho(bilhete: BilheteDestino): BilheteDestino[] {
+    const index = this.BaralhoBilhetesDestino.indexOf(bilhete);
+    if (index < 0) {
+      throw new Error("Esse bilhete de destino não estava no baralho!")
+    }
+    this.BaralhoBilhetesDestino.splice(index, 1);
+    return this.BaralhoBilhetesDestino;
+
   }
 
   public pegarBaralhoBilhetesDestino(): BilheteDestino[] {
@@ -113,8 +124,8 @@ export class Tabuleiro {
     this.CartasVagaoDescartadas.push(...cartas);
   }
 
-  public devolverProBaralho(bilhete: BilheteDestino) : void {
-    this.BaralhoBilhetesDestino.push(bilhete)
+  public devolverProBaralho(bilhetes: BilheteDestino[]) : void {
+    this.BaralhoBilhetesDestino.push(...bilhetes);
   }
 
   private criarRotas(): Rota[] {
@@ -178,7 +189,12 @@ export class Tabuleiro {
   }
   
   private criarCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
-    return new CartaMaiorCaminhoContinuo("Sumidouro" as NomesDeCidades, "Petropolis" as NomesDeCidades, 10);
+    for (const [espacoStr, caminho]  of Object.entries(MaiorCaminhoContinuo)) {
+      const pontos = Number(espacoStr);
+      for (const [origem, destino] of Object.entries(caminho!)) {
+        return new CartaMaiorCaminhoContinuo(origem as NomesDeCidades, destino as NomesDeCidades, pontos);
+      }
+    }
   }
 
   private criarBilhetesDestino(): BilheteDestino[] {

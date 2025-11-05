@@ -1,16 +1,15 @@
 import React from "react";
+import { BilheteDestino } from "../lib/cartas-jogo";
 
 type BaralhoViewProps<T> = {
   cartas?: T[]; 
-  renderizarCarta?: (item: T, index: number, clickable: boolean) => React.ReactNode; 
+  renderizarCarta?: (item: T, idx: number) => React.ReactNode; 
   qtdeCartas?: number; 
   angleStep?: number;
   offsetXStep?: number;
   offsetYStep?: number;
   transformOrigin?: string;
   //estilo?: React.CSSProperties;
-  clicavel?: boolean; 
-  onCardClick?: (item: T, index: number) => void; // callback quando clicam em uma carta
 };
 
 
@@ -23,18 +22,11 @@ export function BaralhoView<T>({
   offsetYStep = 4,
   transformOrigin = "bottom center",
 //   estilo,   
-  clicavel = false,
-  onCardClick,
 }: BaralhoViewProps<T>) {
   const total = cartas ? cartas.length : qtdeCartas;
+  
   const arr = new Array(total).fill(null);
   const startAngle = -angleStep * ((total - 1) / 2);
-
-  const handleClick = (i: number) => {
-    if (!clicavel || !onCardClick) return;
-    if (cartas) onCardClick(cartas[i], i);
-    else onCardClick(undefined as unknown as T, i); // fallback se não houver items
-  };
 
   return (
     <div className="relative w-64 h-48 flex cartas-end justify-center">
@@ -52,17 +44,9 @@ export function BaralhoView<T>({
               transform: `translate(${offsetX}px, ${offsetY}px) rotate(${angle}deg)`,
               zIndex: i,
             }}
-            onClick={() => handleClick(i)}
-            role={clicavel ? "button" : undefined}
-            tabIndex={clicavel ? 0 : undefined}
-            onKeyDown={(e) => {
-              if (!clicavel) return;
-              if (e.key === "Enter" || e.key === " ") handleClick(i);
-            }}
-            aria-disabled={!clicavel}
 
           >
-            {cartas && renderizarCarta ? renderizarCarta(cartas[i], i, clicavel) : renderizarCarta ? renderizarCarta(undefined as any, i, clicavel) : null}
+            {cartas && renderizarCarta ? renderizarCarta(cartas[i]) : renderizarCarta ? renderizarCarta(undefined as any) : null}
           </div>
         );
       })}

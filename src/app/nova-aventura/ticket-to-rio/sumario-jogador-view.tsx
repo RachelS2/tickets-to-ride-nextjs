@@ -13,21 +13,28 @@ import { usarJogo } from "@/app/lib/contexto-jogo";
 import { Jogo } from "@/app/lib/jogo";
 import { BilheteDestino, CartaVagao } from "@/app/lib/cartas-jogo";
 import { cn , pegarHexDaCor} from "@/app/lib/utils";
+import { Jogador } from "@/app/lib/jogador";
+
+type SumarioProps = {
+  jogador: Jogador;
+  jogada: string;
+  setJogada: (j: string) => void;
+  onExecutarJogada: () => void; // notify parent when user clicks "EXECUTAR JOGADA"
+};
 
 /** Cria a lateral direita da tela, que permite a visualização das cartas do jogador atual e que o jogador faça uma jogada. */
-const SumarioJogadorView =() => {
+const SumarioJogadorView : React.FC<SumarioProps> = ({ jogador, jogada, setJogada, onExecutarJogada } : SumarioProps ) => {
     const Jogo: Jogo = usarJogo();
-    const [jogador] = useState({ atual: Jogo.pegaJogadores()[0] });
-    const [jogada, setJogada] = useState<string>("ocupar-rota");
-    const cartasDeVagaoJogador : CartaVagao[] = jogador.atual.verCartasVagao();
-    const bilhetesDestinoJogador : BilheteDestino[] = jogador.atual.verBilhetesDestino();
-    const qtdeTrensJogador: number = jogador.atual.pegarQtdeTrens();
+    
+    const cartasDeVagaoJogador : CartaVagao[] = jogador.verCartasVagao();
+    const bilhetesDestinoJogador : BilheteDestino[] = jogador.verBilhetesDestino();
+    const qtdeTrensJogador: number = jogador.pegarQtdeTrens();
 
-    const corJogador = pegarHexDaCor(jogador.atual.CorDoTrem);
+    const corJogador = pegarHexDaCor(jogador.CorDoTrem);
     return (
         <div>
         {/* Right Sidebar */}
-            <div className="col-span-3 rounded-md space-y-1 bg-accent/3">
+            <div className=" rounded-md space-y-1 bg-accent/3">
             <Card className="border-none shadow-none">
                 <div
                     className={cn(
@@ -37,11 +44,11 @@ const SumarioJogadorView =() => {
                 >
                     <h2 className="font-semibold md:text-lg text-base mx-2">
                     Jogador(a) Atual: <br />
-                    {jogador.atual.Nome}
+                    {jogador.Nome}
                     </h2>
                 </div>
 
-                <div className="space-y-3 p-2 mt-4">
+                <div className="space-y-3 pt-2 mt-4">
                     <div className="flex flex-col">
                         <h3 className="font-semibold mb-2">Suas Cartas de Vagão</h3>
                         <div className="flex flex-wrap gap-3 items-center">
@@ -95,7 +102,7 @@ const SumarioJogadorView =() => {
                     </div>
                 </RadioGroup>
 
-                <Button className="w-full mt-6">
+                <Button className="w-full mt-6  " onClick={onExecutarJogada}>
                     <Play className="w-4 h-4 mr-2" />
                     <span>EXECUTAR JOGADA</span>
                 </Button>

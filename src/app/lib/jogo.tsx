@@ -42,14 +42,18 @@ export class Jogo {
         return this.Tabuleiro.pegarBaralhoBilhetesDestino();
     }
 
+    public removerBilheteDestinoDoBaralho(bilhete: BilheteDestino): BilheteDestino[] {
+        return this.Tabuleiro.removerBilheteDestinoDoBaralho(bilhete);
+    }
+
     public pegarBaralhoCartasVagao(): CartaVagao[] {
         return this.Tabuleiro.pegarBaralhoCartasVagao();
     }
 
     public proximoJogador(): Jogador {
         const indexProxJogador: number = (this.Rodada) % this.Jogadores.length;
-        console.log("Índice do próximo jogador:", indexProxJogador);
-        console.log("Próximo jogador:", this.Jogadores[indexProxJogador].Nome);
+        // console.log("Índice do próximo jogador:", indexProxJogador);
+        // console.log("Próximo jogador:", this.Jogadores[indexProxJogador].Nome);
         return this.Jogadores[indexProxJogador];
     }
 
@@ -69,6 +73,14 @@ export class Jogo {
             throw new Error("Não é possível remover jogadores após o início do jogo.");
         }
         this.Jogadores = this.Jogadores.filter(jogador => jogador.Id !== playerId);
+    }
+
+    public descartarV(cartas: CartaVagao[]): void {
+        this.Tabuleiro.descartar(cartas);
+    }
+
+    public descartarB(bilhetes: BilheteDestino[]): void {
+        this.Tabuleiro.devolverProBaralho(bilhetes);
     }
     
     private calculaVencedor(): void {

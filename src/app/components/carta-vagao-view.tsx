@@ -11,7 +11,6 @@ interface CartaVagaoProps {
 }
 
 export const CartaVagaoView = ({ cartaVagao, size = "md" }: CartaVagaoProps) => {
-  console.log(cartaVagao.Cor);
 
   return (
     <BordaDaCartaView>
