@@ -11,6 +11,7 @@ import SumarioJogadorView from "@/app/nova-aventura/ticket-to-rio/sumario-jogado
 import { usarJogo } from "@/app/lib/contexto-jogo";
 import { Jogo } from "@/app/lib/jogo";
 import { BilheteDestino, CartaVagao } from "@/app/lib/cartas-jogo";
+import {OpcoesDeJogada} from "@/app/lib/utils"
 
 const GamePage: React.FC = () => {
   const jogo: Jogo = usarJogo();
@@ -20,34 +21,58 @@ const GamePage: React.FC = () => {
   const router = useRouter();
 
   // pega o baralho inicial do jogo (copia para estado local)
-  const inicialBaralho: BilheteDestino[] = jogo.pegarBaralhoBilhetesDestino();
-  const [baralhoLocal, setBaralhoLocal] = useState<BilheteDestino[]>(inicialBaralho);
+  const [baralhoLocal, setBaralhoLocal] = useState<BilheteDestino[]>(jogo.pegarBilhetesDeDestino(5));
 
   const [rodada, setRodada] = useState<number>(jogo.rodadaAtual());
 
   // controle se o baralho pode ser clicado (após executar a jogada comprar-bilhetes)
   const [baralhoBilhetesClicavel, setBaralhoBilhetesClicavel] = useState<boolean>(false);
-  const [jogada, setJogada] = useState<string>("ocupar-rota");
+  const [jogada, setJogada] = useState<OpcoesDeJogada>("ocupar-rota");
 
   const [jogador, setJogador] = useState({ atual: jogo.pegaJogadores()[0] });
   const [bilheteNoTopo, setBilheteTopoBaralho] = useState<BilheteDestino | null>(baralhoLocal[0] ?? null);
 
   const cartaMaiorCaminhoContinuo = jogo.pegaCartaMaiorCaminhoContinuo();
 
-  // ids de animação/revelação
+  // ids de animação/revelação de cartas
   const [revealedId, setRevealedId] = useState<string | null>(null);
   const [animandoId, setAnimandoId] = useState<string | null>(null);
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const handleExecutarJogada = () => {
-    if (jogada === "comprar-bilhetes") {
+    if (jogada === "comprar-bilhete") {
       setBaralhoBilhetesClicavel(true);
     } else {
       setBaralhoBilhetesClicavel(false);
       // implementar outras jogadas aqui...
     }
   };
+
+  const removerBilheteDestinoBaralho = (bilhete: BilheteDestino) => {
+    console.log("Baralho antes de comprar:");
+    baralhoLocal.forEach((bilhete, i) => {
+      console.log(`${i + 1}. ${bilhete.Origem} → ${bilhete.Destino} (${bilhete.Pontos} pts)`);
+    });
+
+    const index = baralhoLocal.indexOf(bilhete);
+     if (index < 0) throw new Error("Esse bilhete de destino não estava no baralho!");
+    
+    const novoBaralho = [...baralhoLocal];
+    novoBaralho.splice(index, 1); // remove 1 elemento a partir do índice encontrado
+
+    setBaralhoLocal(novoBaralho);
+
+    
+    console.log("Baralho depois de comprar:");
+    novoBaralho.forEach((bilhete, i) => {
+      console.log(`${i + 1}. ${bilhete.Origem} → ${bilhete.Destino} (${bilhete.Pontos} pts)`);
+    });
+    
+    // atualiza bilhete do topo 
+    setBilheteTopoBaralho(baralhoLocal[0] ?? null);
+
+  }
 
   const getBilheteId = (bilhete: BilheteDestino, index?: number) =>
     String((bilhete as any).id ?? `${(bilhete as any).origem ?? (bilhete as any).Origem}-${(bilhete as any).destino ?? (bilhete as any).Destino}-${index ?? ""}`);
@@ -66,12 +91,7 @@ const GamePage: React.FC = () => {
 
     // 2) remover do baralho — assumimos que jogo.removerBilheteDestinoDoBaralho retorna o novo baralho (ou atualiza internamente)
     // se a API do jogo for diferente, adapte: por exemplo, jogo.removerBilheteDestinoDoBaralho(bilhete); const novo = jogo.pegarBaralho...
-    const novoBaralho: BilheteDestino[] = jogo.removerBilheteDestinoDoBaralho(bilhete);
-    console.log(novoBaralho)
-    // atualiza estado local pra re-render
-    setBaralhoLocal(novoBaralho);
-    // atualiza topo exibido
-    setBilheteTopoBaralho(novoBaralho[0] ?? null);
+    removerBilheteDestinoBaralho(bilhete)
 
     // pequena espera para a sensação de "movimento para a mão"
     await sleep(300);
@@ -87,10 +107,10 @@ const GamePage: React.FC = () => {
   };
 
   // caso o baralho do jogo mude fora (por exemplo outras ações), sincronize localmente
-  useEffect(() => {
-    setBaralhoLocal(jogo.pegarBaralhoBilhetesDestino());
-    setBilheteTopoBaralho(jogo.pegarBaralhoBilhetesDestino()[0] ?? null);
-  }, [jogo]);
+  // useEffect(() => {
+  //   setBaralhoLocal(jogo.pegarBilhetesDeDestino());
+  //   setBilheteTopoBaralho(jogo.pegarBilhetesDeDestino()[0] ?? null);
+  // }, [jogo]);
 
   return (
     <div className="min-h-screen font-serif p-1">
@@ -103,24 +123,17 @@ const GamePage: React.FC = () => {
         <div className="w-32" />
       </div>
 
-      <div className="px-4 py-6">
-        <div className="grid grid-cols-12 gap-6">
+      <div className="px-3 py-6">
+        <div className="grid grid-cols-12 gap-3">
           {/* Left Sidebar */}
-          <div className="col-span-2 bg-background space-y-4">
-            <div className="border-none shadow-none">
-              <div className="flex flex-col text-white rounded-md justify-center text-center items-center bg-vermelho-custom p-2">
-                <h2 className="font-semibold md:text-lg text-xs px-2">
-                  Maior Caminho Contínuo:
-                </h2>
-              </div>
-            </div>
+          <div className="col-span-2 bg-background space-y-4 overflow-hidden">
 
             <BilheteDestinoView bilheteDestino={cartaMaiorCaminhoContinuo} size="md" orientacao="horizontal" />
 
-            <div className="mt-10">
+            <div className="mt-10 relative w-full flex justify-center">
               <BaralhoView
                 cartas={baralhoLocal.slice(0, 5)}
-                angleStep={14}
+                angleStep={10}
                 offsetXStep={20}
                 // renderizarCarta recebe bilhete e index — passamos expostoInicialmente conforme revealedId
                 renderizarCarta={(bilhete: BilheteDestino, idx: number) => {
@@ -128,7 +141,7 @@ const GamePage: React.FC = () => {
                   const isRevealed = revealedId === id;
                   const isAnimating = animandoId === id;
                   return (
-                    <div key={id} className="relative">
+                    <div key={id} className="relative w-full flex justify-center">
 
                         <BilheteDestinoView
                           bilheteDestino={bilhete}
@@ -144,13 +157,11 @@ const GamePage: React.FC = () => {
                     </div>
                   );
                 }}
-                // se preferir delegar clique ao BaralhoView, poderia usar clickable/onCardClick props
               />
             </div>
           </div>
 
           <div className="flex flex-row items-center justify-center bg-blue-300 col-span-7">
-            <div>
                 <Tabuleiro />
               <div className="gap-4 mt-4 justify-center">
                   <Button variant="outline" size="icon" className="w-16 h-16 mr-4 bg-muted">
@@ -160,7 +171,6 @@ const GamePage: React.FC = () => {
                     <Train className="w-6 h-6" />
                   </Button>
               </div>
-            </div>
   
           </div>
 

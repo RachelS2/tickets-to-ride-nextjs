@@ -33,18 +33,18 @@ export class Tabuleiro {
     return shuffled;
   }
 
-  public removerBilheteDestinoDoBaralho(bilhete: BilheteDestino): BilheteDestino[] {
-    const index = this.BaralhoBilhetesDestino.indexOf(bilhete);
-    if (index < 0) {
-      throw new Error("Esse bilhete de destino não estava no baralho!")
-    }
-    this.BaralhoBilhetesDestino.splice(index, 1);
-    return this.BaralhoBilhetesDestino;
+  // public removerBilheteDestinoDoBaralho(bilhete: BilheteDestino): BilheteDestino[] {
+  //   const index = this.BaralhoBilhetesDestino.indexOf(bilhete);
+  //   if (index < 0) {
+  //     throw new Error("Esse bilhete de destino não estava no baralho!")
+  //   }
+  //   this.BaralhoBilhetesDestino.splice(index, 1);
+  //   return this.BaralhoBilhetesDestino;
 
-  }
+  // }
 
-  public pegarBaralhoBilhetesDestino(): BilheteDestino[] {
-    return this.BaralhoBilhetesDestino;
+  public pegarBilhetesDeDestino(qtde: number): BilheteDestino[] {
+    return this.BaralhoBilhetesDestino.slice(-qtde);
   }
 
   public pegarBaralhoCartasVagao(): CartaVagao[] {

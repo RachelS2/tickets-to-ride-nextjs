@@ -11,13 +11,14 @@ export function gerarIdUsuario() {
   return nanoid();
 }
 
+export type OpcoesDeJogada = "ocupar-rota" | "comprar-bilhete" | "comprar-carta"
+
 export function pegarHexDaCor(cor: string): string {
   const corLimpa: string = cor.toLowerCase();
   return `bg-${corLimpa}-custom`
 }
 
 export type CoresDeTrem = "Azul" | "Vermelho" | "Amarelo" | "Verde" | "Preto";
-
 export type CoresDeRota = "Cinza" | "Roxo" | "Laranja" | "Branco" | CoresDeTrem;
 export type CoresCartaVagao = "Roxo" | "Laranja" | "Branco" | "Coringa" | CoresDeTrem;
 
