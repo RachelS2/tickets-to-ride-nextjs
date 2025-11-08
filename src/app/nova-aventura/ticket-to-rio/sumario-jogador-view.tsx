@@ -6,23 +6,34 @@ import { Label } from "@/app/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 
 import { CartaVagaoView } from "@/app/components/carta-vagao-view";
-import { BilheteDestinoView } from "@/app/components/bilhete-de-destino-view";
+import { BilheteDestinoView , BilhetesDestinoProps}  from "@/app/components/bilhete-de-destino-view";
+
 import {  Play, Train } from "lucide-react";
 
 import { usarJogo } from "@/app/lib/contexto-jogo";
 import { Jogo } from "@/app/lib/jogo";
 import { BilheteDestino, CartaVagao } from "@/app/lib/cartas-jogo";
-import { cn , pegarHexDaCor, OpcoesDeJogada} from "@/app/lib/utils";
+import { cn , pegarHexDaCor, OpcoesDeJogada, JogadaEfetiva} from "@/app/lib/utils";
 import { Jogador } from "@/app/lib/jogador";
+
+type ItensJogadorProps = {
+    nome: string;
+    qtdeTrens: number;
+    corDoTrem: string;
+    bilhetesDestino : BilheteDestino[];
+    cartasDeVagao : CartaVagao[]
+}
 
 type SumarioProps = {
   rodada: number;
-  jogadorAtual: Jogador;
-  jogada: OpcoesDeJogada;
+  jogadorAtual: ItensJogadorProps;
+  jogadaSelecionada: OpcoesDeJogada;
   setJogada: (j: OpcoesDeJogada) => void;
   onExecutarJogada: () => void; // notify parent when user clicks "EXECUTAR JOGADA"
-  executouJogadaPrincipal: boolean;
+  jogadaEfetiva: JogadaEfetiva;
   proximoJogador: Jogador;
+  finalizouJogadaPrincipal: boolean;
+  configuracaoBilhetesJogador: BilhetesDestinoProps;
 };
 
 const renderOpcoesJogada = (
@@ -43,102 +54,144 @@ const renderOpcoesJogada = (
     );
 
 
+
 /** Cria a lateral direita da tela, que permite a visualização das cartas do jogador atual e que o jogador faça uma jogada. */
-const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual: jogador, jogada, setJogada, onExecutarJogada, executouJogadaPrincipal, proximoJogador } : SumarioProps ) => {
+const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jogadaSelecionada, setJogada, onExecutarJogada, jogadaEfetiva, proximoJogador, finalizouJogadaPrincipal } : SumarioProps ) => {
+
+    const cartasDeVagaoJogador : CartaVagao[] = jogadorAtual.cartasDeVagao;
+    const bilhetesDestinoJogador : BilheteDestino[] = jogadorAtual.bilhetesDestino;
+    const qtdeTrensJogador: number = jogadorAtual.qtdeTrens;
+    const corJogador = pegarHexDaCor(jogadorAtual.corDoTrem);
 
 
-    const Jogo: Jogo = usarJogo();
-    const cartasDeVagaoJogador : CartaVagao[] = jogador.verCartasVagao();
-    const bilhetesDestinoJogador : BilheteDestino[] = jogador.verBilhetesDestino();
-    const qtdeTrensJogador: number = jogador.pegarQtdeTrens();
-    const corJogador = pegarHexDaCor(jogador.CorDoTrem);
-
+    const renderComprarBilhete = () => (
+        <>
+            {renderOpcoesJogada("comprar-bilhete", "Comprar Bilhetes de Destino")}
+        </>
+    )
     const renderPosComprarBilhete = () => (
-        <RadioGroup value={jogada} onValueChange={setJogada}>
-            {renderOpcoesJogada("descartar-bilhete", "Descartar Bilhete")}
-            {renderOpcoesJogada("passar-a-vez", "Passar a Vez")}
-        </RadioGroup>
+        <>
+            {renderDescartarBilhete()}
+            {renderPassarAVez()}
+        </>
     );
+    const renderDescartarBilhete = () => (
+        <>
+            {renderOpcoesJogada("descartar-bilhete", "Descartar Bilhete")}
+        </>  
+    )
+    const renderPassarAVez= () => (
+        <>
+            {renderOpcoesJogada("passar-a-vez", "Passar a Vez")}
+        </>  
+    )
+    const renderComprarCartaVagao = ()=> (
+        <>
+            {renderOpcoesJogada("comprar-carta", "Comprar Cartas de Vagão")}
+        </>  
+    )
+
     const renderJogadasPrincipais = () => (
-    <RadioGroup value={jogada} onValueChange={setJogada}>
-        {renderOpcoesJogada("ocupar-rota", "Ocupar Rota")}
-        {renderOpcoesJogada("comprar-bilhete", "Comprar Bilhetes de Destino")}
-        {renderOpcoesJogada("comprar-carta", "Comprar Cartas de Vagão")}
-        {renderOpcoesJogada("passar-a-vez", "Passar a Vez")}
-    </RadioGroup>
+        <>
+            {renderOpcoesJogada("ocupar-rota", "Ocupar Rota")}
+            {renderComprarBilhete()}
+            {renderComprarCartaVagao()}
+            {renderPassarAVez()}
+        </>
     );
 
     const renderRodada0 = () => (
-        <RadioGroup value={jogada} onValueChange={setJogada}>
-            {renderOpcoesJogada("descartar-bilhete", "Descartar Bilhete")}
-            {renderOpcoesJogada("passar-a-vez", "Passar a Vez")}
-        </RadioGroup>
+        <>
+            {renderDescartarBilhete()}
+            {renderPassarAVez()}
+        </>
         );
+
+    const renderJogadas = () => {
+        if (rodada === 0) return renderRodada0();
+        
+        switch (jogadaEfetiva) {
+            case "comprar-bilhete":
+                return finalizouJogadaPrincipal
+                    ? renderPosComprarBilhete()
+                    : renderComprarBilhete();
+
+            case "descartar-bilhete":
+                return renderDescartarBilhete();
+
+            case "comprar-carta":
+                return renderComprarCartaVagao();
+
+            case "":
+                default:
+                return renderJogadasPrincipais();
+        }
+    };
+
 
     return (
         <div>
         {/* Right Sidebar */}
-            <div className=" rounded-md space-y-1 bg-accent/3">
-            <Card className="border-none shadow-none">
-                <div
-                    className={cn(
-                    "flex flex-col  text-white rounded-md justify-center shadow text-center items-center",
-                    corJogador
-                    )}
-                >
-                    <h2 className="font-semibold md:text-lg text-base mx-2">
-                    Jogador(a) Atual: <br />
-                    {jogador.Nome}
-                    </h2>
-                </div>
-
-                <div className="space-y-3 pt-2 mt-4">
-                    <div className="flex flex-col">
-                        <h3 className="font-semibold mb-2">Suas Cartas de Vagão</h3>
-                        <div className="flex flex-wrap gap-3 items-center">
-                            {cartasDeVagaoJogador.map((cartaDeVagao, index) => (
-                            <CartaVagaoView key={index} cartaVagao={cartaDeVagao} size="md" />
-                            ))}
-                        </div>
+            <div className=" rounded-md space-y-1 bg-accent/3 min-h-[150px]">
+                <Card className="border-none shadow-none">
+                    <div
+                        className={cn(
+                        "flex flex-col  text-white rounded-md justify-center shadow text-center items-center",
+                        corJogador
+                        )}
+                    >
+                        <h2 className="font-semibold md:text-lg text-base mx-2">
+                        Jogador(a) Atual: <br />
+                        {jogadorAtual.Nome}
+                        </h2>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3 pt-2 mt-4">
                         <div className="flex flex-col">
-                            <h3 className="font-semibold mb-2">Seus Bilhetes de Destino</h3>
+                            <h3 className="font-semibold mb-2">Suas Cartas de Vagão</h3>
                             <div className="flex flex-wrap gap-3 items-center">
-                                {bilhetesDestinoJogador.map((ticket, index) => (
-                                    <BilheteDestinoView key={index} bilheteDestino={ticket} size="md" />
+                                {cartasDeVagaoJogador.map((cartaDeVagao, index) => (
+                                <CartaVagaoView key={index} cartaVagao={cartaDeVagao} size="md" />
                                 ))}
                             </div>
                         </div>
+
+                        <div className="space-y-2">
+                            <div className="flex flex-col">
+                                <h3 className="font-semibold mb-2">Seus Bilhetes de Destino</h3>
+                                <div className="flex flex-wrap gap-3 items-center">
+                                    {bilhetesDestinoJogador.map((ticket, index) => (
+                                        <BilheteDestinoView key={index} bilheteDestino={ticket} size="md" />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-8">
+                            <Train className="w-5 h-5" />
+                            <p className="font-semibold">Você tem {qtdeTrensJogador} trens!</p>
+                        </div>
                     </div>
+                </Card>
 
-                    <div className="flex items-center gap-2 mt-8">
-                        <Train className="w-5 h-5" />
-                        <p className="font-semibold">Você tem {qtdeTrensJogador} trens!</p>
-                    </div>
-                </div>
-            </Card>
+                <Card className="pt-4 border-none shadow-none">
+                    <h3 className="font-semibold mb-4">Próxima Jogada:</h3>
+                        <RadioGroup value={jogadaSelecionada} onValueChange={setJogada}>
+                            {renderJogadas()}
+                        </RadioGroup>
 
-            <Card className="pt-4 border-none shadow-none">
-                <h3 className="font-semibold mb-4">Próxima Jogada:</h3>
-                                    
-                    {rodada === 0 ? ( renderRodada0() ) : 
-                    
-                    rodada > 0 && executouJogadaPrincipal && jogada == "comprar-bilhete" ?  ( renderPosComprarBilhete () ) : 
-                    ( renderJogadasPrincipais ())}
+                    {!jogadaEfetiva? (
+                        <Button className="w-full mt-6  " onClick={onExecutarJogada}>
+                            <Play className="w-4 h-4 mr-2" />
+                            <span>EXECUTAR JOGADA</span>
+                        </Button>
 
-                <Button className="w-full mt-6  " onClick={onExecutarJogada}>
-                    <Play className="w-4 h-4 mr-2" />
-                    <span>EXECUTAR JOGADA</span>
-                </Button>
-            </Card>
+                    ) : <></> }
+                    <Card className="pt-4 border-none shadow-none">
+                        <span className="font-semibold">Próximo(a) a Jogar:</span> {proximoJogador.Nome}
+                    </Card>
+                </Card>
 
-            <Card className="pt-4 border-none shadow-none">
-                <p className="text-sm">
-                    <span className="font-semibold">Próximo(a) a Jogar:</span> {proximoJogador.Nome}
-                </p>
-            </Card>
         </div>
     </div>
   );

@@ -18,7 +18,6 @@ export class Tabuleiro {
     this.BaralhoCartasVagao = this.criarCartasDeVagao();
     this.Rotas = this.criarRotas();     
     this.BaralhoBilhetesDestino = this.criarBilhetesDestino();
-    console.log("Baralho Bilhetes de Destino inicio do jogo:" + this.BaralhoBilhetesDestino)
     this.CartaMaiorCaminhoContinuo = this.criarCartaMaiorCaminhoContinuo();
     this.darCartasAosJogadores(jogadores);
     this.exporCartasVagao()
@@ -51,8 +50,8 @@ export class Tabuleiro {
     const qtde: number = 5 - this.CartasVagaoExpostas.length // É preciso ter sempre 5 cartas de vagão expostas no tabuleiro
     if (qtde > 0) {
       const novasCartasVagao: CartaVagao[] = this.pegarCartaVagaoDoBaralho(qtde); 
-      console.log("Cartas a serem expostas: " + novasCartasVagao.length)
-      console.log("Qtde cartas de vagão no baralho após a exposição: " + this.BaralhoCartasVagao.length)
+      // console.log("Cartas a serem expostas: " + novasCartasVagao.length)
+      // console.log("Qtde cartas de vagão no baralho após a exposição: " + this.BaralhoCartasVagao.length)
       this.CartasVagaoExpostas.push(...novasCartasVagao)
       let locomotivas: number = 0
       for (const carta of this.CartasVagaoExpostas) {
@@ -172,10 +171,10 @@ export class Tabuleiro {
         }
     }
 
-    console.log("Número de cartas de vagão antes de embaralhar" + baralho.length)
+    //console.log("Número de cartas de vagão antes de embaralhar" + baralho.length)
     const cartasVagaoEmbaralhadas : CartaVagao[] = this.embaralharCartas(baralho);
-    console.log("Número de cartas de vagão após embaralhar:", cartasVagaoEmbaralhadas.length);
-    console.log("Cartas de vagão embaralhadas:", cartasVagaoEmbaralhadas);
+    // console.log("Número de cartas de vagão após embaralhar:", cartasVagaoEmbaralhadas.length);
+    // console.log("Cartas de vagão embaralhadas:", cartasVagaoEmbaralhadas);
     return cartasVagaoEmbaralhadas;
   }
   
@@ -214,13 +213,13 @@ export class Tabuleiro {
     }
     
     const bilhetesDestino2 = this.embaralharCartas(bilhetesDestino);
-    console.log("qtde bilhetes de destino criadas:", bilhetesDestino2.length);
-    console.log("bilhetes de destino criadas:", bilhetesDestino2);
+    // console.log("qtde bilhetes de destino criadas:", bilhetesDestino2.length);
+    // console.log("bilhetes de destino criadas:", bilhetesDestino2);
     return bilhetesDestino2;
   }
 
   private darCartasAosJogadores(jogadores: Jogador[]): void{
-    console.log("Qtde cartas baralho antes da distribuição: " + this.BaralhoCartasVagao.length)
+    //console.log("Qtde cartas baralho antes da distribuição: " + this.BaralhoCartasVagao.length)
     if (!this.BaralhoCartasVagao || !this.BaralhoBilhetesDestino) {
         throw new Error("Baralhos não inicializados.");
     }
@@ -241,7 +240,7 @@ export class Tabuleiro {
         }
       }
     }
-    console.log("Qtde cartas baralho depois da distribuição aos jogadores: " + this.BaralhoCartasVagao.length)
+    //console.log("Qtde cartas baralho depois da distribuição aos jogadores: " + this.BaralhoCartasVagao.length)
   }
   
 }

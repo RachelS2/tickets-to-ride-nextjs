@@ -13,6 +13,8 @@ export function gerarIdUsuario() {
 
 export type OpcoesDeJogada = "ocupar-rota" | "comprar-bilhete" | "comprar-carta" | "descartar-bilhete" | "passar-a-vez"
 
+export type JogadaEfetiva = "" | OpcoesDeJogada
+
 export function pegarHexDaCor(cor: string): string {
   const corLimpa: string = cor.toLowerCase();
   return `bg-${corLimpa}-custom`

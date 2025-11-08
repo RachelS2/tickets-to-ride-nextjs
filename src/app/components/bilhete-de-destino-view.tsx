@@ -75,7 +75,7 @@ const BilheteDestinoOculto: React.FC<{
 };
 
 
-type BilhetesDestinoProps = {
+export type BilhetesDestinoProps = {
   bilheteDestino: BilheteDestino;
   size?: "sm" | "md" | "lg" | "responsive";
   orientacao?: "vertical" | "horizontal";
@@ -86,7 +86,6 @@ type BilhetesDestinoProps = {
   onClick?: () => void; 
   destacar? : boolean;
 };
-
 
 
 
