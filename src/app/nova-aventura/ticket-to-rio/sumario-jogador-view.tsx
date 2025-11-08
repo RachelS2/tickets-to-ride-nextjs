@@ -17,11 +17,12 @@ import { Jogador } from "@/app/lib/jogador";
 
 type SumarioProps = {
   rodada: number;
-  jogador: Jogador;
+  jogadorAtual: Jogador;
   jogada: OpcoesDeJogada;
   setJogada: (j: OpcoesDeJogada) => void;
   onExecutarJogada: () => void; // notify parent when user clicks "EXECUTAR JOGADA"
-  executouJogadaPrincipal: boolean,
+  executouJogadaPrincipal: boolean;
+  proximoJogador: Jogador;
 };
 
 const renderOpcoesJogada = (
@@ -43,7 +44,7 @@ const renderOpcoesJogada = (
 
 
 /** Cria a lateral direita da tela, que permite a visualização das cartas do jogador atual e que o jogador faça uma jogada. */
-const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogador, jogada, setJogada, onExecutarJogada, executouJogadaPrincipal } : SumarioProps ) => {
+const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual: jogador, jogada, setJogada, onExecutarJogada, executouJogadaPrincipal, proximoJogador } : SumarioProps ) => {
 
 
     const Jogo: Jogo = usarJogo();
@@ -52,17 +53,25 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogador, jogada, 
     const qtdeTrensJogador: number = jogador.pegarQtdeTrens();
     const corJogador = pegarHexDaCor(jogador.CorDoTrem);
 
+    const renderPosComprarBilhete = () => (
+        <RadioGroup value={jogada} onValueChange={setJogada}>
+            {renderOpcoesJogada("descartar-bilhete", "Descartar Bilhete")}
+            {renderOpcoesJogada("passar-a-vez", "Passar a Vez")}
+        </RadioGroup>
+    );
     const renderJogadasPrincipais = () => (
     <RadioGroup value={jogada} onValueChange={setJogada}>
         {renderOpcoesJogada("ocupar-rota", "Ocupar Rota")}
         {renderOpcoesJogada("comprar-bilhete", "Comprar Bilhetes de Destino")}
         {renderOpcoesJogada("comprar-carta", "Comprar Cartas de Vagão")}
+        {renderOpcoesJogada("passar-a-vez", "Passar a Vez")}
     </RadioGroup>
     );
 
-    const renderJogadasConsecutivas = () => (
+    const renderRodada0 = () => (
         <RadioGroup value={jogada} onValueChange={setJogada}>
             {renderOpcoesJogada("descartar-bilhete", "Descartar Bilhete")}
+            {renderOpcoesJogada("passar-a-vez", "Passar a Vez")}
         </RadioGroup>
         );
 
@@ -114,8 +123,10 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogador, jogada, 
             <Card className="pt-4 border-none shadow-none">
                 <h3 className="font-semibold mb-4">Próxima Jogada:</h3>
                                     
-                {executouJogadaPrincipal ? renderJogadasConsecutivas() : renderJogadasPrincipais()}
-
+                    {rodada === 0 ? ( renderRodada0() ) : 
+                    
+                    rodada > 0 && executouJogadaPrincipal && jogada == "comprar-bilhete" ?  ( renderPosComprarBilhete () ) : 
+                    ( renderJogadasPrincipais ())}
 
                 <Button className="w-full mt-6  " onClick={onExecutarJogada}>
                     <Play className="w-4 h-4 mr-2" />
@@ -125,7 +136,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogador, jogada, 
 
             <Card className="pt-4 border-none shadow-none">
                 <p className="text-sm">
-                    <span className="font-semibold">Próximo(a) a Jogar:</span> {Jogo.proximoJogador().Nome}
+                    <span className="font-semibold">Próximo(a) a Jogar:</span> {proximoJogador.Nome}
                 </p>
             </Card>
         </div>

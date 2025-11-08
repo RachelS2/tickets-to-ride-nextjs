@@ -7,18 +7,13 @@ export class Jogo {
 
     private Tabuleiro!: Tabuleiro;
     private Jogadores: Jogador[] = [];
-    private Rodada: number = 1;
 
     private Iniciado: boolean = false;
 
     public foiIniciado(): boolean {
         return this.Iniciado;
     }
-
-    public rodadaAtual(): number {
-        return this.Rodada;
-    }
-
+    
     public async iniciaJogo(): Promise<void> {
         if (!this.Jogadores || this.Jogadores.length < 2 || this.Jogadores.length > 5) {
             throw new Error("Verifique o número de jogadores antes de iniciar o jogo.");
@@ -48,13 +43,6 @@ export class Jogo {
 
     public pegarBaralhoCartasVagao(): CartaVagao[] {
         return this.Tabuleiro.pegarBaralhoCartasVagao();
-    }
-
-    public proximoJogador(): Jogador {
-        const indexProxJogador: number = (this.Rodada) % this.Jogadores.length;
-        // console.log("Índice do próximo jogador:", indexProxJogador);
-        // console.log("Próximo jogador:", this.Jogadores[indexProxJogador].Nome);
-        return this.Jogadores[indexProxJogador];
     }
 
     public pegaJogadores(): Jogador[] {

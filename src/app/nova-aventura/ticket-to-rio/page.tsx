@@ -12,6 +12,7 @@ import { usarJogo } from "@/app/lib/contexto-jogo";
 import { Jogo } from "@/app/lib/jogo";
 import { BilheteDestino, CartaMaiorCaminhoContinuo, CartaVagao } from "@/app/lib/cartas-jogo";
 import {OpcoesDeJogada} from "@/app/lib/utils"
+import { Jogador } from "@/app/lib/jogador";
 
 const GamePage: React.FC = () => {
   const jogo: Jogo = usarJogo();
@@ -22,27 +23,31 @@ const GamePage: React.FC = () => {
   const cartaMaiorCaminhoContinuo : CartaMaiorCaminhoContinuo = jogo.pegaCartaMaiorCaminhoContinuo();
 
   const [baralhoBilhetesAtual, setBaralhoBilhetesAtual] = useState<BilheteDestino[]>(jogo.pegarBilhetesDeDestino(5));
-  const [rodada, setRodada] = useState<number>(jogo.rodadaAtual());
-
-  
   const [baralhoBilhetesClicavel, setBaralhoBilhetesClicavel] = useState<boolean>(false); // controla se o baralho de bilhetes pode ser clicado (após executar a jogada comprar-bilhetes)
-  const [jogada, setJogada] = useState<OpcoesDeJogada>("ocupar-rota"); // pega a jogada escolhida pelo jogador
+  
+  const [rodada, setRodada] = useState<number>(0);
+  
   const [botaoExecutarClicado, setBotaoExecutarClicado] = useState<boolean>(false); // controla se o botão de executar jogada foi clicado
-  const [jogador, setJogador] = useState({ atual: jogo.pegaJogadores()[0] });
+  const [jogada, setJogada] = useState<OpcoesDeJogada>("ocupar-rota"); // pega a jogada escolhida pelo jogador
   const [executouJogadaPrincipal, setExecutouJogadaPrincipal] = useState<boolean>(false);
+
+  const [jogadoresRestantes, setJogadoresRestantes] = useState<Jogador[]>(jogo.pegaJogadores());
+  console.log("Jogadores inicio do jogo: " + jogadoresRestantes.map(r=> r.Nome + "  "))
+  const [jogador, setJogador] = useState({ atual: jogadoresRestantes[0] });
+  const [proximoJogador, setProximoJogador] = useState<Jogador>(jogadoresRestantes[1]);
 
 
   // ids de animação/revelação de cartas
-  const [idBilheteExposto, setRevealedId] = useState<string | null>(null); // id do bilhete q esta exposto 
-  const [bilhetesDestacadosId, setAnimandoId] = useState<string[]>([]);
+  const [idBilheteExposto, setIdBilheteExposto] = useState<string | null>(null); // id do bilhete q esta exposto 
+  const [idsBilhetesDestacados, setIdsBilhetesDestacados] = useState<string[]>([]);
   const [qtdeBilhetesComprados, setQtdeBilhetesComprados] = useState<number>(0); 
 
   useEffect(() => {
   if (qtdeBilhetesComprados >= 3) {
-    setAnimandoId([]);
-    setRevealedId(null);
+    setIdsBilhetesDestacados([]);
+    setIdBilheteExposto(null);
     setBaralhoBilhetesClicavel(false);
-    setExecutouJogadaPrincipal(true);
+    
   }
 }, [qtdeBilhetesComprados]);
 
@@ -55,11 +60,14 @@ const GamePage: React.FC = () => {
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const removerBilheteDestinoBaralho = (bilhete: BilheteDestino) => {
-    console.log("Baralho antes de comprar:");
-    baralhoBilhetesAtual.forEach((bilhete, i) => {
-      console.log(`${i + 1}. ${bilhete.Origem} → ${bilhete.Destino} (${bilhete.Pontos} pts)`);
-    });
+  const handleRemoverBilheteDestinoBaralho = (bilhete: BilheteDestino) => {
+
+    if (qtdeBilhetesComprados == 0) {
+      console.log("Baralho antes de comprar:");
+      baralhoBilhetesAtual.forEach((bilhete, i) => {
+        console.log(`${i + 1}. ${bilhete.Origem} → ${bilhete.Destino} (${bilhete.Pontos} pts)`);
+      });
+    }
 
     const index : number = baralhoBilhetesAtual.indexOf(bilhete);
     if (index < 0) throw new Error("Esse bilhete de destino não estava no baralho!");
@@ -79,16 +87,16 @@ const GamePage: React.FC = () => {
     if (!baralhoBilhetesClicavel) return;
 
     // tira destaque do baralho
-    setAnimandoId([]);
+    setIdsBilhetesDestacados([]);
 
     const id = bilhete.Id;
 
-    setRevealedId(id); 
-    setAnimandoId([id]); 
+    setIdBilheteExposto(id); 
+    setIdsBilhetesDestacados([id]); 
 
     await sleep(600);
 
-    removerBilheteDestinoBaralho(bilhete);
+    handleRemoverBilheteDestinoBaralho(bilhete);
 
     await sleep(300);
 
@@ -98,11 +106,15 @@ const GamePage: React.FC = () => {
     const novoTotal = qtdeBilhetesComprados + 1;
     setQtdeBilhetesComprados(novoTotal);
 
-    // se ainda pode comprar mais bilhetes e há baralho, mantém o fluxo
+    // se comprou menos de 3 cartas e há baralho, mantém o fluxo
     if ((novoTotal < 3) && (baralhoBilhetesAtual.length > 0)) {
       console.log("entrou - preparar próxima compra");
       setJogada("comprar-bilhete");
-      setAnimandoId(baralhoBilhetesAtual.map(b => b.Id));
+      setIdsBilhetesDestacados(baralhoBilhetesAtual.map(b => b.Id));
+      
+    }
+    else {
+      setExecutouJogadaPrincipal(true);
     }
   };
 
@@ -110,20 +122,41 @@ const GamePage: React.FC = () => {
   const handleExecutarJogadaFromChild = () => {
     
     if (jogada === "comprar-bilhete" && qtdeBilhetesComprados < 3 && baralhoBilhetesAtual.length > 0) {
-      const idsAgora = baralhoBilhetesAtual.map(b => b.Id);
-      console.log("EXECUTAR JOGADA clicado - ids agora:", idsAgora, "jogada:", jogada);
       setBaralhoBilhetesClicavel(true);
-      setAnimandoId(idsAgora);
-      
+      setIdsBilhetesDestacados(baralhoBilhetesAtual.map(b => b.Id));
+    }
+
+    else if (jogada=="passar-a-vez") {
+      handleProximoJogador();
     }
 
     else {
 
     }
-
     setBotaoExecutarClicado(true);
   };
 
+  const handleProximoJogador = () => {
+    // remove o jogador atual da lista de jogadores a jogar na rodada
+    const novosJogadoresRestantes = jogadoresRestantes.filter(j => j.Id !== jogador.atual.Id);
+    // reinicia variaveis pro prox jogador
+    setExecutouJogadaPrincipal(false);
+    setQtdeBilhetesComprados(0);
+    setBaralhoBilhetesClicavel(false);
+    setIdsBilhetesDestacados([]);
+    const todos = jogo.pegaJogadores();
+    if (novosJogadoresRestantes.length === 0) {
+      setJogadoresRestantes(todos);
+      setRodada(r => r + 1);
+      setJogador({ atual: todos[0] });
+      setProximoJogador(todos[1] ?? todos[0]);
+    } else {
+      setJogadoresRestantes(novosJogadoresRestantes);
+      setJogador({ atual: novosJogadoresRestantes[0] });
+      setProximoJogador(novosJogadoresRestantes[1] ?? todos[0]); //pega lista original
+    }
+  };
+  
   return (
     <div className="min-h-screen font-serif p-1">
       <div className="container mx-auto pt-4 px-4 flex text-center justify-between items-center">
@@ -150,7 +183,7 @@ const GamePage: React.FC = () => {
                 renderizarCarta={(bilhete: BilheteDestino) => {
                   const id : string = bilhete.Id;
                   const bilheteEstaExposto : boolean  = idBilheteExposto === id;
-                  const bilheteEstaDestacado : boolean = bilhetesDestacadosId.includes(id);
+                  const bilheteEstaDestacado : boolean = idsBilhetesDestacados.includes(id);
                   return (
                     <div key={id} className="relative w-full flex justify-center">
 
@@ -187,11 +220,12 @@ const GamePage: React.FC = () => {
           <div className="col-span-3">
             <SumarioJogadorView
               rodada={rodada}
-              jogador={jogador.atual}
+              jogadorAtual={jogador.atual}
               jogada={jogada}
               setJogada={setJogada}
               onExecutarJogada={handleExecutarJogadaFromChild}
               executouJogadaPrincipal={executouJogadaPrincipal}
+              proximoJogador={proximoJogador}
             />
           </div>
 

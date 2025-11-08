@@ -11,7 +11,7 @@ export function gerarIdUsuario() {
   return nanoid();
 }
 
-export type OpcoesDeJogada = "ocupar-rota" | "comprar-bilhete" | "comprar-carta" | "descartar-bilhete"
+export type OpcoesDeJogada = "ocupar-rota" | "comprar-bilhete" | "comprar-carta" | "descartar-bilhete" | "passar-a-vez"
 
 export function pegarHexDaCor(cor: string): string {
   const corLimpa: string = cor.toLowerCase();
