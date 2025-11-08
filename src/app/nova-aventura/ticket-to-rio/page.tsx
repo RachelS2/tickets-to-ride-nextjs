@@ -10,7 +10,7 @@ import BaralhoView from "@/app/components/baralho-view";
 import SumarioJogadorView from "@/app/nova-aventura/ticket-to-rio/sumario-jogador-view";
 import { usarJogo } from "@/app/lib/contexto-jogo";
 import { Jogo } from "@/app/lib/jogo";
-import { BilheteDestino, CartaVagao } from "@/app/lib/cartas-jogo";
+import { BilheteDestino, CartaMaiorCaminhoContinuo, CartaVagao } from "@/app/lib/cartas-jogo";
 import {OpcoesDeJogada} from "@/app/lib/utils"
 
 const GamePage: React.FC = () => {
@@ -19,99 +19,110 @@ const GamePage: React.FC = () => {
     notFound();
   }
   const router = useRouter();
+  const cartaMaiorCaminhoContinuo : CartaMaiorCaminhoContinuo = jogo.pegaCartaMaiorCaminhoContinuo();
 
-  // pega o baralho inicial do jogo (copia para estado local)
-  const [baralhoLocal, setBaralhoLocal] = useState<BilheteDestino[]>(jogo.pegarBilhetesDeDestino(5));
-
+  const [baralhoBilhetesAtual, setBaralhoBilhetesAtual] = useState<BilheteDestino[]>(jogo.pegarBilhetesDeDestino(5));
   const [rodada, setRodada] = useState<number>(jogo.rodadaAtual());
 
-  // controle se o baralho pode ser clicado (após executar a jogada comprar-bilhetes)
-  const [baralhoBilhetesClicavel, setBaralhoBilhetesClicavel] = useState<boolean>(false);
-  const [jogada, setJogada] = useState<OpcoesDeJogada>("ocupar-rota");
-
+  
+  const [baralhoBilhetesClicavel, setBaralhoBilhetesClicavel] = useState<boolean>(false); // controla se o baralho de bilhetes pode ser clicado (após executar a jogada comprar-bilhetes)
+  const [jogada, setJogada] = useState<OpcoesDeJogada>("ocupar-rota"); // pega a jogada escolhida pelo jogador
+  const [botaoExecutarClicado, setBotaoExecutarClicado] = useState<boolean>(false); // controla se o botão de executar jogada foi clicado
   const [jogador, setJogador] = useState({ atual: jogo.pegaJogadores()[0] });
-  const [bilheteNoTopo, setBilheteTopoBaralho] = useState<BilheteDestino | null>(baralhoLocal[0] ?? null);
+  const [executouJogadaPrincipal, setExecutouJogadaPrincipal] = useState<boolean>(false);
 
-  const cartaMaiorCaminhoContinuo = jogo.pegaCartaMaiorCaminhoContinuo();
 
   // ids de animação/revelação de cartas
-  const [idBilheteExposto, setRevealedId] = useState<string | null>(null);
+  const [idBilheteExposto, setRevealedId] = useState<string | null>(null); // id do bilhete q esta exposto 
   const [bilhetesDestacadosId, setAnimandoId] = useState<string[]>([]);
+  const [qtdeBilhetesComprados, setQtdeBilhetesComprados] = useState<number>(0); 
+
+  useEffect(() => {
+  if (qtdeBilhetesComprados >= 3) {
+    setAnimandoId([]);
+    setRevealedId(null);
+    setBaralhoBilhetesClicavel(false);
+    setExecutouJogadaPrincipal(true);
+  }
+}, [qtdeBilhetesComprados]);
+
+  useEffect(() => {
+    if (botaoExecutarClicado) {
+      setTimeout(() => setBotaoExecutarClicado(false), 0);
+    }
+  }, [botaoExecutarClicado]);
 
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const handleExecutarJogada = async () => {
-    if (jogada === "comprar-bilhete") {
-      setBaralhoBilhetesClicavel(true);
-      const ids = baralhoLocal.map((b, i) => getBilheteId(b));
-      console.log(ids)
-      setAnimandoId(ids); //Destaca todos os bilhetes de destino
-    } 
-    else {
-    }
-  };
-
   const removerBilheteDestinoBaralho = (bilhete: BilheteDestino) => {
     console.log("Baralho antes de comprar:");
-    baralhoLocal.forEach((bilhete, i) => {
+    baralhoBilhetesAtual.forEach((bilhete, i) => {
       console.log(`${i + 1}. ${bilhete.Origem} → ${bilhete.Destino} (${bilhete.Pontos} pts)`);
     });
 
-    const index = baralhoLocal.indexOf(bilhete);
-     if (index < 0) throw new Error("Esse bilhete de destino não estava no baralho!");
+    const index : number = baralhoBilhetesAtual.indexOf(bilhete);
+    if (index < 0) throw new Error("Esse bilhete de destino não estava no baralho!");
     
-    const novoBaralho = [...baralhoLocal];
-    novoBaralho.splice(index, 1); // remove 1 elemento a partir do índice encontrado
+    const novoBaralho = [...baralhoBilhetesAtual];
+    novoBaralho.splice(index, 1); // remove 1 elemento do baralho a partir do índice encontrado
 
-    setBaralhoLocal(novoBaralho);
+    setBaralhoBilhetesAtual(novoBaralho);
 
-    
     console.log("Baralho depois de comprar:");
     novoBaralho.forEach((bilhete, i) => {
       console.log(`${i + 1}. ${bilhete.Origem} → ${bilhete.Destino} (${bilhete.Pontos} pts)`);
     });
-    
-    // atualiza bilhete do topo 
-    setBilheteTopoBaralho(baralhoLocal[0] ?? null);
-
   }
 
-  const getBilheteId = (bilhete: BilheteDestino) => {
-    const origem = (bilhete as any)?.origem ?? (bilhete as any)?.Origem ?? "unknown-origem";
-    const destino = (bilhete as any)?.destino ?? (bilhete as any)?.Destino ?? "unknown-destino";
-    return `${String(origem)}-${String(destino)}`;
-  };
-
-  const handleComprarBilheteDestino = async (bilhete: BilheteDestino, index: number) => {
+  const handleComprarBilheteDestino = async (bilhete: BilheteDestino) => {
     if (!baralhoBilhetesClicavel) return;
 
-    setAnimandoId([])
+    // tira destaque do baralho
+    setAnimandoId([]);
 
-    const id = getBilheteId(bilhete);
+    const id = bilhete.Id;
 
-    setRevealedId(id); // Revela carta
-    setAnimandoId([id]); // Anima (destaca) a carta
+    setRevealedId(id); 
+    setAnimandoId([id]); 
 
-    // aguarda o flip ficar visível
     await sleep(600);
 
-    removerBilheteDestinoBaralho(bilhete)
+    removerBilheteDestinoBaralho(bilhete);
 
     await sleep(300);
 
     jogador.atual.addBilheteDestino(bilhete);
 
-    setAnimandoId([]);
-    setRevealedId(null);
-    setBaralhoBilhetesClicavel(false);
+    console.log("O jogador já comprou " + qtdeBilhetesComprados + " bilhetes!")
+    const novoTotal = qtdeBilhetesComprados + 1;
+    setQtdeBilhetesComprados(novoTotal);
+
+    // se ainda pode comprar mais bilhetes e há baralho, mantém o fluxo
+    if ((novoTotal < 3) && (baralhoBilhetesAtual.length > 0)) {
+      console.log("entrou - preparar próxima compra");
+      setJogada("comprar-bilhete");
+      setAnimandoId(baralhoBilhetesAtual.map(b => b.Id));
+    }
   };
 
-  // caso o baralho do jogo mude fora (por exemplo outras ações), sincronize localmente
-  // useEffect(() => {
-  //   setBaralhoLocal(jogo.pegarBilhetesDeDestino());
-  //   setBilheteTopoBaralho(jogo.pegarBilhetesDeDestino()[0] ?? null);
-  // }, [jogo]);
+  // Função usada pelo SumarioJogadorView quando o botão "EXECUTAR JOGADA" é clicado
+  const handleExecutarJogadaFromChild = () => {
+    
+    if (jogada === "comprar-bilhete" && qtdeBilhetesComprados < 3 && baralhoBilhetesAtual.length > 0) {
+      const idsAgora = baralhoBilhetesAtual.map(b => b.Id);
+      console.log("EXECUTAR JOGADA clicado - ids agora:", idsAgora, "jogada:", jogada);
+      setBaralhoBilhetesClicavel(true);
+      setAnimandoId(idsAgora);
+      
+    }
+
+    else {
+
+    }
+
+    setBotaoExecutarClicado(true);
+  };
 
   return (
     <div className="min-h-screen font-serif p-1">
@@ -133,11 +144,11 @@ const GamePage: React.FC = () => {
 
             <div className="mt-10 relative w-full flex justify-center">
               <BaralhoView
-                cartas={baralhoLocal.slice(0, 5)}
+                cartas={baralhoBilhetesAtual.slice(0, 5)}
                 angleStep={10}
                 offsetXStep={20}
-                renderizarCarta={(bilhete: BilheteDestino, idx: number) => {
-                  const id : string = getBilheteId(bilhete, idx);
+                renderizarCarta={(bilhete: BilheteDestino) => {
+                  const id : string = bilhete.Id;
                   const bilheteEstaExposto : boolean  = idBilheteExposto === id;
                   const bilheteEstaDestacado : boolean = bilhetesDestacadosId.includes(id);
                   return (
@@ -149,7 +160,7 @@ const GamePage: React.FC = () => {
                           orientacao="vertical"
                           size="md"
                           clicavel={baralhoBilhetesClicavel}
-                          onClick={() => handleComprarBilheteDestino(bilhete, idx)}
+                          onClick={() => handleComprarBilheteDestino(bilhete)}
                           destacar={bilheteEstaDestacado}
                         />
 
@@ -174,7 +185,14 @@ const GamePage: React.FC = () => {
           </div>
 
           <div className="col-span-3">
-            <SumarioJogadorView jogador={jogador.atual} jogada={jogada} setJogada={setJogada} onExecutarJogada={handleExecutarJogada}/>
+            <SumarioJogadorView
+              rodada={rodada}
+              jogador={jogador.atual}
+              jogada={jogada}
+              setJogada={setJogada}
+              onExecutarJogada={handleExecutarJogadaFromChild}
+              executouJogadaPrincipal={executouJogadaPrincipal}
+            />
           </div>
 
       </div>

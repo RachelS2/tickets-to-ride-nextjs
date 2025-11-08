@@ -76,11 +76,11 @@ export class Jogo {
     }
 
     public descartarV(cartas: CartaVagao[]): void {
-        this.Tabuleiro.descartar(cartas);
+        this.Tabuleiro.descartarC(cartas);
     }
 
     public descartarB(bilhetes: BilheteDestino[]): void {
-        this.Tabuleiro.devolverProBaralho(bilhetes);
+        this.Tabuleiro.descartarB(bilhetes);
     }
     
     private calculaVencedor(): void {

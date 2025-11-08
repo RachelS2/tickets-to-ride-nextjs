@@ -1,5 +1,5 @@
 'use client';
-import { useState } from "react";
+import { JSX, useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { Card } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
@@ -16,21 +16,56 @@ import { cn , pegarHexDaCor, OpcoesDeJogada} from "@/app/lib/utils";
 import { Jogador } from "@/app/lib/jogador";
 
 type SumarioProps = {
+  rodada: number;
   jogador: Jogador;
   jogada: OpcoesDeJogada;
   setJogada: (j: OpcoesDeJogada) => void;
   onExecutarJogada: () => void; // notify parent when user clicks "EXECUTAR JOGADA"
+  executouJogadaPrincipal: boolean,
 };
 
+const renderOpcoesJogada = (
+  value: OpcoesDeJogada,
+  label: string,
+) : JSX.Element => 
+    (
+      <div key={value} className="flex items-center space-x-2 mb-2">
+        <RadioGroupItem
+          value={value}
+          id={value}
+          className="cursor-pointer"
+        />
+        <Label htmlFor={value} className="text-base">
+          {label}
+        </Label>
+      </div>
+    );
+
+
 /** Cria a lateral direita da tela, que permite a visualização das cartas do jogador atual e que o jogador faça uma jogada. */
-const SumarioJogadorView : React.FC<SumarioProps> = ({ jogador, jogada, setJogada, onExecutarJogada } : SumarioProps ) => {
+const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogador, jogada, setJogada, onExecutarJogada, executouJogadaPrincipal } : SumarioProps ) => {
+
+
     const Jogo: Jogo = usarJogo();
-    
     const cartasDeVagaoJogador : CartaVagao[] = jogador.verCartasVagao();
     const bilhetesDestinoJogador : BilheteDestino[] = jogador.verBilhetesDestino();
     const qtdeTrensJogador: number = jogador.pegarQtdeTrens();
-
     const corJogador = pegarHexDaCor(jogador.CorDoTrem);
+
+    const renderJogadasPrincipais = () => (
+    <RadioGroup value={jogada} onValueChange={setJogada}>
+        {renderOpcoesJogada("ocupar-rota", "Ocupar Rota")}
+        {renderOpcoesJogada("comprar-bilhete", "Comprar Bilhetes de Destino")}
+        {renderOpcoesJogada("comprar-carta", "Comprar Cartas de Vagão")}
+    </RadioGroup>
+    );
+
+    const renderJogadasConsecutivas = () => (
+        <RadioGroup value={jogada} onValueChange={setJogada}>
+            {renderOpcoesJogada("descartar-bilhete", "Descartar Bilhete")}
+        </RadioGroup>
+        );
+
     return (
         <div>
         {/* Right Sidebar */}
@@ -78,29 +113,9 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ jogador, jogada, setJogad
 
             <Card className="pt-4 border-none shadow-none">
                 <h3 className="font-semibold mb-4">Próxima Jogada:</h3>
+                                    
+                {executouJogadaPrincipal ? renderJogadasConsecutivas() : renderJogadasPrincipais()}
 
-                <RadioGroup value={jogada} onValueChange={setJogada}>
-                    <div className="flex items-center space-x-2 mb-2">
-                        <RadioGroupItem value="ocupar-rota" id="ocupar-rota" className="cursor-pointer" />
-                        <Label htmlFor="ocupar-rota" className="text-base">
-                            Ocupar Rota
-                        </Label>
-                    </div>
-
-                    <div className="flex items-center space-x-2 mb-2">
-                        <RadioGroupItem value="comprar-bilhete" id="comprar-bilhete" className="cursor-pointer" />
-                        <Label htmlFor="comprar-bilhete" className="text-base">
-                            Comprar Bilhetes De Destino
-                        </Label>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="comprar-carta" id="comprar-carta" className="cursor-pointer" />
-                        <Label htmlFor="comprar-carta" className="text-base">
-                            Comprar Cartas de Vagão
-                        </Label>
-                    </div>
-                </RadioGroup>
 
                 <Button className="w-full mt-6  " onClick={onExecutarJogada}>
                     <Play className="w-4 h-4 mr-2" />

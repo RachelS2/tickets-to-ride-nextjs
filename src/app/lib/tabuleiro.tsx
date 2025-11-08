@@ -33,15 +33,6 @@ export class Tabuleiro {
     return shuffled;
   }
 
-  // public removerBilheteDestinoDoBaralho(bilhete: BilheteDestino): BilheteDestino[] {
-  //   const index = this.BaralhoBilhetesDestino.indexOf(bilhete);
-  //   if (index < 0) {
-  //     throw new Error("Esse bilhete de destino não estava no baralho!")
-  //   }
-  //   this.BaralhoBilhetesDestino.splice(index, 1);
-  //   return this.BaralhoBilhetesDestino;
-
-  // }
 
   public pegarBilhetesDeDestino(qtde: number): BilheteDestino[] {
     return this.BaralhoBilhetesDestino.slice(-qtde);
@@ -68,7 +59,7 @@ export class Tabuleiro {
         if (carta.ehLocomotiva())
           locomotivas += 1
         if (locomotivas == 3) 
-          this.descartar(this.CartasVagaoExpostas) 
+          this.descartarC(this.CartasVagaoExpostas) 
           this.exporCartasVagao()
       }
     }
@@ -119,12 +110,12 @@ export class Tabuleiro {
     return cartasPegas;
   }
 
-  public descartar(cartas: CartaVagao[]): void {
+  public descartarC(cartas: CartaVagao[]): void {
 
     this.CartasVagaoDescartadas.push(...cartas);
   }
 
-  public devolverProBaralho(bilhetes: BilheteDestino[]) : void {
+  public descartarB(bilhetes: BilheteDestino[]) : void {
     this.BaralhoBilhetesDestino.push(...bilhetes);
   }
 
@@ -243,7 +234,7 @@ export class Tabuleiro {
         }
       }
 
-      for (let i = 0; i < 3; i++) { // 3 bilhetes de destino por jogador
+      for (let i = 0; i < 4; i++) { // 34 bilhetes de destino por jogador
         const bilheteDestino = this.BaralhoBilhetesDestino.pop();
         if (bilheteDestino) {
             jogador.addBilheteDestino(bilheteDestino);
