@@ -16,24 +16,23 @@ import { BilheteDestino, CartaVagao } from "@/app/lib/cartas-jogo";
 import { cn , pegarHexDaCor, OpcoesDeJogada, JogadaEfetiva} from "@/app/lib/utils";
 import { Jogador } from "@/app/lib/jogador";
 
-type ItensJogadorProps = {
-    nome: string;
-    qtdeTrens: number;
-    corDoTrem: string;
-    bilhetesDestino : BilheteDestino[];
-    cartasDeVagao : CartaVagao[]
+
+type ConfiguracaoBilhetesProps = {
+  clicavel : boolean ;
+  destacar: string[]; 
+  onClick: (bilhete: BilheteDestino) => void; 
 }
 
 type SumarioProps = {
   rodada: number;
-  jogadorAtual: ItensJogadorProps;
+  jogadorAtual: Jogador;
   jogadaSelecionada: OpcoesDeJogada;
   setJogada: (j: OpcoesDeJogada) => void;
   onExecutarJogada: () => void; // notify parent when user clicks "EXECUTAR JOGADA"
   jogadaEfetiva: JogadaEfetiva;
   proximoJogador: Jogador;
   finalizouJogadaPrincipal: boolean;
-  configuracaoBilhetesJogador: BilhetesDestinoProps;
+  configuracaoBilhetesJogador: ConfiguracaoBilhetesProps;
 };
 
 const renderOpcoesJogada = (
@@ -56,13 +55,14 @@ const renderOpcoesJogada = (
 
 
 /** Cria a lateral direita da tela, que permite a visualização das cartas do jogador atual e que o jogador faça uma jogada. */
-const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jogadaSelecionada, setJogada, onExecutarJogada, jogadaEfetiva, proximoJogador, finalizouJogadaPrincipal } : SumarioProps ) => {
+const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jogadaSelecionada, setJogada, onExecutarJogada, jogadaEfetiva, proximoJogador, finalizouJogadaPrincipal, configuracaoBilhetesJogador } : SumarioProps ) => {
 
-    const cartasDeVagaoJogador : CartaVagao[] = jogadorAtual.cartasDeVagao;
-    const bilhetesDestinoJogador : BilheteDestino[] = jogadorAtual.bilhetesDestino;
-    const qtdeTrensJogador: number = jogadorAtual.qtdeTrens;
-    const corJogador = pegarHexDaCor(jogadorAtual.corDoTrem);
-
+    const cartasDeVagaoJogador : CartaVagao[] = jogadorAtual.verCartasVagao();
+    const bilhetesDestinoJogador : BilheteDestino[] = jogadorAtual.verBilhetesDestino();
+    const qtdeTrensJogador: number = jogadorAtual.pegarQtdeTrens();
+    const corJogador = pegarHexDaCor(jogadorAtual.CorDoTrem);
+    const clicavel : boolean = configuracaoBilhetesJogador.clicavel;
+    const destacar : string[] = configuracaoBilhetesJogador.destacar;
 
     const renderComprarBilhete = () => (
         <>
@@ -96,7 +96,6 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
             {renderOpcoesJogada("ocupar-rota", "Ocupar Rota")}
             {renderComprarBilhete()}
             {renderComprarCartaVagao()}
-            {renderPassarAVez()}
         </>
     );
 
@@ -161,7 +160,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                                 <h3 className="font-semibold mb-2">Seus Bilhetes de Destino</h3>
                                 <div className="flex flex-wrap gap-3 items-center">
                                     {bilhetesDestinoJogador.map((ticket, index) => (
-                                        <BilheteDestinoView key={index} bilheteDestino={ticket} size="md" />
+                                        <BilheteDestinoView key={index} bilheteDestino={ticket} size="md"  clicavel={clicavel} destacar={destacar.includes(ticket.Id)} />
                                     ))}
                                 </div>
                             </div>
@@ -180,13 +179,13 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                             {renderJogadas()}
                         </RadioGroup>
 
-                    {!jogadaEfetiva? (
                         <Button className="w-full mt-6  " onClick={onExecutarJogada}>
                             <Play className="w-4 h-4 mr-2" />
                             <span>EXECUTAR JOGADA</span>
                         </Button>
+                    {/* // {!jogadaEfetiva? ( */}
 
-                    ) : <></> }
+                    {/* // ) : <></> } */}
                     <Card className="pt-4 border-none shadow-none">
                         <span className="font-semibold">Próximo(a) a Jogar:</span> {proximoJogador.Nome}
                     </Card>

@@ -7,12 +7,21 @@ export class Jogo {
 
     private Tabuleiro!: Tabuleiro;
     private Jogadores: Jogador[] = [];
-
+    private Rodada: number = 1;
     private Iniciado: boolean = false;
 
     public foiIniciado(): boolean {
         return this.Iniciado;
     }
+
+    public pegarRodada() : number {
+        return this.Rodada;
+    }
+
+    public subirRodada() : void {
+        this.Rodada += 1
+    }
+
     
     public async iniciaJogo(): Promise<void> {
         if (!this.Jogadores || this.Jogadores.length < 2 || this.Jogadores.length > 5) {
@@ -26,20 +35,15 @@ export class Jogo {
         this.Iniciado = true;
         this.Tabuleiro = new Tabuleiro();
         this.Tabuleiro.configuracaoInicial(this.Jogadores);
-        const tabuleiro: Tabuleiro = this.Tabuleiro;
 
         for (const jogador of this.Jogadores) {
-            jogador.defineTabuleiro(tabuleiro);
+            jogador.defineTabuleiro(this.Tabuleiro);
         }
     }
 
     public pegarBilhetesDeDestino(qtde: number): BilheteDestino[] {
         return this.Tabuleiro.pegarBilhetesDeDestino(qtde);
     }
-
-    // public removerBilheteDestinoDoBaralho(bilhete: BilheteDestino): BilheteDestino[] {
-    //     return this.Tabuleiro.removerBilheteDestinoDoBaralho(bilhete);
-    // }
 
     public pegarBaralhoCartasVagao(): CartaVagao[] {
         return this.Tabuleiro.pegarBaralhoCartasVagao();
@@ -61,14 +65,6 @@ export class Jogo {
             throw new Error("Não é possível remover jogadores após o início do jogo.");
         }
         this.Jogadores = this.Jogadores.filter(jogador => jogador.Id !== playerId);
-    }
-
-    public descartarV(cartas: CartaVagao[]): void {
-        this.Tabuleiro.descartarC(cartas);
-    }
-
-    public descartarB(bilhetes: BilheteDestino[]): void {
-        this.Tabuleiro.descartarB(bilhetes);
     }
     
     private calculaVencedor(): void {
