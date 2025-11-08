@@ -12,13 +12,13 @@ import {  Play, Train } from "lucide-react";
 import { usarJogo } from "@/app/lib/contexto-jogo";
 import { Jogo } from "@/app/lib/jogo";
 import { BilheteDestino, CartaVagao } from "@/app/lib/cartas-jogo";
-import { cn , pegarHexDaCor} from "@/app/lib/utils";
+import { cn , pegarHexDaCor, OpcoesDeJogada} from "@/app/lib/utils";
 import { Jogador } from "@/app/lib/jogador";
 
 type SumarioProps = {
   jogador: Jogador;
-  jogada: string;
-  setJogada: (j: string) => void;
+  jogada: OpcoesDeJogada;
+  setJogada: (j: OpcoesDeJogada) => void;
   onExecutarJogada: () => void; // notify parent when user clicks "EXECUTAR JOGADA"
 };
 
@@ -88,15 +88,15 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ jogador, jogada, setJogad
                     </div>
 
                     <div className="flex items-center space-x-2 mb-2">
-                        <RadioGroupItem value="comprar-bilhetes" id="comprar-bilhetes" className="cursor-pointer" />
-                        <Label htmlFor="comprar-bilhetes" className="text-base">
+                        <RadioGroupItem value="comprar-bilhete" id="comprar-bilhete" className="cursor-pointer" />
+                        <Label htmlFor="comprar-bilhete" className="text-base">
                             Comprar Bilhetes De Destino
                         </Label>
                     </div>
 
                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="comprar-cartas" id="comprar-cartas" className="cursor-pointer" />
-                        <Label htmlFor="comprar-cartas" className="text-base">
+                        <RadioGroupItem value="comprar-carta" id="comprar-carta" className="cursor-pointer" />
+                        <Label htmlFor="comprar-carta" className="text-base">
                             Comprar Cartas de Vagão
                         </Label>
                     </div>

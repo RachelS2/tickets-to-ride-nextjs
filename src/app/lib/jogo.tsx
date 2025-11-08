@@ -38,13 +38,13 @@ export class Jogo {
         }
     }
 
-    public pegarBaralhoBilhetesDestino(): BilheteDestino[] {
-        return this.Tabuleiro.pegarBaralhoBilhetesDestino();
+    public pegarBilhetesDeDestino(qtde: number): BilheteDestino[] {
+        return this.Tabuleiro.pegarBilhetesDeDestino(qtde);
     }
 
-    public comprarBilheteDestino(bilhete: BilheteDestino): BilheteDestino[] {
-        return this.Tabuleiro.comprarBilheteDestino(bilhete);
-    }
+    // public removerBilheteDestinoDoBaralho(bilhete: BilheteDestino): BilheteDestino[] {
+    //     return this.Tabuleiro.removerBilheteDestinoDoBaralho(bilhete);
+    // }
 
     public pegarBaralhoCartasVagao(): CartaVagao[] {
         return this.Tabuleiro.pegarBaralhoCartasVagao();
@@ -92,4 +92,7 @@ export class Jogo {
     }
 
 
+    public finalizaJogo() {
+
+    }
 }
