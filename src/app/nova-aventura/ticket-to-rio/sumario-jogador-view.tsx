@@ -76,7 +76,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ jogador, jogada, setJogad
                 </div>
             </Card>
 
-            <Card className="p-4 border-none shadow-none">
+            <Card className="pt-4 border-none shadow-none">
                 <h3 className="font-semibold mb-4">Próxima Jogada:</h3>
 
                 <RadioGroup value={jogada} onValueChange={setJogada}>
@@ -108,7 +108,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ jogador, jogada, setJogad
                 </Button>
             </Card>
 
-            <Card className="p-3 border-none shadow-none">
+            <Card className="pt-4 border-none shadow-none">
                 <p className="text-sm">
                     <span className="font-semibold">Próximo(a) a Jogar:</span> {Jogo.proximoJogador().Nome}
                 </p>

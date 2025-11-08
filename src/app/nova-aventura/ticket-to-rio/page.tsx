@@ -20,8 +20,8 @@ const GamePage: React.FC = () => {
   const router = useRouter();
 
   // pega o baralho inicial do jogo (copia para estado local)
-  const inicialBaralho: BilheteDestino[] = jogo.pegarBaralhoBilhetesDestino();
-  const [baralhoLocal, setBaralhoLocal] = useState<BilheteDestino[]>(inicialBaralho);
+  const inicialBaralho: BilheteDestino[] = jogo.pegarBaralhoBilhetesDestino().slice(0, 5);
+  const [bilhetesDestinoMesa, setBilhetesDestinoMesa] = useState<BilheteDestino[]>(inicialBaralho);
 
   const [rodada, setRodada] = useState<number>(jogo.rodadaAtual());
 
@@ -30,65 +30,66 @@ const GamePage: React.FC = () => {
   const [jogada, setJogada] = useState<string>("ocupar-rota");
 
   const [jogador, setJogador] = useState({ atual: jogo.pegaJogadores()[0] });
-  const [bilheteNoTopo, setBilheteTopoBaralho] = useState<BilheteDestino | null>(baralhoLocal[0] ?? null);
+  const [bilheteNoTopo, setBilheteTopoBaralho] = useState<BilheteDestino | null>(bilhetesDestinoMesa[0] ?? null);
 
   const cartaMaiorCaminhoContinuo = jogo.pegaCartaMaiorCaminhoContinuo();
 
   // ids de animação/revelação
-  const [revealedId, setRevealedId] = useState<string | null>(null);
-  const [animandoId, setAnimandoId] = useState<string | null>(null);
+  const [idBilheteExposto, setRevealedId] = useState<string | null>(null);
+  const [bilhetesDestacadosId, setAnimandoId] = useState<string[]>([]);
+
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-  const handleExecutarJogada = () => {
+  const handleExecutarJogada = async () => {
     if (jogada === "comprar-bilhetes") {
       setBaralhoBilhetesClicavel(true);
-    } else {
-      setBaralhoBilhetesClicavel(false);
-      // implementar outras jogadas aqui...
+      const ids = bilhetesDestinoMesa.map((b, i) => getBilheteId(b));
+      console.log(ids)
+      setAnimandoId(ids); //Destaca todos os bilhetes de destino
+    } 
+    else {
     }
   };
 
-  const getBilheteId = (bilhete: BilheteDestino, index?: number) =>
-    String((bilhete as any).id ?? `${(bilhete as any).origem ?? (bilhete as any).Origem}-${(bilhete as any).destino ?? (bilhete as any).Destino}-${index ?? ""}`);
+  const getBilheteId = (bilhete: BilheteDestino) => {
+    const origem = (bilhete as any)?.origem ?? (bilhete as any)?.Origem ?? "unknown-origem";
+    const destino = (bilhete as any)?.destino ?? (bilhete as any)?.Destino ?? "unknown-destino";
+    return `${String(origem)}-${String(destino)}`;
+  };
 
-  const handleBilheteDestinoOcultoClick = async (bilhete: BilheteDestino, index: number) => {
+  const handleComprarBilheteDestino = async (bilhete: BilheteDestino, index: number) => {
     if (!baralhoBilhetesClicavel) return;
 
-    const id = getBilheteId(bilhete, index);
+    setAnimandoId([])
 
-    // 1) marcar revelado (faz flip visual)
-    setRevealedId(id);
-    setAnimandoId(id);
+    const id = getBilheteId(bilhete);
+
+    setRevealedId(id); // Revela carta
+    setAnimandoId([id]); // Anima (destaca) a carta
 
     // aguarda o flip ficar visível
     await sleep(600);
 
-    // 2) remover do baralho — assumimos que jogo.removerBilheteDestinoDoBaralho retorna o novo baralho (ou atualiza internamente)
-    // se a API do jogo for diferente, adapte: por exemplo, jogo.removerBilheteDestinoDoBaralho(bilhete); const novo = jogo.pegarBaralho...
-    const novoBaralho: BilheteDestino[] = jogo.removerBilheteDestinoDoBaralho(bilhete);
+    const novoBaralho: BilheteDestino[] = jogo.comprarBilheteDestino(bilhete);
     console.log(novoBaralho)
-    // atualiza estado local pra re-render
-    setBaralhoLocal(novoBaralho);
-    // atualiza topo exibido
-    setBilheteTopoBaralho(novoBaralho[0] ?? null);
 
-    // pequena espera para a sensação de "movimento para a mão"
+    setBilhetesDestinoMesa(novoBaralho);
+
+    setBilheteTopoBaralho(novoBaralho[0] ?? null);
+    console.log("Topo do baralho" + novoBaralho[0].Destino + novoBaralho[0].Origem)
+
     await sleep(300);
 
-    // 3) adiciona ao jogador
     jogador.atual.addBilheteDestino(bilhete);
-    // se precisar atualizar o estado do jogador no componente:
 
-    // 4) limpa animação e desabilita clique
-    setAnimandoId(null);
+    setAnimandoId([]);
     setRevealedId(null);
     setBaralhoBilhetesClicavel(false);
   };
 
-  // caso o baralho do jogo mude fora (por exemplo outras ações), sincronize localmente
   useEffect(() => {
-    setBaralhoLocal(jogo.pegarBaralhoBilhetesDestino());
+    setBilhetesDestinoMesa(jogo.pegarBaralhoBilhetesDestino());
     setBilheteTopoBaralho(jogo.pegarBaralhoBilhetesDestino()[0] ?? null);
   }, [jogo]);
 
@@ -107,44 +108,34 @@ const GamePage: React.FC = () => {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Sidebar */}
           <div className="col-span-2 bg-background space-y-4">
-            <div className="border-none shadow-none">
-              <div className="flex flex-col text-white rounded-md justify-center text-center items-center bg-vermelho-custom p-2">
-                <h2 className="font-semibold md:text-lg text-xs px-2">
-                  Maior Caminho Contínuo:
-                </h2>
-              </div>
-            </div>
 
             <BilheteDestinoView bilheteDestino={cartaMaiorCaminhoContinuo} size="md" orientacao="horizontal" />
 
             <div className="mt-10">
               <BaralhoView
-                cartas={baralhoLocal.slice(0, 5)}
+                cartas={bilhetesDestinoMesa.slice(0, 5)}
                 angleStep={14}
                 offsetXStep={20}
-                // renderizarCarta recebe bilhete e index — passamos expostoInicialmente conforme revealedId
                 renderizarCarta={(bilhete: BilheteDestino, idx: number) => {
-                  const id = getBilheteId(bilhete, idx);
-                  const isRevealed = revealedId === id;
-                  const isAnimating = animandoId === id;
+                  const id : string = getBilheteId(bilhete, idx);
+                  const bilheteEstaExposto : boolean  = idBilheteExposto === id;
+                  const bilheteEstaDestacado : boolean = bilhetesDestacadosId.includes(id);
                   return (
                     <div key={id} className="relative">
 
                         <BilheteDestinoView
                           bilheteDestino={bilhete}
-                          expostoInicialmente={isRevealed}
+                          expostoInicialmente={bilheteEstaExposto}
                           orientacao="vertical"
                           size="md"
-                          clickable={baralhoBilhetesClicavel}
-                          onClick={() => handleBilheteDestinoOcultoClick(bilhete, idx)}
+                          clicavel={baralhoBilhetesClicavel}
+                          onClick={() => handleComprarBilheteDestino(bilhete, idx)}
+                          destacar={bilheteEstaDestacado}
                         />
-                        {isAnimating && (
-                          <div className="absolute inset-0 pointer-events-none rounded-md ring-2 ring-offset-2 ring-primary/40" />
-                        )}
+
                     </div>
                   );
                 }}
-                // se preferir delegar clique ao BaralhoView, poderia usar clickable/onCardClick props
               />
             </div>
           </div>

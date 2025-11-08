@@ -42,8 +42,8 @@ export class Jogo {
         return this.Tabuleiro.pegarBaralhoBilhetesDestino();
     }
 
-    public removerBilheteDestinoDoBaralho(bilhete: BilheteDestino): BilheteDestino[] {
-        return this.Tabuleiro.removerBilheteDestinoDoBaralho(bilhete);
+    public comprarBilheteDestino(bilhete: BilheteDestino): BilheteDestino[] {
+        return this.Tabuleiro.comprarBilheteDestino(bilhete);
     }
 
     public pegarBaralhoCartasVagao(): CartaVagao[] {

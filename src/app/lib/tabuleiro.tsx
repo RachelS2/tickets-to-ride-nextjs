@@ -33,7 +33,7 @@ export class Tabuleiro {
     return shuffled;
   }
 
-  public removerBilheteDestinoDoBaralho(bilhete: BilheteDestino): BilheteDestino[] {
+  public comprarBilheteDestino(bilhete: BilheteDestino): BilheteDestino[] {
     const index = this.BaralhoBilhetesDestino.indexOf(bilhete);
     if (index < 0) {
       throw new Error("Esse bilhete de destino não estava no baralho!")

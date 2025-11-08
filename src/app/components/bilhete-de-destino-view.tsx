@@ -81,9 +81,10 @@ type BilhetesDestinoProps = {
   orientacao?: "vertical" | "horizontal";
   /** se true -> mostra a face exposta; se false -> mostra verso (oculto) */
   expostoInicialmente?: boolean;
-  clickable?: boolean;
+  clicavel?: boolean;
   /** notifica pai quando selecionado */
   onClick?: () => void; 
+  destacar? : boolean;
 };
 
 
@@ -96,7 +97,9 @@ export const BilheteDestinoView = ({
   size = "md",
   orientacao = "vertical",
   expostoInicialmente = true,
-  clickable = false,
+  clicavel = false,
+  destacar = false,
+
   onClick,
 }: BilhetesDestinoProps & { expostoInicialmente?: boolean }) => {
 
@@ -109,16 +112,16 @@ export const BilheteDestinoView = ({
   }, [expostoInicialmente]);
 
   const handleClick = () => {
-    if (!clickable) return;
+    if (!clicavel) return;
     setExposicao(true); // revela a carta localmente
     if (onClick) onClick(); 
   };
 
   return (
     <BordaDaCartaView size={size} orientacao={orientacao}>
-      <div className={cn("relative w-full h-full", clickable ? "cursor-pointer" : null)}  onClick={handleClick} role={clickable ? "button" : undefined} tabIndex={clickable ? 0 : undefined}
+      <div className={cn("relative w-full h-full", clicavel ? "cursor-pointer" : null)}  onClick={handleClick} role={clicavel ? "button" : undefined} tabIndex={clicavel ? 0 : undefined}
       onKeyDown={(e) => {
-        if (!clickable) return;
+        if (!clicavel) return;
         if (e.key === "Enter" || e.key === " ") handleClick();
       }}
       aria-pressed={estaExposto}>
@@ -184,9 +187,11 @@ export const BilheteDestinoView = ({
             </div>
           </Card>
         </div>
-      </div>
-    </BordaDaCartaView>
-  );
+      </div>  {destacar && (
+                          <div className="absolute inset-0 pointer-events-none rounded-md ring-2 ring-offset-2 ring-primary/40" />
+                        )}
+    </BordaDaCartaView> 
+  ); 
 };
 
 export default BilheteDestinoView;
