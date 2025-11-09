@@ -68,7 +68,7 @@ export class Jogador {
   public removerBilheteDestino(bilhete: BilheteDestino): void {
     const index = this.BilhetesDestinoMaos.indexOf(bilhete);
     if (index > -1) {
-      this.CartasVagaoMaos.splice(index, 1);
+      this.BilhetesDestinoMaos.splice(index, 1);
     }
   }
   

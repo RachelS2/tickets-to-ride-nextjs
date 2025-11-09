@@ -18,7 +18,7 @@ import { Jogador } from "@/app/lib/jogador";
 
 
 type ConfiguracaoBilhetesProps = {
-  clicavel : boolean ;
+  clicavel : string[] ;
   destacar: string[]; 
   onClick: (bilhete: BilheteDestino) => void; 
 }
@@ -61,8 +61,9 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
     const bilhetesDestinoJogador : BilheteDestino[] = jogadorAtual.verBilhetesDestino();
     const qtdeTrensJogador: number = jogadorAtual.pegarQtdeTrens();
     const corJogador = pegarHexDaCor(jogadorAtual.CorDoTrem);
-    const clicavel : boolean = configuracaoBilhetesJogador.clicavel;
+    const clicavel : string[] = configuracaoBilhetesJogador.clicavel;
     const destacar : string[] = configuracaoBilhetesJogador.destacar;
+    const onClick = configuracaoBilhetesJogador.onClick;
 
     const renderComprarBilhete = () => (
         <>
@@ -111,12 +112,13 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
         
         switch (jogadaEfetiva) {
             case "comprar-bilhete":
+                
                 return finalizouJogadaPrincipal
                     ? renderPosComprarBilhete()
                     : renderComprarBilhete();
 
             case "descartar-bilhete":
-                return renderDescartarBilhete();
+                return renderPosComprarBilhete();
 
             case "comprar-carta":
                 return renderComprarCartaVagao();
@@ -126,7 +128,6 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                 return renderJogadasPrincipais();
         }
     };
-
 
     return (
         <div>
@@ -160,7 +161,8 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                                 <h3 className="font-semibold mb-2">Seus Bilhetes de Destino</h3>
                                 <div className="flex flex-wrap gap-3 items-center">
                                     {bilhetesDestinoJogador.map((ticket, index) => (
-                                        <BilheteDestinoView key={index} bilheteDestino={ticket} size="md"  clicavel={clicavel} destacar={destacar.includes(ticket.Id)} />
+                                        <BilheteDestinoView onClick= {clicavel ? () => onClick(ticket) : undefined} key={index} bilheteDestino={ticket} size="md"  
+                                        clicavel={clicavel ? clicavel.includes(ticket.Id) : undefined } destacar={destacar.includes(ticket.Id)} />
                                     ))}
                                 </div>
                             </div>

@@ -3,7 +3,7 @@ import { BilheteDestino } from "../lib/cartas-jogo";
 
 type BaralhoViewProps<T> = {
   cartas?: T[]; 
-  renderizarCarta?: (item: T, idx: number) => React.ReactNode; 
+  renderizarCarta?: (item: T) => React.ReactNode; 
   qtdeCartas?: number; 
   angleStep?: number;
   offsetXStep?: number;
