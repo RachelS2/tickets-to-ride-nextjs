@@ -1,8 +1,8 @@
 import {Jogador} from "./jogador";
 import {Rota } from "./rota"
 import {CartaVagao, CartaMaiorCaminhoContinuo, BilheteDestino } from "./cartas-jogo";
-import {NomesDeCidades, RotaCidades, DestinosCidades, MaiorCaminhoContinuo} from './cidades';
-import { corDeRotaAleatoria, CoresCartaVagao} from "./utils";
+import { NomesDeCidades, CoresCartaVagao} from "./utils";
+import { rotas, DestinosCidades, MaiorCaminhoContinuo} from "./cidades";
 
 export class Tabuleiro {
   private Rotas!: Rota[]
@@ -105,31 +105,14 @@ export class Tabuleiro {
     this.BaralhoBilhetesDestino = this.embaralharCartas(this.BaralhoBilhetesDestino);
   }
 
+  public pegarRotas() : Rota[] {
+    if (!this.Rotas) throw new Error("As rotas ainda não foram criadas!");
+    return this.Rotas;
+  }
+
   private criarRotas(): Rota[] {
     if (this.Rotas) 
       throw new Error("Já existem Rotas pra esse tabuleiro!");
-
-    const rotas: Rota[] = [];
-    const rotasAdicionadas = new Set<string>(); // evita duplicações (ex: Rio–Niteroi e Niteroi–Rio)
-
-    for (const [espacosStr, cidades] of Object.entries(RotaCidades)) {
-      const qtdeEspacos = parseInt(espacosStr);
-
-      for (const [origem, destinos] of Object.entries(cidades)) {
-
-        for (const destino of destinos) {
-          const chave = [origem, destino].sort().join("-"); // ordena para evitar duplicação
-
-          if (!rotasAdicionadas.has(chave)) {
-            rotasAdicionadas.add(chave);
-
-            const rota = new Rota(origem as NomesDeCidades, destino as NomesDeCidades, qtdeEspacos, corDeRotaAleatoria());
-            rotas.push(rota);
-          }
-        }
-      }
-    }
-
     return rotas;
   }
 
@@ -189,14 +172,14 @@ export class Tabuleiro {
       }
     }
 
-    // chave 8 (miracema a quissama) é repetida 2x, totalizando 3 cartas no baralho
+    // repetida 2x, totalizando 3 cartas no baralho
     for (let i = 0; i < 2; i++) {
-      bilhetesDestino.push(new BilheteDestino("Miracema" as NomesDeCidades, "Quissama" as NomesDeCidades, 8));
+      bilhetesDestino.push(new BilheteDestino("Denver" as NomesDeCidades, "New York" as NomesDeCidades, 8));
     }
 
-    // chave 9 e 10 (itatiaia a volta redonda) são repetidas 2x, totalizando 2 cartas de cada uma dessas no baralho
+    // repetidas 2x, totalizando 2 cartas dessas no baralho
     for (let i = 0; i < 2; i++) {
-      bilhetesDestino.push(new BilheteDestino("Itatiaia" as NomesDeCidades, "Volta Redonda" as NomesDeCidades, 9));
+      bilhetesDestino.push(new BilheteDestino("Seattle" as NomesDeCidades, "New York" as NomesDeCidades, 9));
     }
     
     const bilhetesDestino2 = this.embaralharCartas(bilhetesDestino);

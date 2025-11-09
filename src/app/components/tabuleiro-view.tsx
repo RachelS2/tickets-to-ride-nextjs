@@ -1,89 +1,25 @@
 import { useState } from "react";
 import { Card } from "@/app/components/ui/card";
+import { usarJogo } from "@/app/lib/contexto-jogo";
+import { Jogo } from "@/app/lib/jogo";
+import notFound from "../not-found";
+import { Rota } from "../lib/rota";
+import { Cidade, cidades } from "../lib/cidades";
+import { pegarHexDaCor, pegarVarDaCor } from "../lib/utils";
 
-
-interface City {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-}
-
-interface Route {
-  from: string;
-  to: string;
-  color: string;
-  length: number;
-}
-
-const cities: City[] = [
-  { id: "seattle", name: "Seattle", x: 120, y: 100 },
-  { id: "portland", name: "Portland", x: 100, y: 180 },
-  { id: "san-francisco", name: "San Francisco", x: 80, y: 320 },
-  { id: "los-angeles", name: "Los Angeles", x: 140, y: 400 },
-  { id: "las-vegas", name: "Las Vegas", x: 200, y: 360 },
-  { id: "salt-lake", name: "Salt Lake City", x: 280, y: 220 },
-  { id: "phoenix", name: "Phoenix", x: 260, y: 440 },
-  { id: "denver", name: "Denver", x: 400, y: 280 },
-  { id: "santa-fe", name: "Santa Fe", x: 380, y: 380 },
-  { id: "el-paso", name: "El Paso", x: 380, y: 480 },
-  { id: "dallas", name: "Dallas", x: 540, y: 440 },
-  { id: "houston", name: "Houston", x: 580, y: 520 },
-  { id: "oklahoma", name: "Oklahoma City", x: 540, y: 360 },
-  { id: "kansas", name: "Kansas City", x: 580, y: 280 },
-  { id: "omaha", name: "Omaha", x: 580, y: 220 },
-  { id: "chicago", name: "Chicago", x: 740, y: 220 },
-  { id: "saint-louis", name: "Saint Louis", x: 680, y: 300 },
-  { id: "nashville", name: "Nashville", x: 760, y: 340 },
-  { id: "atlanta", name: "Atlanta", x: 800, y: 400 },
-  { id: "miami", name: "Miami", x: 880, y: 540 },
-  { id: "charleston", name: "Charleston", x: 860, y: 420 },
-  { id: "raleigh", name: "Raleigh", x: 880, y: 360 },
-  { id: "washington", name: "Washington", x: 920, y: 300 },
-  { id: "pittsburgh", name: "Pittsburgh", x: 860, y: 260 },
-  { id: "new-york", name: "New York", x: 960, y: 240 },
-  { id: "boston", name: "Boston", x: 980, y: 180 },
-];
-
-const routes: Route[] = [
-  { from: "seattle", to: "portland", color: "#EF4444", length: 1 },
-  { from: "portland", to: "san-francisco", color: "#10B981", length: 5 },
-  { from: "san-francisco", to: "los-angeles", color: "#F59E0B", length: 3 },
-  { from: "los-angeles", to: "las-vegas", color: "#6B7280", length: 2 },
-  { from: "las-vegas", to: "salt-lake", color: "#F59E0B", length: 3 },
-  { from: "salt-lake", to: "denver", color: "#EF4444", length: 3 },
-  { from: "salt-lake", to: "denver", color: "#F59E0B", length: 3 },
-  { from: "denver", to: "kansas", color: "#3B82F6", length: 4 },
-  { from: "denver", to: "santa-fe", color: "#6B7280", length: 2 },
-  { from: "los-angeles", to: "phoenix", color: "#6B7280", length: 3 },
-  { from: "phoenix", to: "santa-fe", color: "#6B7280", length: 3 },
-  { from: "santa-fe", to: "el-paso", color: "#6B7280", length: 2 },
-  { from: "el-paso", to: "dallas", color: "#EF4444", length: 4 },
-  { from: "dallas", to: "houston", color: "#6B7280", length: 1 },
-  { from: "dallas", to: "oklahoma", color: "#EF4444", length: 2 },
-  { from: "oklahoma", to: "kansas", color: "#6B7280", length: 2 },
-  { from: "kansas", to: "omaha", color: "#3B82F6", length: 1 },
-  { from: "omaha", to: "chicago", color: "#EF4444", length: 4 },
-  { from: "kansas", to: "saint-louis", color: "#8B5CF6", length: 2 },
-  { from: "chicago", to: "saint-louis", color: "#10B981", length: 2 },
-  { from: "saint-louis", to: "nashville", color: "#6B7280", length: 2 },
-  { from: "nashville", to: "atlanta", color: "#6B7280", length: 1 },
-  { from: "atlanta", to: "miami", color: "#3B82F6", length: 5 },
-  { from: "atlanta", to: "charleston", color: "#6B7280", length: 2 },
-  { from: "charleston", to: "raleigh", color: "#6B7280", length: 2 },
-  { from: "raleigh", to: "washington", color: "#6B7280", length: 2 },
-  { from: "washington", to: "pittsburgh", color: "#6B7280", length: 2 },
-  { from: "pittsburgh", to: "new-york", color: "#10B981", length: 2 },
-  { from: "new-york", to: "boston", color: "#EF4444", length: 2 },
-  { from: "chicago", to: "pittsburgh", color: "#F59E0B", length: 3 },
-];
 
 export  const Tabuleiro = () => {
-  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
+  const jogo: Jogo = usarJogo();
+  if (!jogo.foiIniciado()) {
+    notFound();
+  }
+  const rotas: Rota[] = jogo.pegarRotas();
+  
+  const [selectedRoute, setRotaSelecionada] = useState<string | null>(null);
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
-  const getCityPosition = (cityId: string) => {
-    return cities.find(c => c.id === cityId);
+  const getCityPosition = (nomeCidade: string) => {
+    return cidades.find(c => c.Nome === nomeCidade);
   };
 
   return (
@@ -120,57 +56,57 @@ export  const Tabuleiro = () => {
 
             {/* Routes */}
             <g>
-              {routes.map((route, index) => {
-                const fromCity = getCityPosition(route.from);
-                const toCity = getCityPosition(route.to);
-                if (!fromCity || !toCity) return null;
+              {rotas.map((rota, index) => {
+                const origem : Cidade = rota.Origem;
+                const destino : Cidade= rota.Destino;
+                if (!origem || !destino) return null;
 
-                const routeId = `${route.from}-${route.to}`;
-                const isSelected = selectedRoute === routeId;
-
+                const idRota = `${origem}-${destino}`;
+                const estaSelecionada = selectedRoute === idRota;
+                console.log(pegarHexDaCor(rota.Cor));
                 return (
                   <line
                     key={index}
-                    x1={fromCity.x}
-                    y1={fromCity.y}
-                    x2={toCity.x}
-                    y2={toCity.y}
-                    stroke={route.color}
-                    strokeWidth={isSelected ? "8" : "6"}
+                    x1={origem.XCoord}
+                    y1={origem.YCoord}
+                    x2={destino.XCoord}
+                    y2={destino.YCoord}
+                    stroke={pegarHexDaCor(rota.Cor)}
+                    strokeWidth={estaSelecionada ? "8" : "6"}
                     strokeLinecap="round"
-                    opacity={isSelected ? "1" : "0.7"}
+                    opacity={estaSelecionada ? "1" : "0.7"}
                     className="cursor-pointer transition-all hover:opacity-100"
-                    onClick={() => setSelectedRoute(isSelected ? null : routeId)}
+                    onClick={() => setRotaSelecionada(estaSelecionada ? null : idRota)}
                   />
                 );
               })}
             </g>
 
             <g>
-              {cities.map((city) => (
-                <g key={city.id}>
+              {cidades.map((cidade) => (
+                <g key={cidade.Nome}>
                   <circle
-                    cx={city.x}
-                    cy={city.y}
-                    r={hoveredCity === city.id ? "12" : "8"}
+                    cx={cidade.XCoord}
+                    cy={cidade.YCoord}
+                    r={hoveredCity === cidade.Nome ? "12" : "8"}
                     fill="hsl(var(--background))"
                     stroke="hsl(var(--primary))"
                     strokeWidth="3"
                     className="cursor-pointer transition-all"
-                    onMouseEnter={() => setHoveredCity(city.id)}
+                    onMouseEnter={() => setHoveredCity(cidade.Nome)}
                     onMouseLeave={() => setHoveredCity(null)}
                   />
-                  {hoveredCity === city.id && (
+                  {hoveredCity === cidade.Nome && (
                     <text
-                      x={city.x}
-                      y={city.y - 20}
+                      x={cidade.XCoord}
+                      y={cidade.YCoord - 20}
                       textAnchor="middle"
                       fill="hsl(var(--foreground))"
                       fontSize="14"
                       fontWeight="bold"
                       className="font-sans pointer-events-none"
                     >
-                      {city.name}
+                      {cidade.Nome}
                     </text>
                   )}
                 </g>

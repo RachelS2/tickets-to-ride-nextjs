@@ -1,6 +1,5 @@
 import { customAlphabet } from 'nanoid';
-import {NomesDeCidades} from './cidades';
-import { CoresCartaVagao } from "./utils";
+import { CoresCartaVagao, NomesDeCidades } from "./utils";
 
 export class CartaVagao {
     public readonly Cor: CoresCartaVagao 
@@ -25,12 +24,12 @@ export class BilheteDestino {
     public readonly Pontos: number
     public readonly Id: string
 
-    constructor(origin: NomesDeCidades, destino: NomesDeCidades, pontos: number) {
-        this.Origem = origin;
+    constructor(origem: NomesDeCidades, destino: NomesDeCidades, pontos: number) {
+        this.Origem = origem;
         this.Destino = destino;
         this.Pontos = pontos;
         const gerarId = customAlphabet("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ", 8);
-        this.Id = `${origin.slice(0,2)}-${destino.slice(0,2)}-${gerarId()}`;
+        this.Id = `${origem.slice(0,2)}-${destino.slice(0,2)}-${gerarId()}`;
     }
 }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { Train } from "lucide-react";
-import { cn, pegarHexDaCor } from "@/app/lib/utils";
+import { cn, pegarVarDaCor } from "@/app/lib/utils";
 import { CartaVagao } from "@/app/lib/cartas-jogo";
 import { Card } from "../ui/card";
 import CartaView from "../carta-view";
@@ -27,7 +27,7 @@ export const CartaVagaoView: React.FC<CartaVagaoProps> = ({
     <Card
       className={cn(
         "rounded-lg flex items-center justify-center shadow-none border-gray-300 transition-all duration-300 relative w-full h-full",
-        pegarHexDaCor(cartaVagao.Cor)
+        pegarVarDaCor(cartaVagao.Cor)
       )}
       aria-label={`Carta de vagão ${cartaVagao.Cor}`}
     >

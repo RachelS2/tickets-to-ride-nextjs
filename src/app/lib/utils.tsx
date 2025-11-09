@@ -15,7 +15,7 @@ export type OpcoesDeJogada = "ocupar-rota" | "comprar-bilhete" | "comprar-carta"
 
 export type JogadaEfetiva = "" | OpcoesDeJogada
 
-export function pegarHexDaCor(cor: string): string {
+export function pegarVarDaCor(cor: string): string {
   const corLimpa: string = cor.toLowerCase();
   return `bg-${corLimpa}-custom`
 }
@@ -24,21 +24,76 @@ export type CoresDeTrem = "Azul" | "Vermelho" | "Amarelo" | "Verde" | "Preto";
 export type CoresDeRota = "Cinza" | "Roxo" | "Laranja" | "Branco" | CoresDeTrem;
 export type CoresCartaVagao = "Roxo" | "Laranja" | "Branco" | "Coringa" | CoresDeTrem;
 
-function corAleatoria<T extends string>(cores: readonly T[]): T {
-  return cores[Math.floor(Math.random() * cores.length)];
+
+export function pegarHexDaCor(cor: CoresCartaVagao | CoresDeRota | CoresDeTrem): string {
+  const cores: Record<string, string> = {
+
+  Vermelho: "#DC2626",
+   Azul: "#2564ebd3",
+   Verde: "#16A34A",
+   Amarelo: "#ffd105be",
+   Preto: "#1F2937",
+   Roxo: "#5b27b6b0",
+   Laranja: "#ff8800f1",
+  Branco: "#FFFFFF",
+  Cinza: "#808080",
+  };
+
+  return cores[cor] || "#999999"; // fallback
 }
 
-export function corDeRotaAleatoria(): CoresDeRota {
-  const cores: CoresDeRota[] = [
-    "Cinza",
-    "Roxo",
-    "Azul",
-    "Laranja",
-    "Branco",
-    "Verde",
-    "Amarelo",
-    "Preto",
-    "Vermelho",
-  ];
-  return corAleatoria(cores);
-}
+
+// function corAleatoria<T extends string>(cores: readonly T[]): T {
+//   return cores[Math.floor(Math.random() * cores.length)];
+// }
+
+// export function corDeRotaAleatoria(): CoresDeRota {
+//   const cores: CoresDeRota[] = [
+//     "Cinza",
+//     "Roxo",
+//     "Azul",
+//     "Laranja",
+//     "Branco",
+//     "Verde",
+//     "Amarelo",
+//     "Preto",
+//     "Vermelho",
+//   ];
+//   return corAleatoria(cores);
+// }
+
+
+export const NomesDeCidades = [
+  "Seattle",
+  "Portland",
+  "San Francisco",
+  "Los Angeles",
+  "Las Vegas",
+  "Salt Lake City",
+  "Denver",
+  "Santa Fe",
+  "El Paso",
+  "Dallas",
+  "Houston",
+  "Oklahoma City",
+  "Kansas City",
+  "Omaha",
+  "Chicago",
+  "Saint Louis",
+  "Nashville",
+  "Atlanta",
+  "Miami",
+  "Charleston",
+  "Raleigh",
+  "Washington",
+  "Pittsburgh",
+  "New York",
+  "Boston",
+  "Phoenix",
+] as const;
+
+
+export type NomesDeCidades = typeof NomesDeCidades[number];
+
+
+

@@ -14,7 +14,7 @@ export const BaralhoBilhetesDestinoView = ({bilhetes, idBilheteExposto, idsBilhe
     handleComprarBilheteDestino: handleComprarBilheteDestinoBaralho} : BaralhoCartasVagaoViewProps) => {
 
     return (
-        <div className="mt-10 relative w-full flex justify-center">
+        <div className="mt-5 relative w-full flex justify-center">
             <BaralhoView
                 cartas={bilhetes}
                 angleStep={5}

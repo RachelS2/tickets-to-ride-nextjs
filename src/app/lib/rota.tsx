@@ -1,15 +1,15 @@
+import { Cidade } from "./cidades";
 import {Jogador} from "./jogador";
-import {NomesDeCidades} from './cidades';
-import { CoresDeRota } from "./utils";
+import { CoresDeRota, NomesDeCidades } from "./utils";
 
 export class Rota {
-  public readonly Origem: NomesDeCidades
-  public readonly Destino: NomesDeCidades
+  public readonly Origem: Cidade
+  public readonly Destino: Cidade
   public readonly Cor: CoresDeRota
   public readonly QtdeEspacos : number
   private Dono : Jogador | null = null
 
-  constructor(origem: NomesDeCidades, destino: NomesDeCidades, qtdeEspacos: number, cor: CoresDeRota) {
+  constructor(origem: Cidade, destino: Cidade, qtdeEspacos: number, cor: CoresDeRota) {
     if (origem == destino) {
       throw new Error("A origem e o destino da rota não podem ser iguais.");}
 

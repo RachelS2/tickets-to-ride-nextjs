@@ -1,7 +1,7 @@
 import {Jogador} from "./jogador";
-import {NomesDeCidades} from './cidades';
 import { Tabuleiro } from "./tabuleiro";
 import { BilheteDestino, CartaMaiorCaminhoContinuo, CartaVagao } from "./cartas-jogo";
+import { Rota } from "./rota";
 
 export class Jogo {
 
@@ -72,7 +72,9 @@ export class Jogo {
         return this.Tabuleiro.pegarCartasVagaoExpostas(qtde);
     }
 
-    
+    public pegarRotas() : Rota[] {
+        return this.Tabuleiro.pegarRotas()
+    }
 
     public pegaJogadores(): Jogador[] {
         return this.Jogadores;

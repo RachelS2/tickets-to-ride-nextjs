@@ -78,7 +78,7 @@ useEffect(() => {
   const handleStartGame = async () => {
     if (jogadores.length < 2 || jogadores.length > 5) return;
     await jogo.iniciaJogo();
-    router.push("/nova-aventura/ticket-to-rio");
+    router.push("/nova-aventura/ticket-to-ride");
   };
 
   return (
