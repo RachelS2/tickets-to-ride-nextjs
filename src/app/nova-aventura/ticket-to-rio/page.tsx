@@ -6,14 +6,12 @@ import {BaralhoCartasVagaoView} from "@/app/components/carta-de-vagao/baralho-ca
 import { useRouter, notFound } from 'next/navigation';
 import Tabuleiro from "@/app/components/tabuleiro-view";
 import { BilheteDestinoView } from "@/app/components/bilhete-de-destino/bilhete-de-destino-view";
-import BaralhoView from "@/app/components/baralho-view";
 import SumarioJogadorView from "@/app/nova-aventura/ticket-to-rio/sumario-jogador-view";
 import { usarJogo } from "@/app/lib/contexto-jogo";
 import { Jogo } from "@/app/lib/jogo";
 import { BilheteDestino, CartaMaiorCaminhoContinuo, CartaVagao } from "@/app/lib/cartas-jogo";
 import {OpcoesDeJogada, JogadaEfetiva} from "@/app/lib/utils"
 import { Jogador } from "@/app/lib/jogador";
-import { CartaVagaoView } from "@/app/components/carta-de-vagao/carta-vagao-view";
 import { BaralhoBilhetesDestinoView } from "../../components/bilhete-de-destino/baralho-bilhetes-destino-view";
 
 const GamePage: React.FC = () => {
@@ -24,32 +22,34 @@ const GamePage: React.FC = () => {
   const router = useRouter();
   const cartaMaiorCaminhoContinuo : CartaMaiorCaminhoContinuo = jogo.pegaCartaMaiorCaminhoContinuo();
 
-  // VARIÁVEIS DO BARALHO DE CARTAS VAGÃO (CARTAS OCULTAS)
+  // ESTADOS DO BARALHO DE CARTAS VAGÃO (CARTAS OCULTAS)
   const [cartasVagaoBaralhoAtual, setCartasVagaoBaralhoAtual] = useState<CartaVagao[]>(jogo.pegarCartasVagao(15));
   const [cartasVagaoBaralhoClicaveis, setCartasVagaoBaralhoClicaveis] = useState<boolean>(false); // controla se o baralho de cartas pode ser clicado (após executar a jogada comprar-bilhetes)
   const [idsCartasVagaoBaralhoExpostas, setIdsCartasVagaoBaralhoExpostas] = useState<string[]>([]); // id da carta de vagão exposta
   const [idsCartasVagaoBaralhoDestacadas, setIdsCartasVagaoBaralhoDestacadas] = useState<string[]>([]);
 
-  // VARIÁVEIS DO BARALHO DE CARTAS VAGÃO (CARTAS EXPOSTAS)
+  // ESTADOS DO BARALHO DE CARTAS VAGÃO (CARTAS EXPOSTAS)
   const [cartasVagaoExpostasAtual, setCartasVagaoExpostasAtual] = useState<CartaVagao[]>(jogo.pegarCartasVagaoExpostas(5));
   const [cartasVagaoExpostasClicavel, setCartasVagaoExpostasClicavel] = useState<boolean>(false);
   const [idsCartaVagaoExpostasDestacadas, setIdsCartaVagaoExpostasDestacadas] = useState<string[]>([]);
+  const [comprasBloqueadas, setComprasBloqueadas] = useState<boolean>(false); // bloqueia cliques após regra aplicada
+  const [comprouLocomotivaFaceUp, setComprouLocomotivaFaceUp] = useState<boolean>(false);
 
-  // VARIÁVEIS DO BARALHO DE BILHETES DE DESTINO
+  // ESTADOS DO BARALHO DE BILHETES DE DESTINO
   const [baralhoBilhetesAtual, setBaralhoBilhetesAtual] = useState<BilheteDestino[]>(jogo.pegarBilhetesDeDestino(15));
   const [baralhoBilhetesClicavel, setBaralhoBilhetesClicavel] = useState<boolean>(false); // controla se o baralho de bilhetes pode ser clicado (após executar a jogada comprar-bilhetes)
   const [idBilheteExposto, setIdBilheteExposto] = useState<string | null>(null); // id do bilhete do baralho q esta exposto 
   const [idsBilhetesBaralhoDestacados, setIdsBilhetesBaralhoDestacados] = useState<string[]>([]);
   
-  // VARIÁVEIS DA RODADA
+  // ESTADOS DA RODADA
   const [rodada, setRodada] = useState<number>(jogo.pegarRodada());
   
-  // VARIÁVEIS DA JOGADA
+  // ESTADOS DA JOGADA
   const [jogadaEfetiva, setJogadaEfetiva] = useState<JogadaEfetiva>("");
   const [jogadaSelecionada, setJogadaSelecionada] = useState<OpcoesDeJogada>("ocupar-rota"); // pega a jogada escolhida pelo jogador
   const [finalizouJogadaPrincipal, setExecutouJogadaPrincipal] = useState<boolean>(false);
 
-  // VARIÁVEIS DO JOGADOR
+  // ESTADOS DO JOGADOR
   const [jogadoresRestantes, setJogadoresRestantes] = useState<Jogador[]>(jogo.pegaJogadores());
   const [proximoJogador, setProximoJogador] = useState<Jogador>(jogadoresRestantes[1]);
   const [jogador, setJogador] = useState<Jogador>(jogadoresRestantes[0]);
@@ -114,6 +114,15 @@ const GamePage: React.FC = () => {
   };
 
   const handleComprarCartaVagaoExposta = async (carta: CartaVagao) => {    
+    if (comprasBloqueadas) return;
+    const ehLocomotiva : boolean = carta.ehLocomotiva();
+
+    if (comprouLocomotivaFaceUp) {
+      console.warn("Se você quiser comprar uma Locomotiva virada para cima, ela deve ser a primeira Carta de Vagão que você compra no turno e você não pode ",
+        "comprar uma segunda carta.");
+      return;
+    }
+    
     setIdsCartasVagaoBaralhoDestacadas([carta.Id]);
     await sleep(600);
     
@@ -128,11 +137,16 @@ const GamePage: React.FC = () => {
     
     const cartasVagaoCompradasCopy = [...cartasVagaoCompradas, carta];
     setCartasCompradas(cartasVagaoCompradasCopy);
+    if (ehLocomotiva) {
+      setComprouLocomotivaFaceUp(true);
+      setComprasBloqueadas(true)
+    }
 
     // setIdsCartasVagaoBaralhoDestacadas(cartasVagaoBaralhoAtual.map(b => b.Id));
   }
 
   const handleComprarCartaVagaoBaralho = async (carta: CartaVagao) => {
+    if (comprasBloqueadas) return;
     const cartasVagaoCompradasCopy = [...cartasVagaoCompradas, carta];
 
     setIdsCartasVagaoBaralhoExpostas([carta.Id]);
@@ -248,9 +262,9 @@ const GamePage: React.FC = () => {
       </div>
 
       <div className="px-3 py-6">
-        <div className="grid grid-cols-12 gap-3">
+        <div className="grid grid-cols-12 gap-2">
           {/* Left Sidebar */}
-          <div className="col-span-2 bg-background space-y-4 overflow-hidden">
+          <div className="flex flex-col items-center col-span-2 bg-background space-y-3 overflow-hidden">
 
             <BilheteDestinoView bilheteDestino={cartaMaiorCaminhoContinuo} size="md" orientacao="horizontal" />
 
@@ -264,7 +278,7 @@ const GamePage: React.FC = () => {
                                     angleStep={25} offsetXStep={18} idCartaExposta={cartasVagaoExpostasAtual.map(c => c.Id)} handleComprarCartaVagaoBaralho={handleComprarCartaVagaoExposta}/>
           </div>
 
-          <div className="flex flex-row items-center justify-center bg-blue-300 col-span-7">
+          <div className="flex flex-row items-center justify-center col-span-7">
                 <Tabuleiro />  
           </div>
 

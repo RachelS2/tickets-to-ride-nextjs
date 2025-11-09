@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { cn } from "@/app/lib/utils"; // ajuste o caminho se necessário
+import React from "react";
+
 import { CartaOcultaView } from "../carta-de-vagao/carta-oculta-view";
 
-
-/** Verso da carta, conteúdo oculto*/
 export const BilheteDestinoOculto: React.FC<{
   size?: "sm" | "md" | "lg" | "responsive";
   orientacao?: "vertical" | "horizontal";

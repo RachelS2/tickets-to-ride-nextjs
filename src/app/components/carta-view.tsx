@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { cn } from "@/app/lib/utils"; // ajuste o caminho se necessário
+import { cn } from "@/app/lib/utils";
 import { BordaDaCartaView } from "./borda-carta-view";
 
 export type CartaProps = {
@@ -15,10 +15,8 @@ export type CartaProps = {
   childrenExposta?: React.ReactNode;
 };
 
-
-
-/** Componente integrado: mostra verso (TicketBack) quando expostoInicialmente = false, 
-    senão mostra a face com as informações do bilhete. */
+/** Componente integrado: mostra verso quando expostoInicialmente = false, 
+    senão mostra a face com as informações da carta. */
 export const CartaView = ({
   size = "md",
   orientacao = "vertical",
@@ -40,7 +38,7 @@ export const CartaView = ({
 
   const handleClick = () => {
     if (!clicavel) return;
-    setExposicao(true); // revela a carta localmente
+    setExposicao(true); // revela a carta 
     if (onClick) onClick(); 
   };
 
@@ -68,7 +66,7 @@ export const CartaView = ({
           </div>
         </div>
 
-        {/* Frente (exposto) */}
+        {/* Frente (exposta) */}
         <div
           className={cn(
             "absolute inset-0 flex items-center justify-center",

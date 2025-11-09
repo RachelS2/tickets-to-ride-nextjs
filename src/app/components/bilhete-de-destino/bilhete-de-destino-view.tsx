@@ -37,31 +37,30 @@ export const BilheteDestinoView: React.FC<BilhetesDestinoProps> = ({
       )}
       aria-label={`Bilhete destino ${bilheteDestino.Origem} → ${bilheteDestino.Destino}`}
     >
-      {/* 1. Área fixa de Origem (altura fixa para evitar variação entre cartas) */}
-      <div className="h-8 md:h-10 flex items-center justify-center pt-2">
-        <h2 className="text-[10px] md:text-sm text-gray-800 text-center line-clamp-2">
-          {bilheteDestino.Origem}
-        </h2>
-      </div>
-
-      {/* 2. Área do meio (cresce e centraliza o círculo) */}
-      <div className="flex-1 flex items-center justify-center pt-1 pb-1">
-        <div
-          className="bg-primary text-white w-6 h-6 md:w-8 md:h-8 
-                    flex items-center justify-center rounded-full border-2 border-yellow-400 
-                    text-[10px] md:text-sm font-bold shadow-lg"
-          role="status"
-          aria-label={`${bilheteDestino.Pontos} pontos`}
-        >
-          {bilheteDestino.Pontos}
+      <div className="flex flex-col items-center ">
+        <div className="h-8 md:h-10 flex items-center justify-center pt-1">
+          <h2 className="text-[10px] md:text-sm text-gray-800 text-center line-clamp-2">
+            {bilheteDestino.Origem}
+          </h2>
         </div>
-      </div>
 
-      {/* 3. Área fixa do Destino (altura fixa também) */}
-      <div className="h-10 md:h-12 flex items-center justify-center pb-2">
-        <h2 className="text-[10px]  md:text-sm text-gray-800 text-center line-clamp-2">
-          {bilheteDestino.Destino}
-        </h2>
+        <div className="flex-1 flex items-center justify-center pt-1 pb-1">
+          <div
+            className="bg-primary text-white w-6 h-6 md:w-8 md:h-8 
+                      flex items-center justify-center rounded-full border-2 border-yellow-400 
+                      text-[10px] md:text-sm font-bold shadow-lg"
+            role="status"
+            aria-label={`${bilheteDestino.Pontos} pontos`}
+          >
+            {bilheteDestino.Pontos}
+          </div>
+        </div>
+
+        <div className="h-10 md:h-12 flex items-center justify-center pb-2 ">
+          <h2 className="text-[10px]  md:text-sm text-gray-800 text-center line-clamp-2">
+            {bilheteDestino.Destino}
+          </h2>
+        </div>
       </div>
     </Card>
   );
