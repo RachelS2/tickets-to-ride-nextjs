@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "@/app/lib/utils"; // ajuste o caminho se necessário
-import { CartaOcultaView } from "./carta-oculta-view";
+import { CartaOcultaView } from "../carta-de-vagao/carta-oculta-view";
 
 
 /** Verso da carta, conteúdo oculto*/

@@ -1,11 +1,11 @@
 'use client';
 import { useEffect, useState } from "react";
 import { Button } from "@/app/components/ui/button";
-import { Card } from "@/app/components/ui/card";
-import { ArrowLeft, Train, Trash2, CreditCard } from "lucide-react";
+import { ArrowLeft} from "lucide-react";
+import {BaralhoCartasVagaoView} from "@/app/components/carta-de-vagao/baralho-cartas-vagao-view"
 import { useRouter, notFound } from 'next/navigation';
 import Tabuleiro from "@/app/components/tabuleiro-view";
-import { BilheteDestinoView } from "@/app/components/bilhete-de-destino-view";
+import { BilheteDestinoView } from "@/app/components/bilhete-de-destino/bilhete-de-destino-view";
 import BaralhoView from "@/app/components/baralho-view";
 import SumarioJogadorView from "@/app/nova-aventura/ticket-to-rio/sumario-jogador-view";
 import { usarJogo } from "@/app/lib/contexto-jogo";
@@ -13,7 +13,8 @@ import { Jogo } from "@/app/lib/jogo";
 import { BilheteDestino, CartaMaiorCaminhoContinuo, CartaVagao } from "@/app/lib/cartas-jogo";
 import {OpcoesDeJogada, JogadaEfetiva} from "@/app/lib/utils"
 import { Jogador } from "@/app/lib/jogador";
-import { CartaVagaoView } from "@/app/components/carta-vagao-view";
+import { CartaVagaoView } from "@/app/components/carta-de-vagao/carta-vagao-view";
+import { BaralhoBilhetesDestinoView } from "../../components/bilhete-de-destino/baralho-bilhetes-destino-view";
 
 const GamePage: React.FC = () => {
   const jogo: Jogo = usarJogo();
@@ -26,13 +27,12 @@ const GamePage: React.FC = () => {
   // VARIÁVEIS DO BARALHO DE CARTAS VAGÃO (CARTAS OCULTAS)
   const [cartasVagaoBaralhoAtual, setCartasVagaoBaralhoAtual] = useState<CartaVagao[]>(jogo.pegarCartasVagao(15));
   const [cartasVagaoBaralhoClicaveis, setCartasVagaoBaralhoClicaveis] = useState<boolean>(false); // controla se o baralho de cartas pode ser clicado (após executar a jogada comprar-bilhetes)
-  const [idsCartasVagaoBaralhoExpostas, setIdsCartasVagaoBaralhoExpostas] = useState<string | null>(null); // id da carta de vagão exposta
+  const [idsCartasVagaoBaralhoExpostas, setIdsCartasVagaoBaralhoExpostas] = useState<string[]>([]); // id da carta de vagão exposta
   const [idsCartasVagaoBaralhoDestacadas, setIdsCartasVagaoBaralhoDestacadas] = useState<string[]>([]);
 
   // VARIÁVEIS DO BARALHO DE CARTAS VAGÃO (CARTAS EXPOSTAS)
   const [cartasVagaoExpostasAtual, setCartasVagaoExpostasAtual] = useState<CartaVagao[]>(jogo.pegarCartasVagaoExpostas(5));
   const [cartasVagaoExpostasClicavel, setCartasVagaoExpostasClicavel] = useState<boolean>(false);
-  const [idCartaVagaoExposta, setIdCartaVagaoExposta] = useState<string | null>(null); // id da carta de vagão exposta
   const [idsCartaVagaoExpostasDestacadas, setIdsCartaVagaoExpostasDestacadas] = useState<string[]>([]);
 
   // VARIÁVEIS DO BARALHO DE BILHETES DE DESTINO
@@ -84,11 +84,12 @@ const GamePage: React.FC = () => {
     if (jogadaSelecionada === "comprar-carta" && ((cartasVagaoCompradas.length >= 2) || (cartasVagaoBaralhoAtual.length == 0 && cartasVagaoExpostasAtual.length == 0)) ) {
       setExecutouJogadaPrincipal(true);
       setIdsCartasVagaoBaralhoDestacadas([]);
-      setIdsCartasVagaoBaralhoExpostas(null);
+      setIdsCartasVagaoBaralhoExpostas([]);
       setCartasVagaoBaralhoClicaveis(false);
 
       setCartasVagaoExpostasClicavel(false);
       setIdsCartaVagaoExpostasDestacadas([]);
+      console.log("Cartas de vagão compradas" + cartasVagaoCompradas )
 
       console.log("Jogada finalizada automaticamente: o jogador pode comprar no máximo 2 cartas de vagão por rodada!");
     }
@@ -112,14 +113,29 @@ const GamePage: React.FC = () => {
     } 
   };
 
-  const handleComprarCartaVagaoBaralho = async (carta: CartaVagao) => {
-    //setCartasVagaoClicavel(false);
+  const handleComprarCartaVagaoExposta = async (carta: CartaVagao) => {    
+    setIdsCartasVagaoBaralhoDestacadas([carta.Id]);
+    await sleep(600);
+    
+    const index : number = cartasVagaoExpostasAtual.indexOf(carta);
+    if (index < 0) throw new Error("Essa carta de vagão não estava exposta!");
+    const novoBaralho = [...cartasVagaoExpostasAtual];
+    novoBaralho.splice(index, 1);
+    setCartasVagaoExpostasAtual(novoBaralho);
+    
+    await sleep(300);
+    jogador.addCartaVagao(carta);
+    
     const cartasVagaoCompradasCopy = [...cartasVagaoCompradas, carta];
-    if (cartasVagaoCompradasCopy.length > 2) {
-      return;
-    }
+    setCartasCompradas(cartasVagaoCompradasCopy);
 
-    setIdsCartasVagaoBaralhoExpostas(carta.Id);
+    // setIdsCartasVagaoBaralhoDestacadas(cartasVagaoBaralhoAtual.map(b => b.Id));
+  }
+
+  const handleComprarCartaVagaoBaralho = async (carta: CartaVagao) => {
+    const cartasVagaoCompradasCopy = [...cartasVagaoCompradas, carta];
+
+    setIdsCartasVagaoBaralhoExpostas([carta.Id]);
     setIdsCartasVagaoBaralhoDestacadas([carta.Id]);
     await sleep(600);
 
@@ -133,10 +149,7 @@ const GamePage: React.FC = () => {
     jogador.addCartaVagao(carta);
     setCartasCompradas(cartasVagaoCompradasCopy);
 
-    //if (cartasVagaoCompradasCopy.length < 2 && baralhoCartasVagaoAtual.length > 0) {
-    setIdsCartasVagaoBaralhoDestacadas(baralhoBilhetesAtual.map(b => b.Id));
-    //setCartasVagaoClicavel(true);
-    //}
+    // setIdsCartasVagaoBaralhoDestacadas(cartasVagaoBaralhoAtual.map(b => b.Id));
   }
   
   const handleComprarBilheteDestinoBaralho = async (bilhete: BilheteDestino) => {
@@ -182,16 +195,20 @@ const GamePage: React.FC = () => {
     else if (jogadaSelecionada == "comprar-carta") {
       setCartasVagaoBaralhoClicaveis(true);
       setCartasVagaoExpostasClicavel(true);
-      console.log(cartasVagaoBaralhoAtual.map(c => c.Id))
-      setIdsCartaVagaoExpostasDestacadas(cartasVagaoBaralhoAtual.map(c => c.Id));
-      
+      // destaca todas as cartas do baralho
+      const idsBaralho : string[] = cartasVagaoBaralhoAtual.map(c => c.Id);
+      setIdsCartasVagaoBaralhoDestacadas(idsBaralho);
+
+      // destaca todas as cartas expostas visíveis
+      const idsExpostas : string[] = cartasVagaoExpostasAtual.map(c => c.Id);
+      setIdsCartaVagaoExpostasDestacadas(idsExpostas);
+
     }
 
     else if (jogadaSelecionada == "descartar-bilhete") {
       const ids = bilhetesComprados.map(b => b.Id);
       setJogadorIdsBilhetesDestacados(ids);
       setJogadorIdsBilhetesClicaveis(ids);
-
     }
   };
 
@@ -237,62 +254,14 @@ const GamePage: React.FC = () => {
 
             <BilheteDestinoView bilheteDestino={cartaMaiorCaminhoContinuo} size="md" orientacao="horizontal" />
 
-            <div className="mt-10 relative w-full flex justify-center">
-              <BaralhoView
-                cartas={baralhoBilhetesAtual}
-                angleStep={5}
-                offsetXStep={7}
-                renderizarCarta={(bilhete: BilheteDestino) => {
-                  const id : string = bilhete.Id;
-                  const bilheteEstaExposto : boolean  = idBilheteExposto === id;
-                  const bilheteEstaDestacado : boolean = idsBilhetesBaralhoDestacados.includes(id);
-                  return (
-                    <div key={id} className="relative w-full flex justify-center">
+            <BaralhoBilhetesDestinoView bilhetes={baralhoBilhetesAtual} idBilheteExposto={idBilheteExposto} idsBilhetesDestacados={idsBilhetesBaralhoDestacados}
+                                        baralhoClicavel={baralhoBilhetesClicavel} handleComprarBilheteDestino={handleComprarBilheteDestinoBaralho}/>
 
-                        <BilheteDestinoView
-                          key={id}
-                          bilheteDestino={bilhete}
-                          expostoInicialmente={bilheteEstaExposto}
-                          orientacao="vertical"
-                          size="md"
-                          clicavel={baralhoBilhetesClicavel}
-                          onClick={() => handleComprarBilheteDestinoBaralho(bilhete)}
-                          destacar={bilheteEstaDestacado}
-                        />
-
-                    </div>
-                  );
-                }}
-              />
-            </div>
-
-            <div className="mt-10 relative w-full flex justify-center">
-              <BaralhoView
-                cartas={cartasVagaoBaralhoAtual}
-                angleStep={5}
-                offsetXStep={7}
-                renderizarCarta={(carta: CartaVagao) => {
-                  const id : string = carta.Id;
-                  const cartaEstaExposta : boolean  = idsCartasVagaoBaralhoExpostas === id;
-                  const cartaEstaDestacada : boolean = idsCartasVagaoBaralhoDestacadas.includes(id);
-                  return (
-                    <div key={id} className="relative w-full flex justify-center">
-
-                        <CartaVagaoView
-                          key={id}
-                          cartaVagao={carta}
-                          expostaInicialmente={cartaEstaExposta}
-                          size="md"
-                          clicavel={cartasVagaoBaralhoClicaveis}
-                          onClick={() => handleComprarCartaVagaoBaralho(carta)}
-                          destacar={cartaEstaDestacada}
-                        />
-
-                    </div>
-                  );
-                }}
-              />
-            </div >
+            <BaralhoCartasVagaoView cartas={cartasVagaoBaralhoAtual} cartasClicaveis={cartasVagaoBaralhoClicaveis} idsCartasDestacadas={idsCartasVagaoBaralhoDestacadas} 
+                                    idCartaExposta={idsCartasVagaoBaralhoExpostas} handleComprarCartaVagaoBaralho={handleComprarCartaVagaoBaralho}/>
+          
+            <BaralhoCartasVagaoView cartas={cartasVagaoExpostasAtual} cartasClicaveis={cartasVagaoExpostasClicavel} idsCartasDestacadas={idsCartaVagaoExpostasDestacadas} 
+                                    angleStep={25} offsetXStep={18} idCartaExposta={cartasVagaoExpostasAtual.map(c => c.Id)} handleComprarCartaVagaoBaralho={handleComprarCartaVagaoExposta}/>
           </div>
 
           <div className="flex flex-row items-center justify-center bg-blue-300 col-span-7">

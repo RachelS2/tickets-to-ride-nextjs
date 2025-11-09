@@ -5,8 +5,8 @@ import { Card } from "@/app/components/ui/card";
 import { Label } from "@/app/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 
-import { CartaVagaoView } from "@/app/components/carta-vagao-view";
-import { BilheteDestinoView , BilhetesDestinoProps}  from "@/app/components/bilhete-de-destino-view";
+import { CartaVagaoView } from "@/app/components/carta-de-vagao/carta-vagao-view";
+import { BilheteDestinoView , BilhetesDestinoProps}  from "@/app/components/bilhete-de-destino/bilhete-de-destino-view";
 
 import {  Play, Train } from "lucide-react";
 
@@ -158,7 +158,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                             <h3 className="font-semibold mb-2">Suas Cartas de Vagão</h3>
                             <div className="flex flex-wrap gap-3 items-center">
                                 {cartasDeVagaoJogador.map((cartaDeVagao, index) => (
-                                <CartaVagaoView expostaInicialmente={true} destacar={false} clicavel={false} key={index} cartaVagao={cartaDeVagao} size="md" />
+                                <CartaVagaoView expostoInicialmente={true} destacar={false} clicavel={false} key={index} cartaVagao={cartaDeVagao} size="md" />
                                 ))}
                             </div>
                         </div>
