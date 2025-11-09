@@ -146,7 +146,6 @@ export  const Tabuleiro = () => {
               })}
             </g>
 
-            {/* Cities */}
             <g>
               {cities.map((city) => (
                 <g key={city.id}>
@@ -180,7 +179,7 @@ export  const Tabuleiro = () => {
           </svg>
         </div>
 
-        {/* Legend */}
+        {/* Subtitles */}
         <div className="mt-6 flex flex-wrap gap-4 justify-center">
           <div className="flex items-center gap-2">
             <div className="w-6 h-1 bg-red-500 rounded"></div>
@@ -213,3 +212,5 @@ export  const Tabuleiro = () => {
 };
 
 export default Tabuleiro;
+
+

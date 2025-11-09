@@ -6,6 +6,7 @@ import {BaralhoCartasVagaoView} from "@/app/components/carta-de-vagao/baralho-ca
 import { useRouter, notFound } from 'next/navigation';
 import Tabuleiro from "@/app/components/tabuleiro-view";
 import { BilheteDestinoView } from "@/app/components/bilhete-de-destino/bilhete-de-destino-view";
+import BaralhoView from "@/app/components/baralho-view";
 import SumarioJogadorView from "@/app/nova-aventura/ticket-to-rio/sumario-jogador-view";
 import { usarJogo } from "@/app/lib/contexto-jogo";
 import { Jogo } from "@/app/lib/jogo";
@@ -32,8 +33,6 @@ const GamePage: React.FC = () => {
   const [cartasVagaoExpostasAtual, setCartasVagaoExpostasAtual] = useState<CartaVagao[]>(jogo.pegarCartasVagaoExpostas(5));
   const [cartasVagaoExpostasClicavel, setCartasVagaoExpostasClicavel] = useState<boolean>(false);
   const [idsCartaVagaoExpostasDestacadas, setIdsCartaVagaoExpostasDestacadas] = useState<string[]>([]);
-  const [comprasBloqueadas, setComprasBloqueadas] = useState<boolean>(false); // bloqueia cliques após regra aplicada
-  const [comprouLocomotivaFaceUp, setComprouLocomotivaFaceUp] = useState<boolean>(false);
 
   // ESTADOS DO BARALHO DE BILHETES DE DESTINO
   const [baralhoBilhetesAtual, setBaralhoBilhetesAtual] = useState<BilheteDestino[]>(jogo.pegarBilhetesDeDestino(15));
@@ -89,6 +88,7 @@ const GamePage: React.FC = () => {
 
       setCartasVagaoExpostasClicavel(false);
       setIdsCartaVagaoExpostasDestacadas([]);
+      setCartasCompradas([]);
       console.log("Cartas de vagão compradas" + cartasVagaoCompradas )
 
       console.log("Jogada finalizada automaticamente: o jogador pode comprar no máximo 2 cartas de vagão por rodada!");
@@ -114,15 +114,6 @@ const GamePage: React.FC = () => {
   };
 
   const handleComprarCartaVagaoExposta = async (carta: CartaVagao) => {    
-    if (comprasBloqueadas) return;
-    const ehLocomotiva : boolean = carta.ehLocomotiva();
-
-    if (comprouLocomotivaFaceUp) {
-      console.warn("Se você quiser comprar uma Locomotiva virada para cima, ela deve ser a primeira Carta de Vagão que você compra no turno e você não pode ",
-        "comprar uma segunda carta.");
-      return;
-    }
-    
     setIdsCartasVagaoBaralhoDestacadas([carta.Id]);
     await sleep(600);
     
@@ -137,17 +128,13 @@ const GamePage: React.FC = () => {
     
     const cartasVagaoCompradasCopy = [...cartasVagaoCompradas, carta];
     setCartasCompradas(cartasVagaoCompradasCopy);
-    if (ehLocomotiva) {
-      setComprouLocomotivaFaceUp(true);
-      setComprasBloqueadas(true)
-    }
 
-    // setIdsCartasVagaoBaralhoDestacadas(cartasVagaoBaralhoAtual.map(b => b.Id));
+    setIdsCartasVagaoBaralhoDestacadas(cartasVagaoBaralhoAtual.map(b => b.Id));
   }
 
   const handleComprarCartaVagaoBaralho = async (carta: CartaVagao) => {
-    if (comprasBloqueadas) return;
     const cartasVagaoCompradasCopy = [...cartasVagaoCompradas, carta];
+    console.log(cartasVagaoCompradasCopy)
 
     setIdsCartasVagaoBaralhoExpostas([carta.Id]);
     setIdsCartasVagaoBaralhoDestacadas([carta.Id]);
@@ -163,7 +150,7 @@ const GamePage: React.FC = () => {
     jogador.addCartaVagao(carta);
     setCartasCompradas(cartasVagaoCompradasCopy);
 
-    // setIdsCartasVagaoBaralhoDestacadas(cartasVagaoBaralhoAtual.map(b => b.Id));
+    setIdsCartasVagaoBaralhoDestacadas(cartasVagaoBaralhoAtual.map(b => b.Id));
   }
   
   const handleComprarBilheteDestinoBaralho = async (bilhete: BilheteDestino) => {
@@ -252,19 +239,20 @@ const GamePage: React.FC = () => {
   
   return (
     <div className="min-h-screen font-serif p-1">
-      <div className="container mx-auto pt-4 px-4 flex text-center justify-between items-center">
-        <Button className="hover:bg-vermelho-custom" variant="ghost" onClick={() => router.push("/nova-aventura")}>
+      <div className="container mx-auto pt-4 px-4 flex text-center justify-center">
+        {/* <Button className="hover:bg-vermelho-custom" variant="ghost" onClick={() => router.push("/nova-aventura")}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Sair do Jogo
-        </Button>
+        </Button> */}
         <h1 className="text-2xl font-bold text-primary">Rodada {rodada}</h1>
+        <div></div>
         <div className="w-32" />
       </div>
 
       <div className="px-3 py-6">
-        <div className="grid grid-cols-12 gap-2">
+        <div className="grid grid-cols-12 gap-3">
           {/* Left Sidebar */}
-          <div className="flex flex-col items-center col-span-2 bg-background space-y-3 overflow-hidden">
+          <div className="col-span-2 bg-background space-y-4 overflow-hidden">
 
             <BilheteDestinoView bilheteDestino={cartaMaiorCaminhoContinuo} size="md" orientacao="horizontal" />
 
@@ -278,7 +266,7 @@ const GamePage: React.FC = () => {
                                     angleStep={25} offsetXStep={18} idCartaExposta={cartasVagaoExpostasAtual.map(c => c.Id)} handleComprarCartaVagaoBaralho={handleComprarCartaVagaoExposta}/>
           </div>
 
-          <div className="flex flex-row items-center justify-center col-span-7">
+          <div className="flex flex-row items-center justify-center bg-blue-300 col-span-7">
                 <Tabuleiro />  
           </div>
 

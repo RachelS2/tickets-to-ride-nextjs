@@ -37,7 +37,7 @@ export const BilheteDestinoView: React.FC<BilhetesDestinoProps> = ({
       )}
       aria-label={`Bilhete destino ${bilheteDestino.Origem} → ${bilheteDestino.Destino}`}
     >
-      <div className="flex flex-col items-center ">
+      <div className="flex flex-col items-center justify-center">
         <div className="h-8 md:h-10 flex items-center justify-center pt-1">
           <h2 className="text-[10px] md:text-sm text-gray-800 text-center line-clamp-2">
             {bilheteDestino.Origem}
@@ -56,7 +56,7 @@ export const BilheteDestinoView: React.FC<BilhetesDestinoProps> = ({
           </div>
         </div>
 
-        <div className="h-10 md:h-12 flex items-center justify-center pb-2 ">
+        <div className="h-10 md:h-12 flex items-center justify-center pb-2">
           <h2 className="text-[10px]  md:text-sm text-gray-800 text-center line-clamp-2">
             {bilheteDestino.Destino}
           </h2>
