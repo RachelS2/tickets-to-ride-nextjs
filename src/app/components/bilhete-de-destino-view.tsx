@@ -3,76 +3,7 @@ import { cn } from "@/app/lib/utils"; // ajuste o caminho se necessário
 import { BordaDaCartaView } from "./borda-carta-view";
 import {Card} from "@/app/components/ui/card"; // ajuste import se o seu Card estiver em outro lugar
 import { BilheteDestino } from "../lib/cartas-jogo";
-
-/** Verso da carta, conteúdo oculto*/
-const BilheteDestinoOculto: React.FC<{
-  size?: "sm" | "md" | "lg" | "responsive";
-  orientacao?: "vertical" | "horizontal";
- 
-}> = ({ size = "md", orientacao = "vertical"}) => {
-  const ehHorizontal = orientacao === "horizontal";
-
-  return (
-    <div className="relative flex items-center bg-bilhete-destino-oculto justify-center w-full h-full overflow-hidden">
-      {/* Fundo gradiente marrom */}
-      <div
-        className={cn(
-          "absolute inset-1 rounded-[8px] shadow-inner bg-bilhete-destino-oculto",
-          ehHorizontal ? "aspect-[4/2.5] w-full" : "aspect-[2.5/4] w-full"
-        )}
-      />
-
-      {/* Retângulo claro central com texto vertical */}
-      <div
-        className={cn(
-          "relative z-10 flex items-center justify-center rounded-[6px] select-none",
-          ehHorizontal ? "w-1/3 h-[68%]" : "w-[46%] h-[68%]"
-        )}
-        style={{ background: "rgba(255, 238, 205, 0.95)" }}
-        aria-hidden
-      >
-        <div className="flex flex-col items-center justify-center gap-0">
-            {"TICKET".split("").map((ch, i) => (
-              <span
-                key={i}
-                className="font-extrabold text-white text-xs leading-none tracking-wider"
-                // sombra leve no texto para se destacar
-                style={{ textShadow: "0 1px 0 rgba(0,0,0,0.25)" }}
-              >
-                {ch}
-              </span>
-            ))}
-        </div>
-      </div>
-
-      {/* Circulo */}
-      <div
-        className="absolute -top-3 z-20 flex items-center justify-center"
-        style={{ left: "50%", transform: "translateX(-50%)" }}
-        aria-hidden
-      >
-        <div
-          className="rounded-full"
-          style={{
-            width: 26,
-            height: 26,
-            background: "white",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
-          }}
-        />
-      </div>
-
-      <div
-        className="absolute inset-0 pointer-events-none rounded-[8px]"
-        style={{
-          boxShadow:
-            "inset 0 -14px 30px -10px rgba(0,0,0,0.35), 0 6px 18px rgba(0,0,0,0.25)",
-        }}
-        aria-hidden
-      />
-    </div>
-  );
-};
+import { BilheteDestinoOculto } from "./bilhete-de-destino-oculto-view";
 
 
 export type BilhetesDestinoProps = {

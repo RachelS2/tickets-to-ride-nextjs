@@ -20,7 +20,6 @@ export class Tabuleiro {
     this.BaralhoBilhetesDestino = this.criarBilhetesDestino();
     this.CartaMaiorCaminhoContinuo = this.criarCartaMaiorCaminhoContinuo();
     this.darCartasAosJogadores(jogadores);
-    this.exporCartasVagao()
   }
 
   private embaralharCartas<T>(deck: T[]): T[] { // embaralha qq baralho (destinytickets ou traincards)
@@ -33,36 +32,27 @@ export class Tabuleiro {
   }
 
 
-  public pegarBilhetesDeDestino(qtde: number): BilheteDestino[] {
-    return this.BaralhoBilhetesDestino.slice(-qtde);
+  public pegarBaralhoBilhetesDeDestino(qtde: number): BilheteDestino[] {
+    return this.BaralhoBilhetesDestino.splice(-qtde);
   }
 
-  public pegarBaralhoCartasVagao(): CartaVagao[] {
-    return this.BaralhoCartasVagao;
+  public pegarBaralhoCartasVagao(qtde: number): CartaVagao[] {
+    return this.BaralhoCartasVagao.splice(-qtde);
   }
+
+  public exporCartasVagao(cartas: CartaVagao[]): void {
+    this.BaralhoCartasVagao = this.BaralhoCartasVagao.filter(
+      (carta) => !cartas.includes(carta)
+    );
+
+    this.CartasVagaoExpostas = cartas;
+  }
+
 
   public pegarCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
     return this.CartaMaiorCaminhoContinuo;
   }
 
-
-  public exporCartasVagao(): void {
-    const qtde: number = 5 - this.CartasVagaoExpostas.length // É preciso ter sempre 5 cartas de vagão expostas no tabuleiro
-    if (qtde > 0) {
-      const novasCartasVagao: CartaVagao[] = this.pegarCartaVagaoDoBaralho(qtde); 
-      // console.log("Cartas a serem expostas: " + novasCartasVagao.length)
-      // console.log("Qtde cartas de vagão no baralho após a exposição: " + this.BaralhoCartasVagao.length)
-      this.CartasVagaoExpostas.push(...novasCartasVagao)
-      let locomotivas: number = 0
-      for (const carta of this.CartasVagaoExpostas) {
-        if (carta.ehLocomotiva())
-          locomotivas += 1
-        if (locomotivas == 3) 
-          this.descartarC(this.CartasVagaoExpostas) 
-          this.exporCartasVagao()
-      }
-    }
-  }
 
   private reporBaralhoCartasVagao() : void {
     
@@ -70,11 +60,8 @@ export class Tabuleiro {
     this.CartasVagaoDescartadas = []
   }
 
-  private pegarCartaVagaoDoBaralho(qtde: number) : CartaVagao[]{
-    return this.BaralhoCartasVagao.splice(-qtde)
-  }
 
-  private pegarCartaVagaoExposta(qtde: number) :  CartaVagao[]{
+  public pegarCartasVagaoExpostas(qtde: number) :  CartaVagao[]{
     return this.CartasVagaoExpostas.splice(-qtde)
   }
 
@@ -82,7 +69,7 @@ export class Tabuleiro {
     const cartasPegas: CartaVagao[] = []
     let qtdeCartasVagaoBaralho: number = this.BaralhoCartasVagao.length
     if (qtdeCartasVagaoBaralho - qtdeDesejada < 0) {
-        const ultimasCartasBaralho : CartaVagao[] = this.pegarCartaVagaoDoBaralho(qtdeCartasVagaoBaralho)
+        const ultimasCartasBaralho : CartaVagao[] = this.pegarBaralhoCartasVagao(qtdeCartasVagaoBaralho)
         cartasPegas.push(...ultimasCartasBaralho)
         qtdeCartasVagaoBaralho = 0 
     }
@@ -92,7 +79,7 @@ export class Tabuleiro {
 
     const numCartasFaltantes: number = qtdeDesejada - cartasPegas.length
     if (numCartasFaltantes >= 0)
-      cartasPegas.push(...this.pegarCartaVagaoDoBaralho(numCartasFaltantes));
+      cartasPegas.push(...this.pegarBaralhoCartasVagao(numCartasFaltantes));
     
     return cartasPegas;
   }
@@ -105,17 +92,17 @@ export class Tabuleiro {
       throw new Error("Você deve comprar um número positivo de cartas de vagão.")
     const cartasPegas: CartaVagao[] = []
     cartasPegas.push(...this.controlarCartasVagaoDoBaralho(numCartasDoBaralhoAPegar))
-    cartasPegas.push(...this.pegarCartaVagaoExposta(numCartasExpostasAPegar))
+    cartasPegas.push(...this.pegarCartasVagaoExpostas(numCartasExpostasAPegar))
     return cartasPegas;
   }
 
   public descartarC(cartas: CartaVagao[]): void {
-
     this.CartasVagaoDescartadas.push(...cartas);
   }
 
   public descartarB(bilhetes: BilheteDestino[]) : void {
     this.BaralhoBilhetesDestino.push(...bilhetes);
+    this.BaralhoBilhetesDestino = this.embaralharCartas(this.BaralhoBilhetesDestino);
   }
 
   private criarRotas(): Rota[] {

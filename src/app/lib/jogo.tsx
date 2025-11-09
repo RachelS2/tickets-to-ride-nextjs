@@ -39,15 +39,40 @@ export class Jogo {
         for (const jogador of this.Jogadores) {
             jogador.defineTabuleiro(this.Tabuleiro);
         }
+        this.exporCartasVagao();
     }
 
     public pegarBilhetesDeDestino(qtde: number): BilheteDestino[] {
-        return this.Tabuleiro.pegarBilhetesDeDestino(qtde);
+        return this.Tabuleiro.pegarBaralhoBilhetesDeDestino(qtde);
     }
 
-    public pegarBaralhoCartasVagao(): CartaVagao[] {
-        return this.Tabuleiro.pegarBaralhoCartasVagao();
+    public pegarCartasVagao(qtde: number): CartaVagao[] {
+        return this.Tabuleiro.pegarBaralhoCartasVagao(qtde);
     }
+
+    public exporCartasVagao(): CartaVagao[] {
+        let cartasExpostas: CartaVagao[] = this.Tabuleiro.pegarBaralhoCartasVagao(5);
+
+        // conta locomotivas
+        const qtdeLocomotivas = cartasExpostas.filter(c => c.ehLocomotiva()).length;
+
+        // aplica regra de 3 locomotivas
+        if (qtdeLocomotivas >= 3) {
+            this.Tabuleiro.descartarC(cartasExpostas);
+            // tenta novamente até sair uma combinação válida
+            return this.exporCartasVagao();
+        }
+
+        // se não houver 3 locomotivas, mantém as cartas reveladas
+        this.Tabuleiro.exporCartasVagao(cartasExpostas);
+        return cartasExpostas;
+    }
+
+    public pegarCartasVagaoExpostas(qtde: number) : CartaVagao[] {
+        return this.Tabuleiro.pegarCartasVagaoExpostas(qtde);
+    }
+
+    
 
     public pegaJogadores(): Jogador[] {
         return this.Jogadores;

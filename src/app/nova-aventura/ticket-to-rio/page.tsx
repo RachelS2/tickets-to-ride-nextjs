@@ -13,6 +13,7 @@ import { Jogo } from "@/app/lib/jogo";
 import { BilheteDestino, CartaMaiorCaminhoContinuo, CartaVagao } from "@/app/lib/cartas-jogo";
 import {OpcoesDeJogada, JogadaEfetiva} from "@/app/lib/utils"
 import { Jogador } from "@/app/lib/jogador";
+import { CartaVagaoView } from "@/app/components/carta-vagao-view";
 
 const GamePage: React.FC = () => {
   const jogo: Jogo = usarJogo();
@@ -21,6 +22,18 @@ const GamePage: React.FC = () => {
   }
   const router = useRouter();
   const cartaMaiorCaminhoContinuo : CartaMaiorCaminhoContinuo = jogo.pegaCartaMaiorCaminhoContinuo();
+
+  // VARIÁVEIS DO BARALHO DE CARTAS VAGÃO (CARTAS OCULTAS)
+  const [cartasVagaoBaralhoAtual, setCartasVagaoBaralhoAtual] = useState<CartaVagao[]>(jogo.pegarCartasVagao(15));
+  const [cartasVagaoBaralhoClicaveis, setCartasVagaoBaralhoClicaveis] = useState<boolean>(false); // controla se o baralho de cartas pode ser clicado (após executar a jogada comprar-bilhetes)
+  const [idsCartasVagaoBaralhoExpostas, setIdsCartasVagaoBaralhoExpostas] = useState<string | null>(null); // id da carta de vagão exposta
+  const [idsCartasVagaoBaralhoDestacadas, setIdsCartasVagaoBaralhoDestacadas] = useState<string[]>([]);
+
+  // VARIÁVEIS DO BARALHO DE CARTAS VAGÃO (CARTAS EXPOSTAS)
+  const [cartasVagaoExpostasAtual, setCartasVagaoExpostasAtual] = useState<CartaVagao[]>(jogo.pegarCartasVagaoExpostas(5));
+  const [cartasVagaoExpostasClicavel, setCartasVagaoExpostasClicavel] = useState<boolean>(false);
+  const [idCartaVagaoExposta, setIdCartaVagaoExposta] = useState<string | null>(null); // id da carta de vagão exposta
+  const [idsCartaVagaoExpostasDestacadas, setIdsCartaVagaoExpostasDestacadas] = useState<string[]>([]);
 
   // VARIÁVEIS DO BARALHO DE BILHETES DE DESTINO
   const [baralhoBilhetesAtual, setBaralhoBilhetesAtual] = useState<BilheteDestino[]>(jogo.pegarBilhetesDeDestino(15));
@@ -43,19 +56,96 @@ const GamePage: React.FC = () => {
   const [bilhetesComprados, setbilhetesComprados] = useState<BilheteDestino[]>([]); 
   const [jogadorIdsBilhetesClicaveis, setJogadorIdsBilhetesClicaveis] = useState<string[]>([]);
   const [jogadorIdsBilhetesDestacados, setJogadorIdsBilhetesDestacados] = useState<string[]>([]);
+  const [cartasVagaoCompradas, setCartasCompradas] = useState<CartaVagao[]>([])
+  
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   useEffect(() => {
-  if (bilhetesComprados.length >= 3) {
+  if (jogadaSelecionada === "comprar-bilhete" && bilhetesComprados.length >= 3 ||( baralhoBilhetesAtual.length == 0)) {
     setIdsBilhetesBaralhoDestacados([]);
     setIdBilheteExposto(null);
     setBaralhoBilhetesClicavel(false);
+    setExecutouJogadaPrincipal(true);
+    console.log("Jogada finalizada automaticamente: o jogador deve comprar até 3 bilhetes de destino por rodada!");
   }
-}, [bilhetesComprados]);
+}, [bilhetesComprados, jogadaSelecionada]);
+
+  useEffect(() => {
+    if (jogadaSelecionada === "descartar-bilhete" && bilhetesComprados.length <= 1) {
+      // só resta 1 bilhete: finaliza a jogada automaticamente
+      setExecutouJogadaPrincipal(false);
+      setJogadorIdsBilhetesClicaveis([]);
+      setJogadorIdsBilhetesDestacados([]);
+      console.log("Jogada finalizada automaticamente: o jogador deve ficar com pelo menos 1 dos 3 bilhetes de destino comprados!");
+    }
+  }, [bilhetesComprados, jogadaSelecionada]);
+
+  useEffect(() => {
+    if (jogadaSelecionada === "comprar-carta" && ((cartasVagaoCompradas.length >= 2) || (cartasVagaoBaralhoAtual.length == 0 && cartasVagaoExpostasAtual.length == 0)) ) {
+      setExecutouJogadaPrincipal(true);
+      setIdsCartasVagaoBaralhoDestacadas([]);
+      setIdsCartasVagaoBaralhoExpostas(null);
+      setCartasVagaoBaralhoClicaveis(false);
+
+      setCartasVagaoExpostasClicavel(false);
+      setIdsCartaVagaoExpostasDestacadas([]);
+
+      console.log("Jogada finalizada automaticamente: o jogador pode comprar no máximo 2 cartas de vagão por rodada!");
+    }
+  }, [cartasVagaoCompradas, jogadaSelecionada]);
 
 
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  const handleDescartarBilheteDestino = async (bilhete: BilheteDestino) => {
 
-  const handleRemoverBilheteDestinoBaralho = (bilhete: BilheteDestino) => {
+    if (bilhetesComprados.length > 1) {
+      const novaLista = bilhetesComprados.filter(b => b.Id !== bilhete.Id);
+
+      setJogadorIdsBilhetesDestacados([bilhete.Id]);
+      await sleep(600);
+
+      jogador.removerBilheteDestino(bilhete);
+
+      setbilhetesComprados(novaLista);
+
+      setJogadorIdsBilhetesDestacados([]);
+      setJogadorIdsBilhetesClicaveis([]);
+    } 
+  };
+
+  const handleComprarCartaVagaoBaralho = async (carta: CartaVagao) => {
+    //setCartasVagaoClicavel(false);
+    const cartasVagaoCompradasCopy = [...cartasVagaoCompradas, carta];
+    if (cartasVagaoCompradasCopy.length > 2) {
+      return;
+    }
+
+    setIdsCartasVagaoBaralhoExpostas(carta.Id);
+    setIdsCartasVagaoBaralhoDestacadas([carta.Id]);
+    await sleep(600);
+
+    const index : number = cartasVagaoBaralhoAtual.indexOf(carta);
+    if (index < 0) throw new Error("Essa carta de vagão não estava no baralho!");
+    const novoBaralho = [...cartasVagaoBaralhoAtual];
+    novoBaralho.splice(index, 1);
+    setCartasVagaoBaralhoAtual(novoBaralho);
+
+    await sleep(300);
+    jogador.addCartaVagao(carta);
+    setCartasCompradas(cartasVagaoCompradasCopy);
+
+    //if (cartasVagaoCompradasCopy.length < 2 && baralhoCartasVagaoAtual.length > 0) {
+    setIdsCartasVagaoBaralhoDestacadas(baralhoBilhetesAtual.map(b => b.Id));
+    //setCartasVagaoClicavel(true);
+    //}
+  }
+  
+  const handleComprarBilheteDestinoBaralho = async (bilhete: BilheteDestino) => {
+    if (!baralhoBilhetesClicavel) return;
+    const id = bilhete.Id;
+    setIdBilheteExposto(id); 
+    setIdsBilhetesBaralhoDestacados([id]); 
+
+    await sleep(600);
 
     const index : number = baralhoBilhetesAtual.indexOf(bilhete);
     if (index < 0) throw new Error("Esse bilhete de destino não estava no baralho!");
@@ -65,64 +155,22 @@ const GamePage: React.FC = () => {
 
     setBaralhoBilhetesAtual(novoBaralho);
 
-  }
-
-  const handleDescartarBilheteDestino = async(bilhete: BilheteDestino) => {
-
-    if (bilhetesComprados.length > 1) {
-      console.log("Removeu bilhete!");
-
-      setJogadorIdsBilhetesDestacados([bilhete.Id]);
-      await sleep(600);
-
-      jogador.removerBilheteDestino(bilhete);
-
-      // cria uma nova lista sem o bilhete removido
-      const novaLista = bilhetesComprados.filter(b => b.Id !== bilhete.Id);
-
-      // atualiza o estado com a lista filtrada
-      setbilhetesComprados(novaLista);
-
-      // limpa destaques
-      setJogadorIdsBilhetesDestacados([]);
-      setJogadorIdsBilhetesClicaveis([]);
-    }
-  }
-
-  const handleComprarBilheteDestino = async (bilhete: BilheteDestino) => {
-    if (!baralhoBilhetesClicavel) return;
-    const id = bilhete.Id;
-    setIdBilheteExposto(id); 
-    setIdsBilhetesBaralhoDestacados([id]); 
-
-    await sleep(600);
-
-    handleRemoverBilheteDestinoBaralho(bilhete);
-
     await sleep(300);
 
     jogador.addBilheteDestino(bilhete);
 
-    // console.log("O jogador já comprou " + qtdebilhetesComprados.length + " bilhetes!")
     const bilhetesCompradosCopy : BilheteDestino[] = [...bilhetesComprados, bilhete]
     setbilhetesComprados(bilhetesCompradosCopy);
 
-    // se comprou menos de 3 cartas e há baralho, mantém o fluxo
-    if ((bilhetesCompradosCopy.length < 3) && (baralhoBilhetesAtual.length > 0)) {
-      setJogadaSelecionada("comprar-bilhete");
-      setIdsBilhetesBaralhoDestacados(baralhoBilhetesAtual.map(b => b.Id));
-      
-    }
-    else if ((bilhetesCompradosCopy.length >= 3) || (baralhoBilhetesAtual.length == 0)) {
-      setExecutouJogadaPrincipal(true);
-    }
+    setJogadaSelecionada("comprar-bilhete");
+    setIdsBilhetesBaralhoDestacados(baralhoBilhetesAtual.map(b => b.Id));
   };
 
   // Função usada pelo SumarioJogadorView quando o botão "EXECUTAR JOGADA" é clicado
   const handleExecutarJogadaFromChild = () => {
     setJogadaEfetiva(jogadaSelecionada)
     console.log(jogadaSelecionada)
-    if (jogadaSelecionada === "comprar-bilhete" && bilhetesComprados.length < 3 && baralhoBilhetesAtual.length > 0) {
+    if (jogadaSelecionada === "comprar-bilhete") {
       setBaralhoBilhetesClicavel(true);
       setIdsBilhetesBaralhoDestacados(baralhoBilhetesAtual.map(b => b.Id));
     }
@@ -132,11 +180,15 @@ const GamePage: React.FC = () => {
     }
 
     else if (jogadaSelecionada == "comprar-carta") {
+      setCartasVagaoBaralhoClicaveis(true);
+      setCartasVagaoExpostasClicavel(true);
+      console.log(cartasVagaoBaralhoAtual.map(c => c.Id))
+      setIdsCartaVagaoExpostasDestacadas(cartasVagaoBaralhoAtual.map(c => c.Id));
       
     }
+
     else if (jogadaSelecionada == "descartar-bilhete") {
-      console.log(bilhetesComprados)
-      const ids = bilhetesComprados.map(b => b.Id)
+      const ids = bilhetesComprados.map(b => b.Id);
       setJogadorIdsBilhetesDestacados(ids);
       setJogadorIdsBilhetesClicaveis(ids);
 
@@ -204,7 +256,7 @@ const GamePage: React.FC = () => {
                           orientacao="vertical"
                           size="md"
                           clicavel={baralhoBilhetesClicavel}
-                          onClick={() => handleComprarBilheteDestino(bilhete)}
+                          onClick={() => handleComprarBilheteDestinoBaralho(bilhete)}
                           destacar={bilheteEstaDestacado}
                         />
 
@@ -213,19 +265,38 @@ const GamePage: React.FC = () => {
                 }}
               />
             </div>
+
+            <div className="mt-10 relative w-full flex justify-center">
+              <BaralhoView
+                cartas={cartasVagaoBaralhoAtual}
+                angleStep={5}
+                offsetXStep={7}
+                renderizarCarta={(carta: CartaVagao) => {
+                  const id : string = carta.Id;
+                  const cartaEstaExposta : boolean  = idsCartasVagaoBaralhoExpostas === id;
+                  const cartaEstaDestacada : boolean = idsCartasVagaoBaralhoDestacadas.includes(id);
+                  return (
+                    <div key={id} className="relative w-full flex justify-center">
+
+                        <CartaVagaoView
+                          key={id}
+                          cartaVagao={carta}
+                          expostaInicialmente={cartaEstaExposta}
+                          size="md"
+                          clicavel={cartasVagaoBaralhoClicaveis}
+                          onClick={() => handleComprarCartaVagaoBaralho(carta)}
+                          destacar={cartaEstaDestacada}
+                        />
+
+                    </div>
+                  );
+                }}
+              />
+            </div >
           </div>
 
           <div className="flex flex-row items-center justify-center bg-blue-300 col-span-7">
-                <Tabuleiro />
-              <div className="gap-4 mt-4 justify-center">
-                  <Button variant="outline" size="icon" className="w-16 h-16 mr-4 bg-muted">
-                    <Trash2 className="w-6 h-6" />
-                  </Button>
-                  <Button variant="outline" size="icon" className="w-16 h-16 bg-muted">
-                    <Train className="w-6 h-6" />
-                  </Button>
-              </div>
-  
+                <Tabuleiro />  
           </div>
 
           <div className="col-span-3">

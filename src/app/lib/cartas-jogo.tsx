@@ -4,9 +4,12 @@ import { CoresCartaVagao } from "./utils";
 
 export class CartaVagao {
     public readonly Cor: CoresCartaVagao 
+    public readonly Id: string
 
     constructor(cor: CoresCartaVagao) {
         this.Cor = cor;
+        const gerarId = customAlphabet("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ", 8);
+        this.Id = `${cor.slice(0,2)}-${cor.slice(2,5)}-${gerarId()}`;
     }
 
     public ehLocomotiva(): boolean {

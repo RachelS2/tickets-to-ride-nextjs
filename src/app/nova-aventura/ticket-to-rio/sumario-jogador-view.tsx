@@ -91,7 +91,12 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
             {renderOpcoesJogada("comprar-carta", "Comprar Cartas de Vagão")}
         </>  
     )
-
+    const renderPosComprarCartaVagao = () => (
+        <>
+            {renderComprarCartaVagao()}
+            {renderPassarAVez()}
+        </>
+    );
     const renderJogadasPrincipais = () => (
         <>
             {renderOpcoesJogada("ocupar-rota", "Ocupar Rota")}
@@ -118,10 +123,12 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                     : renderComprarBilhete();
 
             case "descartar-bilhete":
-                return renderPosComprarBilhete();
+                return finalizouJogadaPrincipal ? renderPosComprarBilhete() : 
+                renderPassarAVez();
 
             case "comprar-carta":
-                return renderComprarCartaVagao();
+                return finalizouJogadaPrincipal ? renderPassarAVez() 
+                : renderComprarCartaVagao();
 
             case "":
                 default:
@@ -151,7 +158,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                             <h3 className="font-semibold mb-2">Suas Cartas de Vagão</h3>
                             <div className="flex flex-wrap gap-3 items-center">
                                 {cartasDeVagaoJogador.map((cartaDeVagao, index) => (
-                                <CartaVagaoView key={index} cartaVagao={cartaDeVagao} size="md" />
+                                <CartaVagaoView expostaInicialmente={true} destacar={false} clicavel={false} key={index} cartaVagao={cartaDeVagao} size="md" />
                                 ))}
                             </div>
                         </div>
@@ -185,9 +192,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                             <Play className="w-4 h-4 mr-2" />
                             <span>EXECUTAR JOGADA</span>
                         </Button>
-                    {/* // {!jogadaEfetiva? ( */}
 
-                    {/* // ) : <></> } */}
                     <Card className="pt-4 border-none shadow-none">
                         <span className="font-semibold">Próximo(a) a Jogar:</span> {proximoJogador.Nome}
                     </Card>
