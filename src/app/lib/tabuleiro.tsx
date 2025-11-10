@@ -65,36 +65,36 @@ export class Tabuleiro {
     return this.CartasVagaoExpostas.splice(-qtde)
   }
 
-  private controlarCartasVagaoDoBaralho(qtdeDesejada: number) : CartaVagao[] {
-    const cartasPegas: CartaVagao[] = []
-    let qtdeCartasVagaoBaralho: number = this.BaralhoCartasVagao.length
-    if (qtdeCartasVagaoBaralho - qtdeDesejada < 0) {
-        const ultimasCartasBaralho : CartaVagao[] = this.pegarBaralhoCartasVagao(qtdeCartasVagaoBaralho)
-        cartasPegas.push(...ultimasCartasBaralho)
-        qtdeCartasVagaoBaralho = 0 
-    }
+  // private controlarCartasVagaoDoBaralho(qtdeDesejada: number) : CartaVagao[] {
+  //   const cartasPegas: CartaVagao[] = []
+  //   let qtdeCartasVagaoBaralho: number = this.BaralhoCartasVagao.length
+  //   if (qtdeCartasVagaoBaralho - qtdeDesejada < 0) {
+  //       const ultimasCartasBaralho : CartaVagao[] = this.pegarBaralhoCartasVagao(qtdeCartasVagaoBaralho)
+  //       cartasPegas.push(...ultimasCartasBaralho)
+  //       qtdeCartasVagaoBaralho = 0 
+  //   }
 
-    if (qtdeCartasVagaoBaralho == 0)
-      this.reporBaralhoCartasVagao();
+  //   if (qtdeCartasVagaoBaralho == 0)
+  //     this.reporBaralhoCartasVagao();
 
-    const numCartasFaltantes: number = qtdeDesejada - cartasPegas.length
-    if (numCartasFaltantes >= 0)
-      cartasPegas.push(...this.pegarBaralhoCartasVagao(numCartasFaltantes));
+  //   const numCartasFaltantes: number = qtdeDesejada - cartasPegas.length
+  //   if (numCartasFaltantes >= 0)
+  //     cartasPegas.push(...this.pegarBaralhoCartasVagao(numCartasFaltantes));
     
-    return cartasPegas;
-  }
+  //   return cartasPegas;
+  // }
 
-  public comprarCartasVagao(numCartasExpostasAPegar: number, numCartasDoBaralhoAPegar: number) : CartaVagao[] {
-    const totalAPegar: number = numCartasExpostasAPegar + numCartasDoBaralhoAPegar
-    if (totalAPegar > 2)
-      throw new Error("Você pode comprar no máximo 2 cartas de vagão por rodada!")
-    if (totalAPegar < 0) 
-      throw new Error("Você deve comprar um número positivo de cartas de vagão.")
-    const cartasPegas: CartaVagao[] = []
-    cartasPegas.push(...this.controlarCartasVagaoDoBaralho(numCartasDoBaralhoAPegar))
-    cartasPegas.push(...this.pegarCartasVagaoExpostas(numCartasExpostasAPegar))
-    return cartasPegas;
-  }
+  // public comprarCartasVagao(numCartasExpostasAPegar: number, numCartasDoBaralhoAPegar: number) : CartaVagao[] {
+  //   const totalAPegar: number = numCartasExpostasAPegar + numCartasDoBaralhoAPegar
+  //   if (totalAPegar > 2)
+  //     throw new Error("Você pode comprar no máximo 2 cartas de vagão por rodada!")
+  //   if (totalAPegar < 0) 
+  //     throw new Error("Você deve comprar um número positivo de cartas de vagão.")
+  //   const cartasPegas: CartaVagao[] = []
+  //   cartasPegas.push(...this.controlarCartasVagaoDoBaralho(numCartasDoBaralhoAPegar))
+  //   cartasPegas.push(...this.pegarCartasVagaoExpostas(numCartasExpostasAPegar))
+  //   return cartasPegas;
+  // }
 
   public descartarC(cartas: CartaVagao[]): void {
     this.CartasVagaoDescartadas.push(...cartas);
@@ -149,12 +149,9 @@ export class Tabuleiro {
   }
   
   private criarCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
-    for (const [espacoStr, caminho]  of Object.entries(MaiorCaminhoContinuo)) {
-      const pontos = Number(espacoStr);
-      for (const [origem, destino] of Object.entries(caminho!)) {
-        return new CartaMaiorCaminhoContinuo(origem as NomesDeCidades, destino as NomesDeCidades, pontos);
-      }
-    }
+
+    return new CartaMaiorCaminhoContinuo("Seatle" as NomesDeCidades, "Boston" as NomesDeCidades, 25);
+
   }
 
   private criarBilhetesDestino(): BilheteDestino[] {
@@ -172,16 +169,6 @@ export class Tabuleiro {
       }
     }
 
-    // repetida 2x, totalizando 3 cartas no baralho
-    for (let i = 0; i < 2; i++) {
-      bilhetesDestino.push(new BilheteDestino("Denver" as NomesDeCidades, "New York" as NomesDeCidades, 8));
-    }
-
-    // repetidas 2x, totalizando 2 cartas dessas no baralho
-    for (let i = 0; i < 2; i++) {
-      bilhetesDestino.push(new BilheteDestino("Seattle" as NomesDeCidades, "New York" as NomesDeCidades, 9));
-    }
-    
     const bilhetesDestino2 = this.embaralharCartas(bilhetesDestino);
     // console.log("qtde bilhetes de destino criadas:", bilhetesDestino2.length);
     // console.log("bilhetes de destino criadas:", bilhetesDestino2);

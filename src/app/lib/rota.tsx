@@ -1,6 +1,6 @@
 import { Cidade } from "./cidades";
 import {Jogador} from "./jogador";
-import { CoresDeRota, NomesDeCidades } from "./utils";
+import { CoresDeRota } from "./utils";
 
 export class Rota {
   public readonly Origem: Cidade

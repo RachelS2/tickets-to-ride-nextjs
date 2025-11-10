@@ -5,22 +5,38 @@ import { Jogo } from "@/app/lib/jogo";
 import notFound from "../not-found";
 import { Rota } from "../lib/rota";
 import { Cidade, cidades } from "../lib/cidades";
-import { pegarHexDaCor, pegarVarDaCor } from "../lib/utils";
+import { cn, CoresDeRota, pegarVarDaCor, pegarHexDaCor } from "../lib/utils";
 
 
-export  const Tabuleiro = () => {
+type TabuleiroProps = {
+  clicavel: boolean;
+  rotaSelecionada: Rota | null;
+  setRotaSelecionada: (rota: Rota) => void;
+};
+
+
+export  const Tabuleiro = ({clicavel, rotaSelecionada, setRotaSelecionada} : TabuleiroProps) => {
   const jogo: Jogo = usarJogo();
   if (!jogo.foiIniciado()) {
     notFound();
   }
   const rotas: Rota[] = jogo.pegarRotas();
   
-  const [selectedRoute, setRotaSelecionada] = useState<string | null>(null);
+  // const [selectedRoute, setRotaSelecionada] = useState<string | null>(null);
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
-  const getCityPosition = (nomeCidade: string) => {
-    return cidades.find(c => c.Nome === nomeCidade);
-  };
+  const geraLegenda = (cor: CoresDeRota) => {
+    return (
+      <div className="flex items-center gap-2">
+        
+        <div className={cn("w-6 h-1 rounded", pegarVarDaCor(cor))}></div>
+
+        <span className="text-sm text-muted-foreground">{cor}</span>
+      </div> 
+    )
+  }
+
+  const coresUsadas : CoresDeRota[] = []
 
   return (
     <div className="w-full max-w-7xl mx-auto p-4">
@@ -57,13 +73,26 @@ export  const Tabuleiro = () => {
             {/* Routes */}
             <g>
               {rotas.map((rota, index) => {
-                const origem : Cidade = rota.Origem;
-                const destino : Cidade= rota.Destino;
+                const origem = rota.Origem;
+                const destino = rota.Destino;
                 if (!origem || !destino) return null;
 
-                const idRota = `${origem}-${destino}`;
-                const estaSelecionada = selectedRoute === idRota;
-                console.log(pegarHexDaCor(rota.Cor));
+                const idRota = `${origem.Nome}-${destino.Nome}`;
+                const idRotaSelecionada = `${rotaSelecionada?.Origem.Nome}-${rotaSelecionada?.Destino.Nome}`;
+                const estaSelecionada = idRotaSelecionada === idRota;
+
+                const corHex = pegarHexDaCor(rota.Cor);
+
+                // Calcula o comprimento total da linha
+                const dx = destino.XCoord - origem.XCoord;
+                const dy = destino.YCoord - origem.YCoord;
+                const distancia = Math.sqrt(dx * dx + dy * dy);
+
+                // Define o padrão de tracejado (dashLength e gap)
+                // Aqui dividimos a distância total pela quantidade de espaços
+                const dashLength = distancia / (rota.QtdeEspacos * 2);
+                const gapLength = dashLength; // espaçamento igual ao traço
+
                 return (
                   <line
                     key={index}
@@ -71,77 +100,61 @@ export  const Tabuleiro = () => {
                     y1={origem.YCoord}
                     x2={destino.XCoord}
                     y2={destino.YCoord}
-                    stroke={pegarHexDaCor(rota.Cor)}
+                    stroke={corHex}
                     strokeWidth={estaSelecionada ? "8" : "6"}
                     strokeLinecap="round"
-                    opacity={estaSelecionada ? "1" : "0.7"}
+                    strokeDasharray={`${dashLength},${gapLength}`}
+                    opacity={estaSelecionada ? "1" : "0.8"}
                     className="cursor-pointer transition-all hover:opacity-100"
-                    onClick={() => setRotaSelecionada(estaSelecionada ? null : idRota)}
+                    onClick={clicavel? () => setRotaSelecionada(rota) : undefined}
                   />
                 );
               })}
             </g>
 
+
             <g>
-              {cidades.map((cidade) => (
-                <g key={cidade.Nome}>
-                  <circle
-                    cx={cidade.XCoord}
-                    cy={cidade.YCoord}
-                    r={hoveredCity === cidade.Nome ? "12" : "8"}
-                    fill="hsl(var(--background))"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="3"
-                    className="cursor-pointer transition-all"
-                    onMouseEnter={() => setHoveredCity(cidade.Nome)}
-                    onMouseLeave={() => setHoveredCity(null)}
-                  />
-                  {hoveredCity === cidade.Nome && (
-                    <text
-                      x={cidade.XCoord}
-                      y={cidade.YCoord - 20}
-                      textAnchor="middle"
-                      fill="hsl(var(--foreground))"
-                      fontSize="14"
-                      fontWeight="bold"
-                      className="font-sans pointer-events-none"
-                    >
-                      {cidade.Nome}
-                    </text>
-                  )}
-                </g>
-              ))}
+            {cidades.map((cidade) => (
+              <g key={cidade.Nome}>
+                <circle
+                  cx={cidade.XCoord}
+                  cy={cidade.YCoord}
+                  r={hoveredCity === cidade.Nome ? "12" : "8"}
+                  fill="hsl(var(--background))"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth="3"
+                  className="cursor-pointer transition-all"
+                  onMouseEnter={() => setHoveredCity(cidade.Nome)}
+                  onMouseLeave={() => setHoveredCity(null)}
+                />
+                <text
+                  x={cidade.XCoord + 30}
+                  y={cidade.YCoord - 15}
+                  textAnchor="middle"
+                  fill={
+                    hoveredCity === cidade.Nome
+                      ? "hsl(var(--primary))"
+                      : "hsl(var(--foreground))"
+                  }
+                  fontSize="14"
+                  fontWeight={hoveredCity === cidade.Nome ? "bold" : "normal"}
+                  className="font-sans text-black pointer-events-none select-none"
+                >
+                  {cidade.Nome}
+                </text>
+              </g>
+            ))}
             </g>
           </svg>
         </div>
 
         {/* Subtitles */}
         <div className="mt-6 flex flex-wrap gap-4 justify-center">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-1 bg-red-500 rounded"></div>
-            <span className="text-sm text-muted-foreground">Vermelho</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-1 bg-blue-500 rounded"></div>
-            <span className="text-sm text-muted-foreground">Azul</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-1 bg-green-500 rounded"></div>
-            <span className="text-sm text-muted-foreground">Verde</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-1 bg-yellow-500 rounded"></div>
-            <span className="text-sm text-muted-foreground">Amarelo</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-1 bg-purple-500 rounded"></div>
-            <span className="text-sm text-muted-foreground">Roxo</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-1 bg-gray-500 rounded"></div>
-            <span className="text-sm text-muted-foreground">Cinza</span>
-          </div>
+          {coresUsadas.map((cor) => (
+            <div key={cor}>{geraLegenda(cor)}</div>
+          ))}
         </div>
+
       </Card>
     </div>
   );

@@ -6,12 +6,9 @@ import { Label } from "@/app/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 
 import { CartaVagaoView } from "@/app/components/carta-de-vagao/carta-vagao-view";
-import { BilheteDestinoView , BilhetesDestinoProps}  from "@/app/components/bilhete-de-destino/bilhete-de-destino-view";
+import { BilheteDestinoView }  from "@/app/components/bilhete-de-destino/bilhete-de-destino-view";
 
 import {  Play, Train } from "lucide-react";
-
-import { usarJogo } from "@/app/lib/contexto-jogo";
-import { Jogo } from "@/app/lib/jogo";
 import { BilheteDestino, CartaVagao } from "@/app/lib/cartas-jogo";
 import { cn , pegarVarDaCor, OpcoesDeJogada, JogadaEfetiva} from "@/app/lib/utils";
 import { Jogador } from "@/app/lib/jogador";
@@ -21,6 +18,12 @@ type ConfiguracaoBilhetesProps = {
   clicavel : string[] ;
   destacar: string[]; 
   onClick: (bilhete: BilheteDestino) => void; 
+}
+
+type ConfiguracaoCartasJogador = {
+    clicavel : string[] ;
+  destacar: string[]; 
+  onClick: (carta: CartaVagao) => void; 
 }
 
 type SumarioProps = {
@@ -33,6 +36,7 @@ type SumarioProps = {
   proximoJogador: Jogador;
   finalizouJogadaPrincipal: boolean;
   configuracaoBilhetesJogador: ConfiguracaoBilhetesProps;
+  configuracaoCartasJogador: ConfiguracaoCartasJogador;
 };
 
 const renderOpcoesJogada = (
@@ -55,15 +59,19 @@ const renderOpcoesJogada = (
 
 
 /** Cria a lateral direita da tela, que permite a visualização das cartas do jogador atual e que o jogador faça uma jogada. */
-const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jogadaSelecionada, setJogada, onExecutarJogada, jogadaEfetiva, proximoJogador, finalizouJogadaPrincipal, configuracaoBilhetesJogador } : SumarioProps ) => {
+const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jogadaSelecionada, setJogada, onExecutarJogada, jogadaEfetiva, proximoJogador, finalizouJogadaPrincipal, configuracaoBilhetesJogador, configuracaoCartasJogador } : SumarioProps ) => {
 
     const cartasDeVagaoJogador : CartaVagao[] = jogadorAtual.verCartasVagao();
     const bilhetesDestinoJogador : BilheteDestino[] = jogadorAtual.verBilhetesDestino();
     const qtdeTrensJogador: number = jogadorAtual.pegarQtdeTrens();
     const corJogador = pegarVarDaCor(jogadorAtual.CorDoTrem);
-    const clicavel : string[] = configuracaoBilhetesJogador.clicavel;
-    const destacar : string[] = configuracaoBilhetesJogador.destacar;
-    const onClick = configuracaoBilhetesJogador.onClick;
+    const bilhetesClicaveis : string[] = configuracaoBilhetesJogador.clicavel;
+    const bilhetesDestacados : string[] = configuracaoBilhetesJogador.destacar;
+    const onClickBilhete = configuracaoBilhetesJogador.onClick;
+
+    const cartasClicaveis : string[] = configuracaoCartasJogador.clicavel;
+    const cartasDestacadas : string[] = configuracaoCartasJogador.destacar;
+    const onClickCarta = configuracaoCartasJogador.onClick;
 
     const renderComprarBilhete = () => (
         <>
@@ -158,7 +166,9 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                             <h3 className="font-semibold mb-2">Suas Cartas de Vagão</h3>
                             <div className="flex flex-wrap gap-3 items-center">
                                 {cartasDeVagaoJogador.map((cartaDeVagao, index) => (
-                                <CartaVagaoView expostoInicialmente={true} destacar={false} clicavel={false} key={index} cartaVagao={cartaDeVagao} size="md" />
+                                <CartaVagaoView expostoInicialmente={true} destacar={cartasDestacadas.includes(cartaDeVagao.Id)} 
+                                clicavel={cartasClicaveis? cartasClicaveis.includes(cartaDeVagao.Id): undefined} 
+                                key={index} cartaVagao={cartaDeVagao} size="md" onClick={cartasClicaveis ? () => onClickCarta(cartaDeVagao) : undefined}/>
                                 ))}
                             </div>
                         </div>
@@ -168,8 +178,8 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                                 <h3 className="font-semibold mb-2">Seus Bilhetes de Destino</h3>
                                 <div className="flex flex-wrap gap-3 items-center">
                                     {bilhetesDestinoJogador.map((ticket, index) => (
-                                        <BilheteDestinoView onClick= {clicavel ? () => onClick(ticket) : undefined} key={index} bilheteDestino={ticket} size="md"  
-                                        clicavel={clicavel ? clicavel.includes(ticket.Id) : undefined } destacar={destacar.includes(ticket.Id)} />
+                                        <BilheteDestinoView onClick= {bilhetesClicaveis ? () => onClickBilhete(ticket) : undefined} key={index} bilheteDestino={ticket} size="md"  
+                                        clicavel={bilhetesClicaveis ? bilhetesClicaveis.includes(ticket.Id) : undefined } destacar={bilhetesDestacados.includes(ticket.Id)} />
                                     ))}
                                 </div>
                             </div>

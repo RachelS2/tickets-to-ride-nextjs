@@ -34,6 +34,7 @@
     #e2cfb3 100%
   );
 
+  --cinza: "#808080";
   --vermelho: #DC2626;
   --azul: #2564ebd3;
   --verde: #16A34A;
@@ -137,6 +138,9 @@
   }
   .bg-preto-custom {
     background-color: var(--preto);
+  }
+  .bg-cinza-custom {
+    background: var(--cinza);
   }
   .bg-coringa-custom {
     background: var(--coringa);

@@ -44,17 +44,17 @@ export const rotas: Rota[] = [
     new Rota(Seattle, Portland, 1, "Vermelho"),
     new Rota(Portland, SanFrancisco, 5, "Verde"),
     new Rota(SanFrancisco, LosAngeles, 3, "Laranja"),
-    new Rota(LosAngeles, LasVegas, 2, "Cinza"),
+    new Rota(LosAngeles, LasVegas, 2, "Azul"),
     new Rota(LasVegas, SaltLakeCity, 3, "Laranja"),
     new Rota(SaltLakeCity, Denver, 3, "Vermelho"),
     new Rota(SaltLakeCity, Denver, 3, "Laranja"),
     new Rota(Denver, KansasCity, 4, "Azul"),
     new Rota(Denver, SantaFe, 2, "Cinza"),
     new Rota(LosAngeles, Phoenix, 3, "Cinza"),
-    new Rota(Phoenix, SantaFe, 3, "Cinza"),
+    new Rota(Phoenix, SantaFe, 3, "Laranja"),
     new Rota(SantaFe, ElPaso, 2, "Cinza"),
     new Rota(ElPaso, Dallas, 4, "Vermelho"),
-    new Rota(Dallas, Houston, 1, "Cinza"),
+    new Rota(Dallas, Houston, 1, "Preto"),
     new Rota(Dallas, OklahomaCity, 2, "Vermelho"),
     new Rota(OklahomaCity, KansasCity, 2, "Cinza"),
     new Rota(KansasCity, Omaha, 1, "Azul"),
@@ -64,7 +64,7 @@ export const rotas: Rota[] = [
     new Rota(SaintLouis, Nashville, 2, "Cinza"),
     new Rota(Nashville, Atlanta, 1, "Cinza"),
     new Rota(Atlanta, Miami, 5, "Azul"),
-    new Rota(Atlanta, Charleston, 2, "Cinza"),
+    new Rota(Atlanta, Charleston, 2, "Preto"),
     new Rota(Charleston, Raleigh, 2, "Cinza"),
     new Rota(Raleigh, Washington, 2, "Cinza"),
     new Rota(Washington, Pittsburgh, 2, "Cinza"),
@@ -108,83 +108,59 @@ export const MaiorCaminhoContinuo: Record<number, Partial<Record<NomesDeCidades,
   },
 };
 
-export const DestinosCidades: Record<number, Partial<Record<NomesDeCidades, NomesDeCidades>>> = {
+export const DestinosCidades: Record<
+  number,
+  Partial<Record<NomesDeCidades, NomesDeCidades>>
+> = {
+  // 1 ponto — pares muito curtos / vizinhança imediata
   1: {
-    "Dallas": "Houston",
-    "Seattle": "Portland",
     "Kansas City": "Omaha",
-    "Nashville": "Atlanta",
+    "Santa Fe": "El Paso",        
+    "Saint Louis": "Kansas City", 
+    "Washington": "Pittsburgh",
+    "Oklahoma City": "Dallas",
   },
 
   2: {
-    "Dallas": "Oklahoma City",
-    "Kansas City": "Saint Louis",
-    "Chicago": "Saint Louis",
-    "Saint Louis": "Nashville",
-    "Santa Fe": "El Paso",
-    "Los Angeles": "Las Vegas",
-    "Charleston": "Raleigh",
     "Raleigh": "Washington",
-    "Washington": "Pittsburgh",
-    "Pittsburgh": "New York",
-    "New York": "Boston",
+    "Saint Louis": "Nashville",
+    "Oklahoma City": "Kansas City",
   },
-
   3: {
-    "Phoenix": "Santa Fe",
-    "Salt Lake City": "Denver",
-    "Los Angeles": "Phoenix",
+    "Los Angeles": "Phoenix",  
+    "Phoenix": "Santa Fe",  
+    "Salt Lake City": "Denver",   
     "Las Vegas": "Salt Lake City",
+    "Omaha": "Chicago",           
     "Chicago": "Pittsburgh",
+    "San Francisco": "Los Angeles",
   },
-
-  4: {
+  
+  5: {
     "Denver": "Kansas City",
     "El Paso": "Dallas",
-  },
-
-  5: {
-    "Denver": "Santa Fe",
-    "Portland": "San Francisco",
-    "Atlanta": "Miami",
-    "Salt Lake City": "Denver",
+    "Omaha": "Chicago",
   },
 
   6: {
-    "Seattle": "San Francisco",
-    "Los Angeles": "Denver",
-  },
-
-  7: {
-    "San Francisco": "Santa Fe",
-    "Denver": "Chicago",
+    "Miami": "Atlanta",
+    "Portland": "San Francisco",
+    "Phoenix": "Denver",
+    "San Francisco":"Las Vegas",
   },
 
   8: {
-    "Los Angeles": "Houston",
-  },
-
-  9: {
-    "Seattle": "Denver",
-  },
-
-  10: {
-    "Seattle": "Chicago",
+    "Seattle": "San Francisco",
+    "Miami": "Charleston",
+    "Salt Lake City": "Kansas City",
+    "San Francisco": "Santa Fe",
+    "Santa Fe": "Houston"
   },
 
   11: {
-    "Los Angeles": "Atlanta",
-  },
+    "Omaha": "Atlanta",
+    "Boston": "Charleston",
+    "El Paso": "Saint Louis",
 
-  12: {
-    "San Francisco": "Chicago",
-  },
-
-  13: {
-    "Denver": "New York",
-  },
-
-  14: {
-    "Seattle": "New York",
-  },
+  }
 };
