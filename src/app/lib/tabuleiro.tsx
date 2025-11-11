@@ -34,21 +34,23 @@ export class Tabuleiro {
 
 
   public pegarBaralhoBilhetesDeDestino(qtde: number): BilheteDestino[] {
-  console.log("DEBUG - estado do jogo antes de repor:");
-  console.log("jogo.baralhoBilhetesDestino.length", this.BaralhoBilhetesDestino.length);
+    console.log("Qtde baralho antes retirada " + this.BaralhoBilhetesDestino)
     const retiradas: BilheteDestino[] = [];
     for (let i = 0; i < qtde; i++) {
       const card = this.BaralhoBilhetesDestino.pop();
       if (!card) break;
       retiradas.push(card);
     }
+    console.log(retiradas.map(c=>c.Destino));
+    console.log("Qtde cartas tiradas " + retiradas.length)
+    console.log("Qtde baralho apos retirada " + this.BaralhoBilhetesDestino)
     return retiradas;
   }
 
 
   public pegarBaralhoCartasVagao(qtde: number): CartaVagao[] {
-    console.log("DEBUG - estado do jogo antes de repor:");
-    console.log("jogo.baralhoBilhetesDestino.length", this.BaralhoCartasVagao.length);
+    // console.log("DEBUG - estado do jogo antes de repor:");
+    // console.log("jogo.Cartas.length", this.BaralhoCartasVagao.length);
     const retiradas: CartaVagao[] = [];
     for (let i = 0; i < qtde; i++) {
       const card = this.BaralhoCartasVagao.pop();
@@ -83,36 +85,6 @@ export class Tabuleiro {
     return this.CartasVagaoExpostas.splice(-qtde)
   }
 
-  // private controlarCartasVagaoDoBaralho(qtdeDesejada: number) : CartaVagao[] {
-  //   const cartasPegas: CartaVagao[] = []
-  //   let qtdeCartasVagaoBaralho: number = this.BaralhoCartasVagao.length
-  //   if (qtdeCartasVagaoBaralho - qtdeDesejada < 0) {
-  //       const ultimasCartasBaralho : CartaVagao[] = this.pegarBaralhoCartasVagao(qtdeCartasVagaoBaralho)
-  //       cartasPegas.push(...ultimasCartasBaralho)
-  //       qtdeCartasVagaoBaralho = 0 
-  //   }
-
-  //   if (qtdeCartasVagaoBaralho == 0)
-  //     this.reporBaralhoCartasVagao();
-
-  //   const numCartasFaltantes: number = qtdeDesejada - cartasPegas.length
-  //   if (numCartasFaltantes >= 0)
-  //     cartasPegas.push(...this.pegarBaralhoCartasVagao(numCartasFaltantes));
-    
-  //   return cartasPegas;
-  // }
-
-  // public comprarCartasVagao(numCartasExpostasAPegar: number, numCartasDoBaralhoAPegar: number) : CartaVagao[] {
-  //   const totalAPegar: number = numCartasExpostasAPegar + numCartasDoBaralhoAPegar
-  //   if (totalAPegar > 2)
-  //     throw new Error("Você pode comprar no máximo 2 cartas de vagão por rodada!")
-  //   if (totalAPegar < 0) 
-  //     throw new Error("Você deve comprar um número positivo de cartas de vagão.")
-  //   const cartasPegas: CartaVagao[] = []
-  //   cartasPegas.push(...this.controlarCartasVagaoDoBaralho(numCartasDoBaralhoAPegar))
-  //   cartasPegas.push(...this.pegarCartasVagaoExpostas(numCartasExpostasAPegar))
-  //   return cartasPegas;
-  // }
 
   public descartarC(cartas: CartaVagao[]): void {
     this.CartasVagaoDescartadas.push(...cartas);
@@ -189,7 +161,9 @@ export class Tabuleiro {
 
     const bilhetesDestino2 = this.embaralharCartas(bilhetesDestino);
     // console.log("qtde bilhetes de destino criadas:", bilhetesDestino2.length);
-    // console.log("bilhetes de destino criadas:", bilhetesDestino2);
+    console.log("bilhetes de destino origem:", bilhetesDestino2.map(c=> c.Origem));
+    console.log("bilhetes de destino destino:", bilhetesDestino2.map(c=> c.Destino));
+
     return bilhetesDestino2;
   }
 

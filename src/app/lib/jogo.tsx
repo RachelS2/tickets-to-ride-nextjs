@@ -98,6 +98,7 @@ export class Jogo {
         return this.Tabuleiro.pegarCartaMaiorCaminhoContinuo();
     }
 
+    
 
     public finalizaJogo() {
 

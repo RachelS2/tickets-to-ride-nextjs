@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/app/components/ui/button";
 import { ArrowLeft} from "lucide-react";
 import {BaralhoCartasVagaoView} from "@/app/components/carta-de-vagao/baralho-cartas-vagao-view"
@@ -42,7 +42,7 @@ const GamePage: React.FC = () => {
   const [idsCartaVagaoExpostasDestacadas, setIdsCartaVagaoExpostasDestacadas] = useState<string[]>([]);
 
   // ESTADOS DO BARALHO DE BILHETES DE DESTINO
-  const [baralhoBilhetesAtual, setBaralhoBilhetesAtual] = useState<BilheteDestino[]>(jogo.pegarBilhetesDeDestino(qtdeInicialBilhetesDestinoBaralho));
+  const [baralhoBilhetesAtual, setBaralhoBilhetesAtual] = useState<BilheteDestino[]>([]);
   const [baralhoBilhetesClicavel, setBaralhoBilhetesClicavel] = useState<boolean>(false); // controla se o baralho de bilhetes pode ser clicado (após executar a jogada comprar-bilhetes)
   const [idBilheteExposto, setIdBilheteExposto] = useState<string | null>(null); // id do bilhete do baralho q esta exposto 
   const [idsBilhetesBaralhoDestacados, setIdsBilhetesBaralhoDestacados] = useState<string[]>([]);
@@ -74,8 +74,23 @@ const GamePage: React.FC = () => {
 
   const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+  const initializedRef = useRef(false);
   useEffect(() => {
-  if (jogadaSelecionada === "comprar-bilhete" && bilhetesComprados.length >= 3 ||( baralhoBilhetesAtual.length == 0)) {
+
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+
+    if (typeof window === "undefined") return;
+
+    if (baralhoBilhetesAtual.length == 0) {
+      const iniciais = jogo.pegarBilhetesDeDestino(qtdeInicialBilhetesDestinoBaralho);
+      console.log("Inicializei baralho com:", iniciais);
+      setBaralhoBilhetesAtual(iniciais);
+    }
+  }, [baralhoBilhetesAtual]); // jogo provavelmente do contexto; ajuste se necessário
+
+  useEffect(() => {
+  if (jogadaSelecionada === "comprar-bilhete" && bilhetesComprados.length >= 3 || baralhoBilhetesAtual.length == 0) {
     setIdsBilhetesBaralhoDestacados([]);
     setIdBilheteExposto(null);
     setBaralhoBilhetesClicavel(false);
@@ -214,9 +229,9 @@ const GamePage: React.FC = () => {
     if (index < 0) throw new Error("Esse bilhete de destino não estava no baralho!");
     
     const novoBaralho = [...baralhoBilhetesAtual];
-    novoBaralho.splice(index, 1); // remove 1 elemento do baralho a partir do índice encontrado
+    baralhoBilhetesAtual.splice(index, 1); // remove 1 elemento do baralho a partir do índice encontrado
 
-    setBaralhoBilhetesAtual(novoBaralho);
+    // setBaralhoBilhetesAtual(novoBaralho);
 
     await sleep(300);
 
@@ -328,7 +343,6 @@ const GamePage: React.FC = () => {
     const maisBilhetesDestino: BilheteDestino[] = jogo.pegarBilhetesDeDestino(neededBilhetes);
     console.log("maisBilhetesDestino:", maisBilhetesDestino);
 
-    // Caso algum método tenha retornado undefined/null, normalize para []
     const maisVagao = Array.isArray(maisCartasVagaoBaralho) ? maisCartasVagaoBaralho : [];
     const maisExpostas = Array.isArray(maisCartasVagaoExpostas) ? maisCartasVagaoExpostas : [];
     const maisBil = Array.isArray(maisBilhetesDestino) ? maisBilhetesDestino : [];
