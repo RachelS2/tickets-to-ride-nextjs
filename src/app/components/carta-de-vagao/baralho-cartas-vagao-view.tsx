@@ -16,7 +16,7 @@ type BaralhoCartasVagaoViewProps = {
 export const BaralhoCartasVagaoView = ({cartas, idCartaExposta, idsCartasDestacadas, cartasClicaveis, handleComprarCartaVagaoBaralho, angleStep=5, offsetXStep=7} : BaralhoCartasVagaoViewProps) => {
 
     return (
-        <div className="mt-10 relative w-full flex justify-center">
+        <div className="relative w-full flex justify-center">
             <BaralhoView
             cartas={cartas}
             angleStep={angleStep}
@@ -32,7 +32,7 @@ export const BaralhoCartasVagaoView = ({cartas, idCartaExposta, idsCartasDestaca
                         key={id}
                         cartaVagao={carta}
                         expostoInicialmente={cartaEstaExposta}
-                        size="md"
+                        size="responsive"
                         clicavel={cartasClicaveis}
                         onClick={() => handleComprarCartaVagaoBaralho(carta)}
                         destacar={cartaEstaDestacada}

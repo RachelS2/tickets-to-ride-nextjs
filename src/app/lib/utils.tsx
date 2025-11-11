@@ -21,9 +21,12 @@ export function pegarVarDaCor(cor: string): string {
 }
 
 export type CoresDeTrem = "Azul" | "Vermelho" | "Amarelo" | "Verde" | "Preto";
-export type CoresDeRota = "Cinza" | "Roxo" | "Laranja" | "Branco" | CoresDeTrem;
-export type CoresCartaVagao = "Roxo" | "Laranja" | "Branco" | "Coringa" | CoresDeTrem;
 
+type CoresComuns = "Roxo" | "Laranja" | "Branco" | CoresDeTrem
+export type CoresDeRota = "Cinza" | CoresComuns;
+export type CoresCartaVagao = "Coringa" | CoresComuns;
+
+//Roxo, Vermelho, Laranja, Amarelo, Verde, Azul, Branco, Preto
 
 export function pegarHexDaCor(cor: CoresCartaVagao | CoresDeRota | CoresDeTrem): string {
   const cores: Record<string, string> = {

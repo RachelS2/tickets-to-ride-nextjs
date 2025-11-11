@@ -14,16 +14,17 @@ export const BordaDaCartaView = ({
   const ehHorizontal = orientacao === "horizontal";
 
   return (
-    <div className={cn("relative flex items-center justify-center bg-white p-1 shadow", ehHorizontal ? "aspect-[4/2.5]" : "aspect-[2.5/4]", 
-          size === "sm" && (ehHorizontal ? "w-full max-w-[12.5rem] h-[4.37rem]" : "w-[3rem]"),
-          size === "md" && (ehHorizontal ? "w-full max-w-[10rem] h-[6.25rem]" : "w-[5rem]"),
-          size === "lg" && (ehHorizontal ? "w-full max-w-[18rem] h-[12rem]" : "w-[7rem]"),
-          size === "responsive" &&
-            (ehHorizontal
-              ? "w-[120px] sm:w-[120px] md:w-[290px] lg:w-[300px] xl:w-[240px]"
-              : "w-[60px] sm:w-[80px] md:w-[100px] lg:w-[120px] xl:w-[140px]"))}>
-
-      {children}        
-    </div>
-            )
-    }
+  <div
+    className={cn(
+      "relative flex items-center justify-center bg-white p-1 shadow transition-all",
+      ehHorizontal ? "aspect-[4/2.5]" : "aspect-[2.5/4]",
+      size === "responsive" &&
+        (ehHorizontal
+          ? "w-[full] sm:w-[2rem] h-[3rem] md:w-[3rem] h-[4rem] lg:w-[4rem] h-[5rem] xl:w-[8rem]"
+          : "w-[10vw] sm:w-[8vw] md:w-[6vw] lg:w-[5vw] xl:w-[4vw]")
+    )}
+  >
+    {children}
+  </div>
+  )
+ }

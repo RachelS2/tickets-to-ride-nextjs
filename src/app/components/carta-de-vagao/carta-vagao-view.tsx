@@ -13,6 +13,7 @@ export type CartaVagaoProps = {
   clicavel?: boolean;
   onClick?: () => void;
   destacar?: boolean;
+  clicada?: boolean ;
 };
 
 export const CartaVagaoView: React.FC<CartaVagaoProps> = ({
@@ -21,6 +22,7 @@ export const CartaVagaoView: React.FC<CartaVagaoProps> = ({
   expostoInicialmente = false,
   clicavel = false,
   destacar = false,
+  clicada,
   onClick,
 }) => {
   const frente = (
@@ -52,6 +54,7 @@ export const CartaVagaoView: React.FC<CartaVagaoProps> = ({
       onClick={onClick}
       childrenOculta={verso}
       childrenExposta={frente}
+      clicada={clicada}
     />
   );
 };

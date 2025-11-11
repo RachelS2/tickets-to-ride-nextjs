@@ -4,18 +4,20 @@ import { usarJogo } from "@/app/lib/contexto-jogo";
 import { Jogo } from "@/app/lib/jogo";
 import notFound from "../not-found";
 import { Rota } from "../lib/rota";
-import { Cidade, cidades } from "../lib/cidades";
+import { Cidade, Cidades } from "../lib/cidades";
 import { cn, CoresDeRota, pegarVarDaCor, pegarHexDaCor } from "../lib/utils";
 
 
 type TabuleiroProps = {
-  clicavel: boolean;
+  rotasClicaveis: boolean;
   rotaSelecionada: Rota | null;
-  setRotaSelecionada: (rota: Rota) => void;
+  handleOcuparRota: (rota: Rota) => void;
+  rotasPiscando: boolean;
+
 };
 
 
-export  const Tabuleiro = ({clicavel, rotaSelecionada, setRotaSelecionada} : TabuleiroProps) => {
+export  const Tabuleiro = ({rotasClicaveis, rotaSelecionada, handleOcuparRota, rotasPiscando} : TabuleiroProps) => {
   const jogo: Jogo = usarJogo();
   if (!jogo.foiIniciado()) {
     notFound();
@@ -104,17 +106,30 @@ export  const Tabuleiro = ({clicavel, rotaSelecionada, setRotaSelecionada} : Tab
                     strokeWidth={estaSelecionada ? "8" : "6"}
                     strokeLinecap="round"
                     strokeDasharray={`${dashLength},${gapLength}`}
-                    opacity={estaSelecionada ? "1" : "0.8"}
-                    className="cursor-pointer transition-all hover:opacity-100"
-                    onClick={clicavel? () => setRotaSelecionada(rota) : undefined}
-                  />
+                    opacity={estaSelecionada || !rotaSelecionada ? "1" : "0.2"}
+                    className={
+                      rotasClicaveis && !estaSelecionada
+                        ? "cursor-pointer animate-blink transition-all hover:opacity-100"
+                        : "transition-all hover:opacity-100"
+                    }
+                    onClick={rotasClicaveis ? () => handleOcuparRota(rota) : undefined}
+                  >
+                    {rotasPiscando && (
+                      <animate
+                        attributeName="opacity"
+                        values="1;0.15;1"
+                        dur="1s"
+                        repeatCount="indefinite"
+                      /> 
+                    )}
+                  </line>
                 );
               })}
             </g>
 
 
             <g>
-            {cidades.map((cidade) => (
+            {Cidades.map((cidade) => (
               <g key={cidade.Nome}>
                 <circle
                   cx={cidade.XCoord}
@@ -123,7 +138,7 @@ export  const Tabuleiro = ({clicavel, rotaSelecionada, setRotaSelecionada} : Tab
                   fill="hsl(var(--background))"
                   stroke="hsl(var(--primary))"
                   strokeWidth="3"
-                  className="cursor-pointer transition-all"
+                  className={cn("transition-all")}
                   onMouseEnter={() => setHoveredCity(cidade.Nome)}
                   onMouseLeave={() => setHoveredCity(null)}
                 />
@@ -136,9 +151,10 @@ export  const Tabuleiro = ({clicavel, rotaSelecionada, setRotaSelecionada} : Tab
                       ? "hsl(var(--primary))"
                       : "hsl(var(--foreground))"
                   }
-                  fontSize="14"
-                  fontWeight={hoveredCity === cidade.Nome ? "bold" : "normal"}
-                  className="font-sans text-black pointer-events-none select-none"
+                  fontSize={rotaSelecionada?.Origem?.Nome === cidade.Nome || rotaSelecionada?.Destino?.Nome === cidade.Nome ? "14" : "12"}
+                  fontWeight={(hoveredCity === cidade.Nome) || (rotaSelecionada?.Origem?.Nome === cidade.Nome || rotaSelecionada?.Destino?.Nome === cidade.Nome ) ? "bold" : 
+                    "normal"}
+                  className={cn( "font-sans pointer-events-none select-none")}
                 >
                   {cidade.Nome}
                 </text>

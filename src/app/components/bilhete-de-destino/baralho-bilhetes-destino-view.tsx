@@ -31,7 +31,7 @@ export const BaralhoBilhetesDestinoView = ({bilhetes, idBilheteExposto, idsBilhe
                         bilheteDestino={bilhete}
                         expostoInicialmente={bilheteEstaExposto}
                         orientacao="vertical"
-                        size="md"
+                        size="responsive"
                         clicavel={baralhoClicavel}
                         onClick={() => handleComprarBilheteDestinoBaralho(bilhete)}
                         destacar={bilheteEstaDestacado}

@@ -19,7 +19,7 @@ export type BilhetesDestinoProps = {
 
 export const BilheteDestinoView: React.FC<BilhetesDestinoProps> = ({
   bilheteDestino,
-  size = "md",
+  size = "responsive",
   orientacao = "vertical",
   expostoInicialmente = true,
   clicavel = false,
@@ -28,42 +28,47 @@ export const BilheteDestinoView: React.FC<BilhetesDestinoProps> = ({
 }) => {
   const ladoComumClasses =
     "relative font-serif h-full w-full border-none rounded-lg overflow-hidden transition-all duration-300 ease-in-out";
-
+  const tamTextos = "text-[0.4rem]  sm:text-[0.4rem] md:text-[0.5rem] lg:text-[0.675rem] xl:text-[0.8rem]";
+  const origemDestinoComum = "text-gray-800 text-center line-clamp-2";
   const frente = (
-    <Card
-      className={cn(
-        ladoComumClasses,
-        "relative font-serif bg-foreground h-full w-full border-none bg-bilhete-destino rounded-lg overflow-hidden flex flex-col transition-all duration-300"
-      )}
-      aria-label={`Bilhete destino ${bilheteDestino.Origem} → ${bilheteDestino.Destino}`}
-    >
-      <div className="flex flex-col items-center justify-center">
-        <div className="h-8 md:h-10 flex items-center justify-center pt-1">
-          <h2 className="text-[10px] md:text-sm text-gray-800 text-center line-clamp-2">
-            {bilheteDestino.Origem}
-          </h2>
-        </div>
+  <Card
+    className={cn(
+      ladoComumClasses,
+      "relative font-serif bg-bilhete-destino h-full w-full border-none rounded-lg overflow-hidden flex flex-col transition-all duration-300"
+    )}
+    aria-label={`Bilhete destino ${bilheteDestino.Origem} → ${bilheteDestino.Destino}`}
+  >
+    {/* Contêiner principal ocupando 100% da altura */}
+    <div className="flex flex-col h-full items-center justify-between relative">
+      
+      {/* Cabeçalho */}
+      <div className="h-1/3 flex items-center justify-center w-full">
+        <h2 className={cn(tamTextos, origemDestinoComum)}>
+          {bilheteDestino.Origem}
+        </h2>
+      </div>
 
-        <div className="flex-1 flex items-center justify-center pt-1 pb-1">
-          <div
-            className="bg-primary text-white w-6 h-6 md:w-8 md:h-8 
-                      flex items-center justify-center rounded-full border-2 border-yellow-400 
-                      text-[10px] md:text-sm font-bold shadow-lg"
-            role="status"
-            aria-label={`${bilheteDestino.Pontos} pontos`}
-          >
-            {bilheteDestino.Pontos}
-          </div>
-        </div>
-
-        <div className="h-10 md:h-12 flex items-center justify-center pb-2">
-          <h2 className="text-[10px]  md:text-sm text-gray-800 text-center line-clamp-2">
-            {bilheteDestino.Destino}
-          </h2>
+      {/* Pontos (centralizado, mas acima visualmente) */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+        <div
+          className={cn(
+            tamTextos,
+            "bg-primary text-white w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 flex items-center justify-center rounded-full border-2 border-yellow-400 font-bold shadow-lg"
+          )}
+        >
+          {bilheteDestino.Pontos}
         </div>
       </div>
-    </Card>
-  );
+
+      {/* Rodapé */}
+      <div className="h-1/3 flex items-center justify-center w-full">
+        <h2 className={cn(tamTextos, origemDestinoComum)}>
+          {bilheteDestino.Destino}
+        </h2>
+      </div>
+    </div>
+  </Card>
+);
 
   const verso = <BilheteDestinoOculto size={size} orientacao={orientacao} />;
 

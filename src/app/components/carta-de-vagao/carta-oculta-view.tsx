@@ -21,7 +21,7 @@ interface CartaOcultaProps {
  * - Aceita children para o conteúdo interno (texto, ícone, etc)
  */
 export const CartaOcultaView: React.FC<CartaOcultaProps> = ({
-  size = "md",
+  size = "responsive",
   orientacao = "vertical",
   corFundo = "bg-bilhete-destino-oculto",
   corCentro = "rgba(255, 238, 205, 0.95)",

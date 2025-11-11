@@ -174,7 +174,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #171515;
+    --background: #928d8d;
     --foreground: #ededed;
   }
 }
@@ -184,3 +184,4 @@ body {
   color: var(--foreground);
   font-family: Helvetica, Arial, sans-serif;
 }
+

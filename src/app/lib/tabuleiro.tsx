@@ -2,13 +2,14 @@ import {Jogador} from "./jogador";
 import {Rota } from "./rota"
 import {CartaVagao, CartaMaiorCaminhoContinuo, BilheteDestino } from "./cartas-jogo";
 import { NomesDeCidades, CoresCartaVagao} from "./utils";
-import { rotas, DestinosCidades, MaiorCaminhoContinuo} from "./cidades";
+import { Rotas, DestinosCidades} from "./cidades";
 
 export class Tabuleiro {
   private Rotas!: Rota[]
   private BaralhoCartasVagao!: CartaVagao[] 
   private BaralhoBilhetesDestino!: BilheteDestino[]
-  
+
+
   private CartaMaiorCaminhoContinuo!: CartaMaiorCaminhoContinuo;
 
   private CartasVagaoExpostas: CartaVagao[] = []
@@ -33,11 +34,28 @@ export class Tabuleiro {
 
 
   public pegarBaralhoBilhetesDeDestino(qtde: number): BilheteDestino[] {
-    return this.BaralhoBilhetesDestino.splice(-qtde);
+  console.log("DEBUG - estado do jogo antes de repor:");
+  console.log("jogo.baralhoBilhetesDestino.length", this.BaralhoBilhetesDestino.length);
+    const retiradas: BilheteDestino[] = [];
+    for (let i = 0; i < qtde; i++) {
+      const card = this.BaralhoBilhetesDestino.pop();
+      if (!card) break;
+      retiradas.push(card);
+    }
+    return retiradas;
   }
 
+
   public pegarBaralhoCartasVagao(qtde: number): CartaVagao[] {
-    return this.BaralhoCartasVagao.splice(-qtde);
+    console.log("DEBUG - estado do jogo antes de repor:");
+    console.log("jogo.baralhoBilhetesDestino.length", this.BaralhoCartasVagao.length);
+    const retiradas: CartaVagao[] = [];
+    for (let i = 0; i < qtde; i++) {
+      const card = this.BaralhoCartasVagao.pop();
+      if (!card) break;
+      retiradas.push(card);
+    }
+    return retiradas;
   }
 
   public exporCartasVagao(cartas: CartaVagao[]): void {
@@ -113,7 +131,7 @@ export class Tabuleiro {
   private criarRotas(): Rota[] {
     if (this.Rotas) 
       throw new Error("Já existem Rotas pra esse tabuleiro!");
-    return rotas;
+    return Rotas;
   }
 
   private criarCartasDeVagao() : CartaVagao[] {

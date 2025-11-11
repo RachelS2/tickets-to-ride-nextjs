@@ -24,6 +24,7 @@ type ConfiguracaoCartasJogador = {
     clicavel : string[] ;
   destacar: string[]; 
   onClick: (carta: CartaVagao) => void; 
+  clicadas: string[]; 
 }
 
 type SumarioProps = {
@@ -59,7 +60,8 @@ const renderOpcoesJogada = (
 
 
 /** Cria a lateral direita da tela, que permite a visualização das cartas do jogador atual e que o jogador faça uma jogada. */
-const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jogadaSelecionada, setJogada, onExecutarJogada, jogadaEfetiva, proximoJogador, finalizouJogadaPrincipal, configuracaoBilhetesJogador, configuracaoCartasJogador } : SumarioProps ) => {
+const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jogadaSelecionada, setJogada, onExecutarJogada, jogadaEfetiva, proximoJogador, 
+    finalizouJogadaPrincipal, configuracaoBilhetesJogador, configuracaoCartasJogador } : SumarioProps ) => {
 
     const cartasDeVagaoJogador : CartaVagao[] = jogadorAtual.verCartasVagao();
     const bilhetesDestinoJogador : BilheteDestino[] = jogadorAtual.verBilhetesDestino();
@@ -72,6 +74,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
     const cartasClicaveis : string[] = configuracaoCartasJogador.clicavel;
     const cartasDestacadas : string[] = configuracaoCartasJogador.destacar;
     const onClickCarta = configuracaoCartasJogador.onClick;
+    const clicada = configuracaoCartasJogador.clicadas;
 
     const renderComprarBilhete = () => (
         <>
@@ -86,7 +89,8 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
     );
     const renderDescartarBilhete = () => (
         <>
-            {renderOpcoesJogada("descartar-bilhete", "Descartar Bilhete")}
+            {jogadorAtual.verBilhetesDestino() ? renderOpcoesJogada("descartar-bilhete", "Descartar Bilhete") :
+            <></> }
         </>  
     )
     const renderPassarAVez= () => (
@@ -99,12 +103,12 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
             {renderOpcoesJogada("comprar-carta", "Comprar Cartas de Vagão")}
         </>  
     )
-    const renderPosComprarCartaVagao = () => (
+
+    const renderOcuparRota = () => (
         <>
-            {renderComprarCartaVagao()}
-            {renderPassarAVez()}
+            {renderOpcoesJogada("ocupar-rota", "Ocupar Rota")}
         </>
-    );
+    )
     const renderJogadasPrincipais = () => (
         <>
             {renderOpcoesJogada("ocupar-rota", "Ocupar Rota")}
@@ -137,6 +141,10 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
             case "comprar-carta":
                 return finalizouJogadaPrincipal ? renderPassarAVez() 
                 : renderComprarCartaVagao();
+            
+            case "ocupar-rota":
+                return finalizouJogadaPrincipal ? renderPassarAVez() :
+                renderOcuparRota();
 
             case "":
                 default:
@@ -167,8 +175,9 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                             <div className="flex flex-wrap gap-3 items-center">
                                 {cartasDeVagaoJogador.map((cartaDeVagao, index) => (
                                 <CartaVagaoView expostoInicialmente={true} destacar={cartasDestacadas.includes(cartaDeVagao.Id)} 
-                                clicavel={cartasClicaveis? cartasClicaveis.includes(cartaDeVagao.Id): undefined} 
-                                key={index} cartaVagao={cartaDeVagao} size="md" onClick={cartasClicaveis ? () => onClickCarta(cartaDeVagao) : undefined}/>
+                                clicavel={cartasClicaveis? cartasClicaveis.includes(cartaDeVagao.Id): undefined}  
+                                key={index} clicada={clicada.includes(cartaDeVagao.Id)} cartaVagao={cartaDeVagao} size="responsive" 
+                                onClick={cartasClicaveis ? () => onClickCarta(cartaDeVagao) : undefined}/>
                                 ))}
                             </div>
                         </div>
@@ -178,7 +187,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
                                 <h3 className="font-semibold mb-2">Seus Bilhetes de Destino</h3>
                                 <div className="flex flex-wrap gap-3 items-center">
                                     {bilhetesDestinoJogador.map((ticket, index) => (
-                                        <BilheteDestinoView onClick= {bilhetesClicaveis ? () => onClickBilhete(ticket) : undefined} key={index} bilheteDestino={ticket} size="md"  
+                                        <BilheteDestinoView onClick= {bilhetesClicaveis ? () => onClickBilhete(ticket) : undefined} key={index} bilheteDestino={ticket} size="responsive"  
                                         clicavel={bilhetesClicaveis ? bilhetesClicaveis.includes(ticket.Id) : undefined } destacar={bilhetesDestacados.includes(ticket.Id)} />
                                     ))}
                                 </div>
@@ -187,7 +196,7 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
 
                         <div className="flex items-center gap-2 mt-8">
                             <Train className="w-5 h-5" />
-                            <p className="font-semibold">Você tem {qtdeTrensJogador} trens!</p>
+                            <p className="font-semibold">Você tem {qtdeTrensJogador} trens e {jogadorAtual.pegarPontos()} pontos!</p>
                         </div>
                     </div>
                 </Card>

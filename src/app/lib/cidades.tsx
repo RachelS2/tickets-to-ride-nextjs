@@ -40,40 +40,41 @@ export const Pittsburgh: Cidade = { Nome: "Pittsburgh", XCoord: 860, YCoord: 260
 export const NewYork: Cidade = { Nome: "New York", XCoord: 960, YCoord: 240 };
 export const Boston: Cidade = { Nome: "Boston", XCoord: 980, YCoord: 180 };
 
-export const rotas: Rota[] = [
-    new Rota(Seattle, Portland, 1, "Vermelho"),
-    new Rota(Portland, SanFrancisco, 5, "Verde"),
-    new Rota(SanFrancisco, LosAngeles, 3, "Laranja"),
-    new Rota(LosAngeles, LasVegas, 2, "Azul"),
-    new Rota(LasVegas, SaltLakeCity, 3, "Laranja"),
-    new Rota(SaltLakeCity, Denver, 3, "Vermelho"),
-    new Rota(SaltLakeCity, Denver, 3, "Laranja"),
-    new Rota(Denver, KansasCity, 4, "Azul"),
-    new Rota(Denver, SantaFe, 2, "Cinza"),
-    new Rota(LosAngeles, Phoenix, 3, "Cinza"),
-    new Rota(Phoenix, SantaFe, 3, "Laranja"),
-    new Rota(SantaFe, ElPaso, 2, "Cinza"),
-    new Rota(ElPaso, Dallas, 4, "Vermelho"),
-    new Rota(Dallas, Houston, 1, "Preto"),
-    new Rota(Dallas, OklahomaCity, 2, "Vermelho"),
-    new Rota(OklahomaCity, KansasCity, 2, "Cinza"),
-    new Rota(KansasCity, Omaha, 1, "Azul"),
-    new Rota(Omaha, Chicago, 4, "Vermelho"),
-    new Rota(KansasCity, SaintLouis, 2, "Roxo"),
-    new Rota(Chicago, SaintLouis, 2, "Verde"),
-    new Rota(SaintLouis, Nashville, 2, "Cinza"),
-    new Rota(Nashville, Atlanta, 1, "Cinza"),
-    new Rota(Atlanta, Miami, 5, "Azul"),
-    new Rota(Atlanta, Charleston, 2, "Preto"),
-    new Rota(Charleston, Raleigh, 2, "Cinza"),
-    new Rota(Raleigh, Washington, 2, "Cinza"),
-    new Rota(Washington, Pittsburgh, 2, "Cinza"),
-    new Rota(Pittsburgh, NewYork, 2, "Verde"),
-    new Rota(NewYork, Boston, 2, "Vermelho"),
-    new Rota(Chicago, Pittsburgh, 3, "Laranja"),
-  ];
+export const Rotas: Rota[] = [
+  new Rota(Seattle, Portland, 1, "Vermelho"),
+  new Rota(Portland, SanFrancisco, 5, "Verde"),
+  new Rota(SanFrancisco, LosAngeles, 3, "Laranja"),
+  new Rota(LosAngeles, LasVegas, 2, "Azul"),
+  new Rota(LasVegas, SaltLakeCity, 3, "Roxo"),
+  new Rota(SaltLakeCity, Denver, 3, "Amarelo"),
+  new Rota(SaltLakeCity, Denver, 3, "Branco"),
+  new Rota(Denver, KansasCity, 4, "Azul"),
+  new Rota(Denver, SantaFe, 2, "Cinza"),
+  new Rota(LosAngeles, Phoenix, 3, "Preto"),
+  new Rota(Phoenix, SantaFe, 3, "Laranja"),
+  new Rota(SantaFe, ElPaso, 2, "Amarelo"),
+  new Rota(ElPaso, Dallas, 4, "Vermelho"),
+  new Rota(Dallas, Houston, 1, "Branco"),
+  new Rota(Dallas, OklahomaCity, 2, "Roxo"),
+  new Rota(OklahomaCity, KansasCity, 2, "Verde"),
+  new Rota(KansasCity, Omaha, 1, "Preto"),
+  new Rota(Omaha, Chicago, 4, "Azul"),
+  new Rota(KansasCity, SaintLouis, 2, "Amarelo"),
+  new Rota(Chicago, SaintLouis, 2, "Branco"),
+  new Rota(SaintLouis, Nashville, 2, "Cinza"),
+  new Rota(Nashville, Atlanta, 1, "Laranja"),
+  new Rota(Atlanta, Miami, 5, "Verde"),
+  new Rota(Atlanta, Charleston, 2, "Roxo"),
+  new Rota(Charleston, Raleigh, 2, "Cinza"),
+  new Rota(Raleigh, Washington, 2, "Branco"),
+  new Rota(Washington, Pittsburgh, 2, "Vermelho"),
+  new Rota(Pittsburgh, NewYork, 2, "Laranja"),
+  new Rota(NewYork, Boston, 2, "Azul"),
+  new Rota(Chicago, Pittsburgh, 3, "Preto"),
+];
 
-export const cidades: Cidade[] = [
+
+export const Cidades: Cidade[] = [
   Seattle,
   Portland,
   SanFrancisco,
@@ -102,11 +103,6 @@ export const cidades: Cidade[] = [
   Boston,
 ];
 
-export const MaiorCaminhoContinuo: Record<number, Partial<Record<NomesDeCidades, NomesDeCidades>>> = {
-  16: {
-    "Los Angeles": "Miami",
-  },
-};
 
 export const DestinosCidades: Record<
   number,

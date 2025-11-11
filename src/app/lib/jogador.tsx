@@ -62,6 +62,7 @@ export class Jogador {
     const index = this.CartasVagaoMaos.indexOf(carta);
     if (index > -1) {
       this.CartasVagaoMaos.splice(index, 1);
+      this.Tabuleiro.descartarC([carta]);
     }
   }
 

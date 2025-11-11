@@ -87,9 +87,6 @@ export class Jogo {
     }
     
     public removeJogador(playerId: string): void {
-        if (this.Iniciado) {
-            throw new Error("Não é possível remover jogadores após o início do jogo.");
-        }
         this.Jogadores = this.Jogadores.filter(jogador => jogador.Id !== playerId);
     }
     
