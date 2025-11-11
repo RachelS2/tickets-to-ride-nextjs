@@ -32,40 +32,33 @@ export class Tabuleiro {
     return shuffled;
   }
 
-
   public pegarBaralhoBilhetesDeDestino(qtde: number): BilheteDestino[] {
-    console.log("Qtde baralho antes retirada " + this.BaralhoBilhetesDestino)
-    const retiradas: BilheteDestino[] = [];
-    for (let i = 0; i < qtde; i++) {
-      const card = this.BaralhoBilhetesDestino.pop();
-      if (!card) break;
-      retiradas.push(card);
+    if (qtde > 0) {
+      return this.BaralhoBilhetesDestino.splice(-qtde)
     }
-    console.log(retiradas.map(c=>c.Destino));
-    console.log("Qtde cartas tiradas " + retiradas.length)
-    console.log("Qtde baralho apos retirada " + this.BaralhoBilhetesDestino)
-    return retiradas;
+    return [];
   }
 
 
   public pegarBaralhoCartasVagao(qtde: number): CartaVagao[] {
-    // console.log("DEBUG - estado do jogo antes de repor:");
-    // console.log("jogo.Cartas.length", this.BaralhoCartasVagao.length);
-    const retiradas: CartaVagao[] = [];
-    for (let i = 0; i < qtde; i++) {
-      const card = this.BaralhoCartasVagao.pop();
-      if (!card) break;
-      retiradas.push(card);
+    if (qtde > 0) {
+      return this.BaralhoCartasVagao.splice(-qtde)
     }
-    return retiradas;
+    return [];
+  }
+
+  public pegarCartasVagaoExpostas(qtde: number) :  CartaVagao[]{
+    if (qtde > 0) {
+      return this.CartasVagaoExpostas.splice(-qtde)
+    }
+    return [];
   }
 
   public exporCartasVagao(cartas: CartaVagao[]): void {
     this.BaralhoCartasVagao = this.BaralhoCartasVagao.filter(
       (carta) => !cartas.includes(carta)
-    );
-
-    this.CartasVagaoExpostas = cartas;
+    ); //remove do baralho oculto as cartas a serem expostas
+    this.CartasVagaoExpostas = cartas; //expoe cartas
   }
 
 
@@ -78,11 +71,6 @@ export class Tabuleiro {
     
     this.BaralhoCartasVagao = this.CartasVagaoDescartadas
     this.CartasVagaoDescartadas = []
-  }
-
-
-  public pegarCartasVagaoExpostas(qtde: number) :  CartaVagao[]{
-    return this.CartasVagaoExpostas.splice(-qtde)
   }
 
 
@@ -150,7 +138,7 @@ export class Tabuleiro {
     
     const bilhetesDestino: BilheteDestino[] = [];
 
-    // cria 29 tickets de destino a partir de DestinosCidades
+    // cria 30 tickets de destino a partir de DestinosCidades
     for (const [espacosStr, rotas] of Object.entries(DestinosCidades)) {
       const pontos = Number(espacosStr);
       
@@ -161,8 +149,8 @@ export class Tabuleiro {
 
     const bilhetesDestino2 = this.embaralharCartas(bilhetesDestino);
     // console.log("qtde bilhetes de destino criadas:", bilhetesDestino2.length);
-    console.log("bilhetes de destino origem:", bilhetesDestino2.map(c=> c.Origem));
-    console.log("bilhetes de destino destino:", bilhetesDestino2.map(c=> c.Destino));
+    // console.log("bilhetes de destino origem:", bilhetesDestino2.map(c=> c.Origem));
+    // console.log("bilhetes de destino destino:", bilhetesDestino2.map(c=> c.Destino));
 
     return bilhetesDestino2;
   }
@@ -182,7 +170,7 @@ export class Tabuleiro {
         }
       }
 
-      for (let i = 0; i < 4; i++) { // 34 bilhetes de destino por jogador
+      for (let i = 0; i < 4; i++) { // 4 bilhetes de destino por jogador
         const bilheteDestino = this.BaralhoBilhetesDestino.pop();
         if (bilheteDestino) {
             jogador.addBilheteDestino(bilheteDestino);

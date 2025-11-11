@@ -7,7 +7,7 @@ export class Jogo {
 
     private Tabuleiro!: Tabuleiro;
     private Jogadores: Jogador[] = [];
-    private Rodada: number = 1;
+    private Rodada: number = 0;
     private Iniciado: boolean = false;
 
     public foiIniciado(): boolean {

@@ -4,7 +4,7 @@ import { Button } from "@/app/components/ui/button";
 import { ArrowLeft} from "lucide-react";
 import {BaralhoCartasVagaoView} from "@/app/components/carta-de-vagao/baralho-cartas-vagao-view"
 import { useRouter, notFound } from 'next/navigation';
-import Tabuleiro from "@/app/components/tabuleiro-view";
+import TabuleiroView from "@/app/components/tabuleiro-view";
 import { BilheteDestinoView } from "@/app/components/bilhete-de-destino/bilhete-de-destino-view";
 import BaralhoView from "@/app/components/baralho-view";
 import SumarioJogadorView from "@/app/nova-aventura/ticket-to-ride/sumario-jogador-view";
@@ -21,15 +21,9 @@ const GamePage: React.FC = () => {
   if (!jogo.foiIniciado()) {
     notFound();
   }
-  const router = useRouter();
-  const cartaMaiorCaminhoContinuo : CartaMaiorCaminhoContinuo = jogo.pegaCartaMaiorCaminhoContinuo();
-  const qtdeInicialCartasVagaoBaralho : number = 15
-  const qtdeInicialCartasVagaoExpostas: number = 5
-  const qtdeInicialBilhetesDestinoBaralho : number = 15
-
 
   // ESTADOS DO BARALHO DE CARTAS VAGÃO (CARTAS OCULTAS)
-  const [cartasVagaoBaralhoAtual, setCartasVagaoBaralhoAtual] = useState<CartaVagao[]>(jogo.pegarBaralhoCartasVagao(qtdeInicialCartasVagaoBaralho));
+  const [cartasVagaoBaralhoAtual, setCartasVagaoBaralhoAtual] = useState<CartaVagao[]>([]);
   const [cartasVagaoBaralhoClicaveis, setCartasVagaoBaralhoClicaveis] = useState<boolean>(false); // controla se o baralho de cartas pode ser clicado (após executar a jogada comprar-bilhetes)
   const [idsCartasVagaoBaralhoExpostas, setIdsCartasVagaoBaralhoExpostas] = useState<string[]>([]); // id da carta de vagão exposta
   const [idsCartasVagaoBaralhoDestacadas, setIdsCartasVagaoBaralhoDestacadas] = useState<string[]>([]);
@@ -37,7 +31,7 @@ const GamePage: React.FC = () => {
   const [cartasVagaoDescartadas, setCartasVagaoDescartadas] =  useState<CartaVagao[]>([])
 
   // ESTADOS DO BARALHO DE CARTAS VAGÃO (CARTAS EXPOSTAS)
-  const [cartasVagaoExpostasAtual, setCartasVagaoExpostasAtual] = useState<CartaVagao[]>(jogo.pegarCartasVagaoExpostas(qtdeInicialCartasVagaoExpostas));
+  const [cartasVagaoExpostasAtual, setCartasVagaoExpostasAtual] = useState<CartaVagao[]>([]);
   const [cartasVagaoExpostasClicavel, setCartasVagaoExpostasClicavel] = useState<boolean>(false);
   const [idsCartaVagaoExpostasDestacadas, setIdsCartaVagaoExpostasDestacadas] = useState<string[]>([]);
 
@@ -59,7 +53,8 @@ const GamePage: React.FC = () => {
   const [jogadoresRestantes, setJogadoresRestantes] = useState<Jogador[]>(jogo.pegaJogadores());
   const [proximoJogador, setProximoJogador] = useState<Jogador>(jogadoresRestantes[1]);
   const [jogador, setJogador] = useState<Jogador>(jogadoresRestantes[0]);
-  const [bilhetesComprados, setbilhetesComprados] = useState<BilheteDestino[]>([]); 
+  const [bilhetesComprados, setBilhetesComprados] = useState<BilheteDestino[]>([]); 
+  const [jogadorBilhetesDescartados, setJogadorBilhetesDescartados] = useState<number>(0); 
   const [jogadorIdsBilhetesClicaveis, setJogadorIdsBilhetesClicaveis] = useState<string[]>([]);
   const [jogadorIdsBilhetesDestacados, setJogadorIdsBilhetesDestacados] = useState<string[]>([]);
   const [jogadorCartasVagaoDestacadas, setJogadorCartasVagaoDestacadas] = useState<string[]>([]);
@@ -72,9 +67,12 @@ const GamePage: React.FC = () => {
   const [rotasClicaveis, setRotasClicaveis] = useState<boolean>(false);
   const [rotasPiscando, setRotasPiscando] = useState<boolean>(false);
 
-  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const initializedRef = useRef(false);
+  const qtdeInicialCartasVagaoBaralho : number = 15
+  const qtdeInicialCartasVagaoExpostas: number = 5
+  const qtdeInicialBilhetesDestinoBaralho : number = 15
+
   useEffect(() => {
 
     if (initializedRef.current) return;
@@ -84,10 +82,21 @@ const GamePage: React.FC = () => {
 
     if (baralhoBilhetesAtual.length == 0) {
       const iniciais = jogo.pegarBilhetesDeDestino(qtdeInicialBilhetesDestinoBaralho);
-      console.log("Inicializei baralho com:", iniciais);
+      console.log("Baralho inicializado:", iniciais.map(b=>"Destino: " + b.Destino + " Origem: " + b.Origem));
       setBaralhoBilhetesAtual(iniciais);
     }
-  }, [baralhoBilhetesAtual]); // jogo provavelmente do contexto; ajuste se necessário
+
+    if (cartasVagaoBaralhoAtual.length == 0) {
+      const iniciais = jogo.pegarBaralhoCartasVagao(qtdeInicialCartasVagaoBaralho);
+      console.log("Cartas vagão baralho inicial:", iniciais.map(b=>"Cor: " + b.Cor + " Coringa: " + b.ehLocomotiva));
+      setCartasVagaoBaralhoAtual(iniciais);
+    }
+    if (cartasVagaoExpostasAtual.length == 0) {
+      const iniciais = jogo.pegarCartasVagaoExpostas(qtdeInicialCartasVagaoExpostas);
+      console.log("Cartas vagão expostas iniciais:", iniciais.map(b=>"Cor: " + b.Cor + " Coringa: " + b.ehLocomotiva));
+      setCartasVagaoExpostasAtual(iniciais);
+    }
+  }, [baralhoBilhetesAtual, cartasVagaoBaralhoAtual, cartasVagaoExpostasAtual]); // jogo provavelmente do contexto; ajuste se necessário
 
   useEffect(() => {
   if (jogadaSelecionada === "comprar-bilhete" && bilhetesComprados.length >= 3 || baralhoBilhetesAtual.length == 0) {
@@ -107,7 +116,10 @@ const GamePage: React.FC = () => {
       setJogadorIdsBilhetesDestacados([]);
       console.log("Jogada finalizada automaticamente: o jogador deve ficar com pelo menos 1 dos 3 bilhetes de destino comprados!");
     }
+
+    
   }, [bilhetesComprados, jogadaSelecionada]);
+
 
   useEffect(() => {
     if (jogadaSelecionada == "ocupar-rota" && jogadorCartasVagaoDescartadas.length == rotaSelecionada?.QtdeEspacos) {
@@ -144,22 +156,26 @@ const GamePage: React.FC = () => {
     }
   }, [cartasVagaoCompradas, jogadaSelecionada]);
 
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
   const handleDescartarBilheteDestino = async (bilhete: BilheteDestino) => {
+    if (bilhetesComprados.length < 1 && rodada > 0 || (jogadorBilhetesDescartados >= 2 && rodada ==0)) return;
 
-    if (bilhetesComprados.length > 1) {
-      const novaLista = bilhetesComprados.filter(b => b.Id !== bilhete.Id);
+    setJogadorIdsBilhetesDestacados([bilhete.Id]);
+    await sleep(600);
+    jogador.removerBilheteDestino(bilhete);
 
-      setJogadorIdsBilhetesDestacados([bilhete.Id]);
-      await sleep(600);
-
-      jogador.removerBilheteDestino(bilhete);
-
-      setbilhetesComprados(novaLista);
-
-      setJogadorIdsBilhetesDestacados([]);
-      setJogadorIdsBilhetesClicaveis([]);
+    let novaLista : BilheteDestino[] = []
+    if (rodada == 0) {
+      novaLista = jogador.verBilhetesDestino().filter(b => b.Id !== bilhete.Id);
+      setJogadorBilhetesDescartados(prev=> prev+1);
     } 
+    else {
+      novaLista = bilhetesComprados.filter(b => b.Id !== bilhete.Id);
+    }
+    setBilhetesComprados(novaLista);
+    setJogadorIdsBilhetesDestacados([]);
+    setJogadorIdsBilhetesClicaveis([]);
   };
 
   const handleDescartarCartaVagao = async (carta: CartaVagao) => {
@@ -183,10 +199,9 @@ const GamePage: React.FC = () => {
     
     const index : number = cartasVagaoExpostasAtual.indexOf(carta);
     if (index < 0) throw new Error("Essa carta de vagão não estava exposta!");
-    const novoBaralho = [...cartasVagaoExpostasAtual];
-    novoBaralho.splice(index, 1);
-    setCartasVagaoExpostasAtual(novoBaralho);
-    
+    // const novoBaralho = [...cartasVagaoExpostasAtual];
+    cartasVagaoExpostasAtual.splice(index, 1);
+    //setCartasVagaoExpostasAtual(novoBaralho);
     await sleep(300);
     jogador.addCartaVagao(carta);
     
@@ -206,9 +221,10 @@ const GamePage: React.FC = () => {
 
     const index : number = cartasVagaoBaralhoAtual.indexOf(carta);
     if (index < 0) throw new Error("Essa carta de vagão não estava no baralho!");
-    const novoBaralho = [...cartasVagaoBaralhoAtual];
-    novoBaralho.splice(index, 1);
-    setCartasVagaoBaralhoAtual(novoBaralho);
+    // const novoBaralho = [...cartasVagaoBaralhoAtual];
+    // novoBaralho.splice(index, 1);
+    cartasVagaoBaralhoAtual.splice(index, 1);
+    //setCartasVagaoBaralhoAtual( 1));
 
     await sleep(300);
     jogador.addCartaVagao(carta);
@@ -228,18 +244,14 @@ const GamePage: React.FC = () => {
     const index : number = baralhoBilhetesAtual.indexOf(bilhete);
     if (index < 0) throw new Error("Esse bilhete de destino não estava no baralho!");
     
-    const novoBaralho = [...baralhoBilhetesAtual];
     baralhoBilhetesAtual.splice(index, 1); // remove 1 elemento do baralho a partir do índice encontrado
-
-    // setBaralhoBilhetesAtual(novoBaralho);
 
     await sleep(300);
 
     jogador.addBilheteDestino(bilhete);
 
     const bilhetesCompradosCopy : BilheteDestino[] = [...bilhetesComprados, bilhete]
-    setbilhetesComprados(bilhetesCompradosCopy);
-
+    setBilhetesComprados(bilhetesCompradosCopy);
     setJogadaSelecionada("comprar-bilhete");
     setIdsBilhetesBaralhoDestacados(baralhoBilhetesAtual.map(b => b.Id));
   };
@@ -271,15 +283,25 @@ const GamePage: React.FC = () => {
     }
 
     else if (jogadaSelecionada == "descartar-bilhete") {
-      const ids = bilhetesComprados.map(b => b.Id);
+      let ids : string[] = []
+      if (rodada == 0) {
+        if (jogadorBilhetesDescartados >= 3) return;
+        ids = jogador.verBilhetesDestino().map(b=> b.Id);
+      }
+      else {
+        ids = bilhetesComprados.map(b => b.Id);
+      }
+      console.log("aqui")
       setJogadorIdsBilhetesDestacados(ids);
       setJogadorIdsBilhetesClicaveis(ids);
+      return;
     }
 
     else if (jogadaSelecionada == "ocupar-rota") {
       setRotasClicaveis(true);
       setRotasPiscando(true);      
     }
+
   };
 
   const handleOcuparRota = async (rota: Rota) => {
@@ -297,14 +319,17 @@ const GamePage: React.FC = () => {
     // remove o jogador atual da lista de jogadores a jogar na rodada
     const novosJogadoresRestantes = jogadoresRestantes.filter(j => j.Id !== jogador.Id);
     // reinicia variaveis pro prox jogador
+    console.log("teste")
     setExecutouJogadaPrincipal(false);
-    setbilhetesComprados([]);
+    setBilhetesComprados([]);
     setBaralhoBilhetesClicavel(false);
     setIdsBilhetesBaralhoDestacados([]);
+    setJogadorBilhetesDescartados(0);
     setJogadaEfetiva("");
     setJogadaSelecionada("ocupar-rota");
     setJogadorCartasClicadas([]);
     setJogadorCartasVagaoDescartadas([]);
+    setJogadorCartasVagaoDestacadas([]);
     setRotaSelecionada(null);
     setRotasPiscando(false);
     const todos = jogo.pegaJogadores();
@@ -377,7 +402,7 @@ const GamePage: React.FC = () => {
           <div className="col-span-2 bg-background flex flex-col items-center overflow-hidden gap-0">
 
             <div className="mb-5">
-              <BilheteDestinoView bilheteDestino={cartaMaiorCaminhoContinuo} size="responsive" orientacao="horizontal" />
+              <BilheteDestinoView bilheteDestino={jogo.pegaCartaMaiorCaminhoContinuo()} size="responsive" orientacao="horizontal" />
             </div>
 
             <div className="mb-0">
@@ -394,8 +419,8 @@ const GamePage: React.FC = () => {
                                     angleStep={25} offsetXStep={13} idCartaExposta={cartasVagaoExpostasAtual.map(c => c.Id)} handleComprarCartaVagaoBaralho={handleComprarCartaVagaoExposta}/>
           </div>
 
-          <div className="flex flex-row items-center justify-center bg-blue-300 col-span-7">
-                <Tabuleiro rotasClicaveis={rotasClicaveis} handleOcuparRota={handleOcuparRota} rotasPiscando={rotasPiscando} rotaSelecionada={rotaSelecionada} />  
+          <div className="flex flex-row inset-0 items-center col-span-7">
+                <TabuleiroView rotasClicaveis={rotasClicaveis} handleOcuparRota={handleOcuparRota} rotasPiscando={rotasPiscando} rotaSelecionada={rotaSelecionada} />  
           </div>
 
           <div className="col-span-3">

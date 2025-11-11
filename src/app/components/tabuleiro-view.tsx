@@ -17,7 +17,7 @@ type TabuleiroProps = {
 };
 
 
-export  const Tabuleiro = ({rotasClicaveis, rotaSelecionada, handleOcuparRota, rotasPiscando} : TabuleiroProps) => {
+export  const TabuleiroView = ({rotasClicaveis, rotaSelecionada, handleOcuparRota, rotasPiscando} : TabuleiroProps) => {
   const jogo: Jogo = usarJogo();
   if (!jogo.foiIniciado()) {
     notFound();
@@ -41,8 +41,8 @@ export  const Tabuleiro = ({rotasClicaveis, rotaSelecionada, handleOcuparRota, r
   const coresUsadas : CoresDeRota[] = []
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4">
-      <Card className="p-6 bg-muted/20">
+    <div className="flex flex-col items-center w-full max-w-7xl mx-auto p-4">
+      <Card className="p-6 border-none shadow-none bg-muted/20">
         {/* <div className="mb-6">
           <h2 className="font-serif font-bold text-3xl mb-2 text-foreground">
             Tabuleiro do Jogo
@@ -52,7 +52,7 @@ export  const Tabuleiro = ({rotasClicaveis, rotaSelecionada, handleOcuparRota, r
           </p>
         </div> */}
 
-        <div className="bg-background rounded-lg shadow-elegant p-4 overflow-auto">
+        <div className="bg-bilhete-destino rounded-lg shadow-elegant p-4 overflow-auto">
           <svg 
             viewBox="0 0 1100 600" 
             className="w-full h-auto"
@@ -176,6 +176,6 @@ export  const Tabuleiro = ({rotasClicaveis, rotaSelecionada, handleOcuparRota, r
   );
 };
 
-export default Tabuleiro;
+export default TabuleiroView;
 
 

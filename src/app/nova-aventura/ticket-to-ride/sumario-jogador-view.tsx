@@ -119,8 +119,8 @@ const SumarioJogadorView : React.FC<SumarioProps> = ({ rodada, jogadorAtual, jog
 
     const renderRodada0 = () => (
         <>
-            {renderDescartarBilhete()}
-            {renderPassarAVez()}
+            {renderPassarAVez() }
+            {renderDescartarBilhete() }
         </>
         );
 
