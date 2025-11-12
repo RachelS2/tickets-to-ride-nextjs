@@ -41,8 +41,8 @@ export  const TabuleiroView = ({rotasClicaveis, rotaSelecionada, handleOcuparRot
   const coresUsadas : CoresDeRota[] = []
 
   return (
-    <div className="flex flex-col items-center w-full max-w-7xl mx-auto p-4">
-      <Card className="p-6 border-none shadow-none bg-muted/20">
+    <div className="flex flex-col items-center w-full max-w-7xl mx-auto">
+      <Card className="border-none shadow-none bg-muted/20">
         {/* <div className="mb-6">
           <h2 className="font-serif font-bold text-3xl mb-2 text-foreground">
             Tabuleiro do Jogo
@@ -151,7 +151,7 @@ export  const TabuleiroView = ({rotasClicaveis, rotaSelecionada, handleOcuparRot
                       ? "hsl(var(--primary))"
                       : "hsl(var(--foreground))"
                   }
-                  fontSize={rotaSelecionada?.Origem?.Nome === cidade.Nome || rotaSelecionada?.Destino?.Nome === cidade.Nome ? "14" : "12"}
+                  fontSize={rotaSelecionada?.Origem?.Nome === cidade.Nome || rotaSelecionada?.Destino?.Nome === cidade.Nome ? "16" : "14"}
                   fontWeight={(hoveredCity === cidade.Nome) || (rotaSelecionada?.Origem?.Nome === cidade.Nome || rotaSelecionada?.Destino?.Nome === cidade.Nome ) ? "bold" : 
                     "normal"}
                   className={cn( "font-sans pointer-events-none select-none")}

@@ -285,13 +285,14 @@ const GamePage: React.FC = () => {
     else if (jogadaSelecionada == "descartar-bilhete") {
       let ids : string[] = []
       if (rodada == 0) {
-        if (jogadorBilhetesDescartados >= 3) return;
+        if (jogadorBilhetesDescartados >= 3) {
+          return;
+        }
         ids = jogador.verBilhetesDestino().map(b=> b.Id);
       }
       else {
         ids = bilhetesComprados.map(b => b.Id);
       }
-      console.log("aqui")
       setJogadorIdsBilhetesDestacados(ids);
       setJogadorIdsBilhetesClicaveis(ids);
       return;
@@ -419,7 +420,7 @@ const GamePage: React.FC = () => {
                                     angleStep={25} offsetXStep={13} idCartaExposta={cartasVagaoExpostasAtual.map(c => c.Id)} handleComprarCartaVagaoBaralho={handleComprarCartaVagaoExposta}/>
           </div>
 
-          <div className="flex flex-row inset-0 items-center col-span-7">
+          <div className="col-span-7 flex justify-center items-up min-h-screen relative">
                 <TabuleiroView rotasClicaveis={rotasClicaveis} handleOcuparRota={handleOcuparRota} rotasPiscando={rotasPiscando} rotaSelecionada={rotaSelecionada} />  
           </div>
 
