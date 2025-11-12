@@ -20,7 +20,7 @@ export class Rota {
   }
 
   public estaOcupada(): boolean {
-    return this.Dono == null;
+    return this.Dono != null;
   }
 
   public ocupar(jogador: Jogador): number {
@@ -28,6 +28,9 @@ export class Rota {
     return this.QtdeEspacos;
   }
 
+  public pegarDono() : Jogador | null {
+    return this.Dono;
+  }
   // public pegarQtdeEspacos(): number {
   //   return this.QtdeEspacos;
   // }

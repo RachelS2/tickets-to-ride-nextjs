@@ -5,7 +5,7 @@ import { Jogo } from "@/app/lib/jogo";
 import notFound from "../not-found";
 import { Rota } from "../lib/rota";
 import { Cidade, Cidades } from "../lib/cidades";
-import { cn, CoresDeRota, pegarVarDaCor, pegarHexDaCor } from "../lib/utils";
+import { cn, CoresDeRota, pegarVarDaCor, pegarHexDaCor, CoresDeTrem } from "../lib/utils";
 
 
 type TabuleiroProps = {
@@ -84,6 +84,10 @@ export  const TabuleiroView = ({rotasClicaveis, rotaSelecionada, handleOcuparRot
                 const estaSelecionada = idRotaSelecionada === idRota;
 
                 const corHex = pegarHexDaCor(rota.Cor);
+                const corTremDono: CoresDeTrem | undefined  = rota.pegarDono()?.CorDoTrem
+                let hexCorTrem = ""
+                if (corTremDono)
+                  hexCorTrem = pegarHexDaCor(corTremDono);
 
                 // Calcula o comprimento total da linha
                 const dx = destino.XCoord - origem.XCoord;
@@ -92,6 +96,7 @@ export  const TabuleiroView = ({rotasClicaveis, rotaSelecionada, handleOcuparRot
 
                 // Define o padrão de tracejado (dashLength e gap)
                 // Aqui dividimos a distância total pela quantidade de espaços
+                const estaOcupada: boolean = rota.estaOcupada();
                 const dashLength = distancia / (rota.QtdeEspacos * 2);
                 const gapLength = dashLength; // espaçamento igual ao traço
 
@@ -102,19 +107,20 @@ export  const TabuleiroView = ({rotasClicaveis, rotaSelecionada, handleOcuparRot
                     y1={origem.YCoord}
                     x2={destino.XCoord}
                     y2={destino.YCoord}
-                    stroke={corHex}
+                    stroke={estaOcupada && hexCorTrem ? hexCorTrem : corHex}
                     strokeWidth={estaSelecionada ? "8" : "6"}
                     strokeLinecap="round"
-                    strokeDasharray={`${dashLength},${gapLength}`}
-                    opacity={estaSelecionada || !rotaSelecionada ? "1" : "0.2"}
+                    strokeDasharray={estaOcupada? 1 : `${dashLength},${gapLength}`}
+                    opacity={(estaSelecionada || !rotaSelecionada ) && !estaOcupada ? "1" : "0.2"}
                     className={
                       rotasClicaveis && !estaSelecionada
                         ? "cursor-pointer animate-blink transition-all hover:opacity-100"
                         : "transition-all hover:opacity-100"
                     }
-                    onClick={rotasClicaveis ? () => handleOcuparRota(rota) : undefined}
+                    onClick={rotasClicaveis && !estaOcupada ? () => handleOcuparRota(rota) : undefined}
                   >
-                    {rotasPiscando && (
+                    <title>{estaOcupada ? `Dono: ${rota.pegarDono()?.Nome}` : undefined}</title>
+                    {rotasPiscando && !estaOcupada && (
                       <animate
                         attributeName="opacity"
                         values="1;0.15;1"

@@ -189,7 +189,7 @@ const GamePage: React.FC = () => {
 
     const jogadorCartasDescartadasCopy = [...jogadorCartasVagaoDescartadas, carta.Id];
     console.log(jogadorCartasDescartadasCopy.length)
-
+    console.log(rotaSelecionada.estaOcupada() + "Origem: " + rotaSelecionada.Origem)
     setJogadorCartasVagaoDescartadas(jogadorCartasDescartadasCopy);
   }
 
