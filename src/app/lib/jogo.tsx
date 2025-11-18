@@ -2,7 +2,6 @@ import {Jogador} from "./jogador";
 import { Tabuleiro } from "./tabuleiro";
 import { BilheteDestino, CartaMaiorCaminhoContinuo, CartaVagao } from "./cartas-jogo";
 import { Rota } from "./rota";
-import PlayersModal from "../components/resultado-view";
 
 export class Jogo {
 
@@ -10,6 +9,7 @@ export class Jogo {
     private Jogadores: Jogador[] = [];
     private Rodada: number = 0;
     private Iniciado: boolean = false;
+    private rodada_final: number | null = null;
 
     public foiIniciado(): boolean {
         return this.Iniciado;
@@ -20,10 +20,17 @@ export class Jogo {
     }
 
     public subirRodada() : void {
-        this.Rodada += 1
+        this.Rodada += 1;
     }
 
-    
+    public pegarRodadaFinal() : number | null{
+        return this.rodada_final;
+    }
+
+    public setRodadaFinal(): void {
+        this.rodada_final = this.Rodada + 1;
+    }
+
     public async iniciaJogo(): Promise<void> {
         if (!this.Jogadores || this.Jogadores.length < 2 || this.Jogadores.length > 5) {
             throw new Error("Verifique o número de jogadores antes de iniciar o jogo.");

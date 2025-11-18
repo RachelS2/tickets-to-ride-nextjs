@@ -79,10 +79,12 @@ export class Jogador {
   }
   
   public somarPontos(pontos: number): void {
+    console.log(`Jogador ${this.Nome} ganhou ${pontos} pontos.`);
     this.Pontos += pontos;
   }
 
   public subitrairPontos(pontos: number): void {
+    console.log(`Jogador ${this.Nome} perdeu ${pontos} pontos.`);
     if (this.Pontos - pontos < 0) {
       this.Pontos = 0;
     } else {

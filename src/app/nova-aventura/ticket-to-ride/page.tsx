@@ -48,6 +48,7 @@ const GamePage: React.FC = () => {
   const [jogadaEfetiva, setJogadaEfetiva] = useState<JogadaEfetiva>("");
   const [jogadaSelecionada, setJogadaSelecionada] = useState<OpcoesDeJogada>("ocupar-rota"); // pega a jogada escolhida pelo jogador
   const [finalizouJogadaPrincipal, setExecutouJogadaPrincipal] = useState<boolean>(false);
+  const [resultadosFinais, setResultadosFinais] = useState<React.ReactNode>(null);
 
   // ESTADOS DO JOGADOR
   const [jogadoresRestantes, setJogadoresRestantes] = useState<Jogador[]>(jogo.pegaJogadores());
@@ -72,7 +73,6 @@ const GamePage: React.FC = () => {
   const qtdeInicialCartasVagaoBaralho : number = 15
   const qtdeInicialCartasVagaoExpostas: number = 5
   const qtdeInicialBilhetesDestinoBaralho : number = 15
-  let rodada_final : number = 0;
 
   useEffect(() => {
 
@@ -319,6 +319,30 @@ const GamePage: React.FC = () => {
     setJogadorCartasVagaoDestacadas(cartasVagaoMaos);
   }
 
+  const handleResultados = (jogadores: Array<Jogador>) => {
+    console.log("Mostrando resultados finais:");
+    for (const jogador of jogadores) {
+      console.log(`Jogador: ${jogador.Nome}, Pontos: ${jogador.pegarPontos()}`);
+    }
+    return (
+      <div className="p-6">
+        <h1 className="text-xl font-bold mb-4">Jogadores</h1>
+
+        <ul className="space-y-2">
+          {jogadores.map((p) => (
+            <li
+              key={p.Id}
+              className="p-3 border rounded-lg flex justify-between bg-gray-200"
+            >
+              <span>{p.Nome}</span>
+              <span>{p.pegarPontos()} pts</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   const handleProximoJogador = () => {
     // remove o jogador atual da lista de jogadores a jogar na rodada
     const novosJogadoresRestantes = jogadoresRestantes.filter(j => j.Id !== jogador.Id);
@@ -338,13 +362,12 @@ const GamePage: React.FC = () => {
     setRotasPiscando(false);
     const todos = jogo.pegaJogadores();
     handleReporCartas();
-
-    if(jogo.verificarFimDeJogo() && rodada_final == 0) {
-      let rodada_final = jogo.pegarRodada() + 1;
+    if(jogo.verificarFimDeJogo() && !jogo.pegarRodadaFinal()) {
+      jogo.setRodadaFinal();
     }
-    if(rodada_final > 0 && rodada_final === jogo.pegarRodada()) {
+    if(jogo.pegarRodadaFinal() === jogo.pegarRodada()) {
       const jogadores = jogo.calculaVencedor();
-      mostrarResultados(jogadores);
+      setResultadosFinais(handleResultados(jogadores));  
       return;
     }
     if (novosJogadoresRestantes.length === 0) {
@@ -456,25 +479,6 @@ const GamePage: React.FC = () => {
     </div>
   );
 
-  const mostrarResultados = (jogadores: Array<Jogador>) => {
-  return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">Jogadores</h1>
-
-      <ul className="space-y-2">
-        {jogadores.map((p) => (
-          <li
-            key={p.Id}
-            className="p-3 border rounded-lg flex justify-between bg-gray-200"
-          >
-            <span>{p.Nome}</span>
-            <span>{p.pegarPontos()} pts</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-  };
 };
 
 export default GamePage;
