@@ -44,7 +44,7 @@ export const BilheteDestinoView: React.FC<BilhetesDestinoProps> = ({
       {/* Cabeçalho */}
       <div className="h-1/3 flex items-center justify-center w-full">
         <h2 className={cn(tamTextos, origemDestinoComum)}>
-          {bilheteDestino.Origem}
+          {bilheteDestino.Origem.Nome}
         </h2>
       </div>
 
@@ -63,7 +63,7 @@ export const BilheteDestinoView: React.FC<BilhetesDestinoProps> = ({
       {/* Rodapé */}
       <div className="h-1/3 flex items-center justify-center w-full">
         <h2 className={cn(tamTextos, origemDestinoComum)}>
-          {bilheteDestino.Destino}
+          {bilheteDestino.Destino.Nome}
         </h2>
       </div>
     </div>
@@ -79,6 +79,7 @@ export const BilheteDestinoView: React.FC<BilhetesDestinoProps> = ({
       expostoInicialmente={expostoInicialmente}
       clicavel={clicavel}
       destacar={destacar}
+      clicada={bilheteDestino.objetivoFoiAtingido() ? true: false}
       onClick={onClick}
       childrenOculta={verso}
       childrenExposta={frente}

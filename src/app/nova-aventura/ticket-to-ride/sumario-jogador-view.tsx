@@ -21,7 +21,7 @@ type ConfiguracaoBilhetesProps = {
 }
 
 type ConfiguracaoCartasJogador = {
-    clicavel : string[] ;
+  clicavel : string[] ;
   destacar: string[]; 
   onClick: (carta: CartaVagao) => void; 
   clicadas: string[]; 

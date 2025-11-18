@@ -30,8 +30,11 @@ export class Jogador {
   public pegarTrem(qtde: number) : void {
     if (this.QtdeTrens == 0 || this.QtdeTrens - qtde < 0) 
         throw new Error("Quantidade de trens insuficiente para pegar.");
-
     this.QtdeTrens -= qtde;
+  }
+
+  public marcarPontos(qtde: number) : void {
+    this.Pontos += qtde;
   }
 
   public verCartasVagao(): CartaVagao[] {
