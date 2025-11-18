@@ -2,7 +2,7 @@ import {Jogador} from "./jogador";
 import {Rota } from "./rota"
 import {CartaVagao, CartaMaiorCaminhoContinuo, BilheteDestino } from "./cartas-jogo";
 import { NomesDeCidades, CoresCartaVagao} from "./utils";
-import { Rotas, DestinosCidades} from "./cidades";
+import { Rotas, DestinosCidades, Seattle, Boston} from "./cidades";
 
 export class Tabuleiro {
   private Rotas!: Rota[]
@@ -128,7 +128,7 @@ export class Tabuleiro {
   
   private criarCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
 
-    return new CartaMaiorCaminhoContinuo("Seatle" as NomesDeCidades, "Boston" as NomesDeCidades, 25);
+    return new CartaMaiorCaminhoContinuo(Seattle, Boston, 25);
 
   }
 
@@ -136,23 +136,7 @@ export class Tabuleiro {
     if (this.BaralhoBilhetesDestino) 
       throw new Error("Já existem Bilhetes de Destino pra esse tabuleiro!");
     
-    const bilhetesDestino: BilheteDestino[] = [];
-
-    // cria 30 tickets de destino a partir de DestinosCidades
-    for (const [espacosStr, rotas] of Object.entries(DestinosCidades)) {
-      const pontos = Number(espacosStr);
-      
-      for (const [origem, destino] of Object.entries(rotas!)) {
-        bilhetesDestino.push(new BilheteDestino(origem as NomesDeCidades, destino as NomesDeCidades, pontos));
-      }
-    }
-
-    const bilhetesDestino2 = this.embaralharCartas(bilhetesDestino);
-    // console.log("qtde bilhetes de destino criadas:", bilhetesDestino2.length);
-    // console.log("bilhetes de destino origem:", bilhetesDestino2.map(c=> c.Origem));
-    // console.log("bilhetes de destino destino:", bilhetesDestino2.map(c=> c.Destino));
-
-    return bilhetesDestino2;
+    return this.embaralharCartas(DestinosCidades);
   }
 
   private darCartasAosJogadores(jogadores: Jogador[]): void{

@@ -1,3 +1,4 @@
+import { BilheteDestino } from "./cartas-jogo";
 import { Rota } from "./rota";
 import { NomesDeCidades } from "./utils";
 
@@ -47,7 +48,6 @@ export const Rotas: Rota[] = [
   new Rota(LosAngeles, LasVegas, 2, "Azul"),
   new Rota(LasVegas, SaltLakeCity, 3, "Roxo"),
   new Rota(SaltLakeCity, Denver, 3, "Amarelo"),
-  new Rota(SaltLakeCity, Denver, 3, "Branco"),
   new Rota(Denver, KansasCity, 4, "Azul"),
   new Rota(Denver, SantaFe, 2, "Cinza"),
   new Rota(LosAngeles, Phoenix, 3, "Preto"),
@@ -104,59 +104,45 @@ export const Cidades: Cidade[] = [
 ];
 
 
-export const DestinosCidades: Record<
-  number,
-  Partial<Record<NomesDeCidades, NomesDeCidades>>
-> = {
-  // 1 ponto — pares muito curtos / vizinhança imediata
-  1: {
-    "Kansas City": "Omaha",
-    "Santa Fe": "El Paso",        
-    "Saint Louis": "Kansas City", 
-    "Washington": "Pittsburgh",
-    "Oklahoma City": "Dallas",
-  },
+export const DestinosCidades: BilheteDestino[] = [
+  // --- 1 ponto ---
+  new BilheteDestino(KansasCity, Omaha, 1),
+  new BilheteDestino(SantaFe, ElPaso, 1),
+  new BilheteDestino(SaintLouis, KansasCity, 1),
+  new BilheteDestino(Washington, Pittsburgh, 1),
+  new BilheteDestino(OklahomaCity, Dallas, 1),
 
-  2: {
-    "Raleigh": "Washington",
-    "Saint Louis": "Nashville",
-    "Oklahoma City": "Kansas City",
-  },
-  3: {
-    "Los Angeles": "Phoenix",  
-    "Phoenix": "Santa Fe",  
-    "Salt Lake City": "Denver",   
-    "Las Vegas": "Salt Lake City",
-    "Omaha": "Chicago",           
-    "Chicago": "Pittsburgh",
-    "San Francisco": "Los Angeles",
-  },
-  
-  5: {
-    "Denver": "Kansas City",
-    "El Paso": "Dallas",
-    "Omaha": "Chicago",
-  },
+  // --- 2 pontos ---
+  new BilheteDestino(Raleigh, Washington, 2),
+  new BilheteDestino(SaintLouis, Nashville, 2),
+  new BilheteDestino(OklahomaCity, KansasCity, 2),
+  new BilheteDestino(LosAngeles, Phoenix, 2),
+  new BilheteDestino(Phoenix, SantaFe, 2),
 
-  6: {
-    "Miami": "Atlanta",
-    "Portland": "San Francisco",
-    "Phoenix": "Denver",
-    "San Francisco":"Las Vegas",
-  },
+  // --- 3 pontos ---
+  new BilheteDestino(SaltLakeCity, Denver, 3),
+  new BilheteDestino(LasVegas, SaltLakeCity, 3),
+  new BilheteDestino(Omaha, Chicago, 3),
+  new BilheteDestino(Chicago, Pittsburgh, 3),
+  new BilheteDestino(SanFrancisco, LosAngeles, 3),
 
-  8: {
-    "Seattle": "San Francisco",
-    "Miami": "Charleston",
-    "Salt Lake City": "Kansas City",
-    "San Francisco": "Santa Fe",
-    "Santa Fe": "Houston"
-  },
+  // --- 4 pontos ---
+  new BilheteDestino(Denver, KansasCity, 4),
+  new BilheteDestino(ElPaso, Dallas, 4),
+  new BilheteDestino(Miami, Atlanta, 4),
+  new BilheteDestino(Portland, SanFrancisco, 4),
 
-  11: {
-    "Omaha": "Atlanta",
-    "Boston": "Charleston",
-    "El Paso": "Saint Louis",
+  // --- 5 pontos ---
+  new BilheteDestino(Phoenix, Denver, 5),
+  new BilheteDestino(SanFrancisco, LasVegas, 5),
+  new BilheteDestino(Seattle, SanFrancisco, 5),
+  new BilheteDestino(Miami, Charleston, 5),
+  new BilheteDestino(SaltLakeCity, KansasCity, 5),
 
-  }
-};
+  // --- 6 pontos ---
+  new BilheteDestino(SanFrancisco, SantaFe, 6),
+  new BilheteDestino(SantaFe, Houston, 6),
+  new BilheteDestino(Atlanta, Omaha, 6),
+  new BilheteDestino(Boston, Charleston, 6),
+  new BilheteDestino(ElPaso, SaintLouis, 6),
+];

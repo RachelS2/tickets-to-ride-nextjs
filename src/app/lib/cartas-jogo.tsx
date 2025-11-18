@@ -1,5 +1,6 @@
 import { customAlphabet } from 'nanoid';
 import { CoresCartaVagao, NomesDeCidades } from "./utils";
+import { Cidade } from './cidades';
 
 export class CartaVagao {
     public readonly Cor: CoresCartaVagao 
@@ -19,22 +20,32 @@ export class CartaVagao {
 
 
 export class BilheteDestino {
-    public readonly Origem: NomesDeCidades
-    public readonly Destino: NomesDeCidades
+    public readonly Origem: Cidade
+    public readonly Destino: Cidade
     public readonly Pontos: number
+    private ObjetivoAtingido: boolean = false
     public readonly Id: string
 
-    constructor(origem: NomesDeCidades, destino: NomesDeCidades, pontos: number) {
+    constructor(origem: Cidade, destino: Cidade, pontos: number) {
         this.Origem = origem;
         this.Destino = destino;
         this.Pontos = pontos;
         const gerarId = customAlphabet("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ", 8);
-        this.Id = `${origem.slice(0,2)}-${destino.slice(0,2)}-${gerarId()}`;
+        this.Id = `${origem.Nome.slice(0,2)}-${destino.Nome.slice(0,2)}-${gerarId()}`;
     }
+
+    public marcarObjetivoAtingido() : void {
+        this.ObjetivoAtingido = true;
+    }
+
+    public objetivoFoiAtingido() : boolean {
+        return this.ObjetivoAtingido;
+    }
+    
 }
 
 export class CartaMaiorCaminhoContinuo extends BilheteDestino {
-    constructor(origin: NomesDeCidades, destino: NomesDeCidades, pontos: number) {
+    constructor(origin: Cidade, destino: Cidade, pontos: number) {
         super(origin, destino, pontos);
 
     }
