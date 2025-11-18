@@ -2,6 +2,7 @@ import {Jogador} from "./jogador";
 import { Tabuleiro } from "./tabuleiro";
 import { BilheteDestino, CartaMaiorCaminhoContinuo, CartaVagao } from "./cartas-jogo";
 import { Rota } from "./rota";
+import PlayersModal from "../components/resultado-view";
 
 export class Jogo {
 
@@ -90,8 +91,29 @@ export class Jogo {
         this.Jogadores = this.Jogadores.filter(jogador => jogador.Id !== playerId);
     }
     
-    private calculaVencedor(): void {
-        // TODO
+    public verificarFimDeJogo(): boolean {
+        if (!this.Iniciado) {
+            throw new Error("O jogo não foi iniciado.");
+        }
+        if (this.Jogadores.some(jogador => jogador.pegarQtdeTrens() <= 2)) {
+            return true;
+        }
+        return false;
+    }
+
+    public calculaVencedor(): Array<Jogador> {
+        console.log("Calculando vencedor...");
+        let vencedor: Jogador | null = null;
+        for (let jogador of this.Jogadores) {
+            let totalPontosBilhetes = jogador.contabilizarBilhetesDestino();
+            jogador.somarPontos(totalPontosBilhetes);
+            if(jogador.verBilhetesDestino().length > 0) {
+                for(let bilhete of jogador.verBilhetesDestino()) {
+                    jogador.subitrairPontos(bilhete.Pontos);
+                }
+            }
+        }
+        return this.Jogadores;
     }
     
     public pegaCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {

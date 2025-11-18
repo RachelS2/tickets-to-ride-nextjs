@@ -180,4 +180,11 @@ export class Tabuleiro {
     //console.log("Qtde cartas baralho depois da distribuição aos jogadores: " + this.BaralhoCartasVagao.length)
   }
   
+  public verificarRota(origem: NomesDeCidades, destino: NomesDeCidades, jogador: Jogador): boolean {
+    const rotaConectada = this.Rotas.find(rota => 
+      (rota.Origem.Nome === origem && rota.Destino.Nome === destino && rota.pegarDono() === jogador) ||
+      (rota.Origem.Nome === destino && rota.Destino.Nome === origem && rota.pegarDono() === jogador)
+    );
+    return rotaConectada !== undefined;
+  }
 }

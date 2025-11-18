@@ -9,7 +9,7 @@ export class Jogador {
   public readonly CorDoTrem: CoresDeTrem
   public readonly RodadaAJogar: number
 
-  private QtdeTrens: number = 45
+  private QtdeTrens: number = 3
   private CartasVagaoMaos: CartaVagao[] = []
   private BilhetesDestinoMaos: BilheteDestino[] = []
   private Pontos: number = 0
@@ -46,6 +46,10 @@ export class Jogador {
     return this.Pontos;
   }
 
+  public diminuirQtdeTrens(QtdeTrens:  number): void {
+    this.QtdeTrens = this.QtdeTrens - QtdeTrens;
+  }
+
   public pegarQtdeTrens(): number {
     return this.QtdeTrens;
   }
@@ -74,4 +78,26 @@ export class Jogador {
     }
   }
   
+  public somarPontos(pontos: number): void {
+    this.Pontos += pontos;
+  }
+
+  public subitrairPontos(pontos: number): void {
+    if (this.Pontos - pontos < 0) {
+      this.Pontos = 0;
+    } else {
+      this.Pontos -= pontos;
+    }
+  }  
+
+  public contabilizarBilhetesDestino(): number {
+    let totalPontos = 0;
+    for (let bilhete of this.BilhetesDestinoMaos) {
+      if (this.Tabuleiro.verificarRota(bilhete.Origem, bilhete.Destino, this)){
+        totalPontos += bilhete.Pontos;
+        this.removerBilheteDestino(bilhete);
+      }
+    }
+    return totalPontos;
+  }
 }

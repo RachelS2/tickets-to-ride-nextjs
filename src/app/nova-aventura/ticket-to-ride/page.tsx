@@ -72,6 +72,7 @@ const GamePage: React.FC = () => {
   const qtdeInicialCartasVagaoBaralho : number = 15
   const qtdeInicialCartasVagaoExpostas: number = 5
   const qtdeInicialBilhetesDestinoBaralho : number = 15
+  let rodada_final : number = 0;
 
   useEffect(() => {
 
@@ -131,7 +132,9 @@ const GamePage: React.FC = () => {
           jogador.removerCartaVagao(carta);
         }
       }
-      rotaSelecionada.ocupar(jogador);
+      let qtdTrens = rotaSelecionada.ocupar(jogador);
+      jogador.diminuirQtdeTrens(qtdTrens)
+      jogador.somarPontos(qtdTrens);
       setJogadorCartasVagaoDescartadas([]);
       setJogadorCartasVagaoClicaveis([]);
       setJogadorCartasVagaoDestacadas([]);
@@ -335,6 +338,15 @@ const GamePage: React.FC = () => {
     setRotasPiscando(false);
     const todos = jogo.pegaJogadores();
     handleReporCartas();
+
+    if(jogo.verificarFimDeJogo() && rodada_final == 0) {
+      let rodada_final = jogo.pegarRodada() + 1;
+    }
+    if(rodada_final > 0 && rodada_final === jogo.pegarRodada()) {
+      const jogadores = jogo.calculaVencedor();
+      mostrarResultados(jogadores);
+      return;
+    }
     if (novosJogadoresRestantes.length === 0) {
       setJogadoresRestantes(todos);
       jogo.subirRodada();
@@ -443,6 +455,26 @@ const GamePage: React.FC = () => {
     </div>
     </div>
   );
+
+  const mostrarResultados = (jogadores: Array<Jogador>) => {
+  return (
+    <div className="p-6">
+      <h1 className="text-xl font-bold mb-4">Jogadores</h1>
+
+      <ul className="space-y-2">
+        {jogadores.map((p) => (
+          <li
+            key={p.Id}
+            className="p-3 border rounded-lg flex justify-between bg-gray-200"
+          >
+            <span>{p.Nome}</span>
+            <span>{p.pegarPontos()} pts</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+  };
 };
 
 export default GamePage;
