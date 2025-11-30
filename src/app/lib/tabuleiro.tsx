@@ -8,10 +8,7 @@ export class Tabuleiro {
   private Rotas!: Rota[]
   private BaralhoCartasVagao!: CartaVagao[] 
   private BaralhoBilhetesDestino!: BilheteDestino[]
-
-
   private CartaMaiorCaminhoContinuo!: CartaMaiorCaminhoContinuo;
-
   private CartasVagaoExpostas: CartaVagao[] = []
   private CartasVagaoDescartadas : CartaVagao[] = []
 
@@ -66,13 +63,11 @@ export class Tabuleiro {
     return this.CartaMaiorCaminhoContinuo;
   }
 
-
   private reporBaralhoCartasVagao() : void {
-    
+    if (this.BaralhoCartasVagao.length > 0) return; //se ainda tiver cartas, não repõe  
     this.BaralhoCartasVagao = this.CartasVagaoDescartadas
     this.CartasVagaoDescartadas = []
   }
-
 
   public descartarC(cartas: CartaVagao[]): void {
     this.CartasVagaoDescartadas.push(...cartas);
@@ -119,28 +114,21 @@ export class Tabuleiro {
         }
     }
 
-    //console.log("Número de cartas de vagão antes de embaralhar" + baralho.length)
     const cartasVagaoEmbaralhadas : CartaVagao[] = this.embaralharCartas(baralho);
-    // console.log("Número de cartas de vagão após embaralhar:", cartasVagaoEmbaralhadas.length);
-    // console.log("Cartas de vagão embaralhadas:", cartasVagaoEmbaralhadas);
     return cartasVagaoEmbaralhadas;
   }
   
   private criarCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
-
     return new CartaMaiorCaminhoContinuo(Seattle, Boston, 25);
-
   }
 
   private criarBilhetesDestino(): BilheteDestino[] {
     if (this.BaralhoBilhetesDestino) 
       throw new Error("Já existem Bilhetes de Destino pra esse tabuleiro!");
-    
     return this.embaralharCartas(DestinosCidades);
   }
 
   private darCartasAosJogadores(jogadores: Jogador[]): void{
-    //console.log("Qtde cartas baralho antes da distribuição: " + this.BaralhoCartasVagao.length)
     if (!this.BaralhoCartasVagao || !this.BaralhoBilhetesDestino) {
         throw new Error("Baralhos não inicializados.");
     }
@@ -161,14 +149,16 @@ export class Tabuleiro {
         }
       }
     }
-    //console.log("Qtde cartas baralho depois da distribuição aos jogadores: " + this.BaralhoCartasVagao.length)
   }
   
-  public verificarRota(origem: NomesDeCidades, destino: NomesDeCidades, jogador: Jogador): boolean {
+  public verificarBilheteAtingido(origem: NomesDeCidades, destino: NomesDeCidades, jogador: Jogador): boolean {
     const rotaConectada = this.Rotas.find(rota => 
       (rota.Origem.Nome === origem && rota.Destino.Nome === destino && rota.pegarDono() === jogador) ||
       (rota.Origem.Nome === destino && rota.Destino.Nome === origem && rota.pegarDono() === jogador)
     );
+    if (rotaConectada !== undefined){
+      console.log("Rota conectada: " + rotaConectada.Destino.Nome + " - " + rotaConectada.Origem.Nome);
+    }
     return rotaConectada !== undefined;
   }
 }

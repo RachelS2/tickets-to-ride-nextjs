@@ -9,7 +9,7 @@ export class Jogo {
     private Jogadores: Jogador[] = [];
     private Rodada: number = 0;
     private Iniciado: boolean = false;
-    private rodada_final: number | null = null;
+    private RodadaFinal: number | null = null;
 
     public foiIniciado(): boolean {
         return this.Iniciado;
@@ -24,11 +24,11 @@ export class Jogo {
     }
 
     public pegarRodadaFinal() : number | null{
-        return this.rodada_final;
+        return this.RodadaFinal;
     }
 
     public setRodadaFinal(): void {
-        this.rodada_final = this.Rodada + 1;
+        this.RodadaFinal = this.Rodada + 1;
     }
 
     public async iniciaJogo(): Promise<void> {
@@ -108,19 +108,42 @@ export class Jogo {
         return false;
     }
 
-    public calculaVencedor(): Array<Jogador> {
+    public calculaVencedor(): Jogador[] {
         console.log("Calculando vencedor...");
-        let vencedor: Jogador | null = null;
-        for (let jogador of this.Jogadores) {
-            let totalPontosBilhetes = jogador.contabilizarBilhetesDestino();
-            jogador.somarPontos(totalPontosBilhetes);
-            if(jogador.verBilhetesDestino().length > 0) {
-                for(let bilhete of jogador.verBilhetesDestino()) {
-                    jogador.subitrairPontos(bilhete.Pontos);
+        const resultados: { jogador: Jogador; novoPontos: number }[] = [];
+
+        for (const jogador of this.Jogadores) {
+            const pontosAtuais = jogador.pegarPontos();
+            console.log("Verificando jogador " + jogador.Nome + " com pontos atuais: " + pontosAtuais);
+            let ganho = 0;
+            const bilhetesJogador : BilheteDestino[] = jogador.verBilhetesDestino()
+            for (let i = bilhetesJogador.length - 1; i >= 0; i--) {
+                const bilhete = bilhetesJogador[i];
+                if (this.Tabuleiro.verificarBilheteAtingido(bilhete.Origem.Nome, bilhete.Destino.Nome, jogador) || bilhete.objetivoFoiAtingido()) {
+                    ganho += bilhete.Pontos;
+                    bilhete.marcarObjetivoAtingido()
+                    console.log("Marcou pontos do bilhete: " + bilhete.Origem.Nome + " - " + bilhete.Destino.Nome);
                 }
             }
+
+            // penalidades: todos os bilhetes que restaram na mão
+            let penalidade = 0;
+            for (const bilhete of bilhetesJogador) {
+                if (!bilhete.objetivoFoiAtingido()) {
+                    penalidade += bilhete.Pontos;
+                }
+            }
+
+            let novoTotal = pontosAtuais + ganho - penalidade;
+
+            resultados.push({ jogador, novoPontos: novoTotal });
+
+            jogador.marcarPontos(novoTotal - pontosAtuais); 
+
+            console.log(`${jogador.Nome}: ${pontosAtuais} +${ganho} -${penalidade} => ${novoTotal}`);
         }
-        return this.Jogadores;
+
+        return this.Jogadores.slice().sort((a, b) => b.pegarPontos() - a.pegarPontos());
     }
     
     public pegaCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
@@ -143,10 +166,17 @@ export class Jogo {
                 return 15
         }
         return 0;
-        
     }
 
-    public finalizaJogo() {
+    public verificarBilheteAtingido(bilhete: BilheteDestino, jogador: Jogador): boolean {
+        return this.Tabuleiro.verificarBilheteAtingido(bilhete.Origem.Nome, bilhete.Destino.Nome, jogador);
+    }
 
+    public finalizaJogo(): void {
+        this.Iniciado = false;
+        this.RodadaFinal = null;
+        this.Rodada = 0;
+        this.Tabuleiro = null as unknown as Tabuleiro;
+        this.Jogadores = [];
     }
 }
