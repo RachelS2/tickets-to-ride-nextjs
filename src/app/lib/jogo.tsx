@@ -114,13 +114,15 @@ export class Jogo {
         console.log("Calculando vencedor...");
         const resultados: { jogador: Jogador; novoPontos: number }[] = [];
         const cartaMaiorCaminho : CartaMaiorCaminhoContinuo = this.Tabuleiro.pegarCartaMaiorCaminhoContinuo();
+        let cartaMaiorCaminhoAtingida: boolean = false;
         for (const jogador of this.Jogadores) {
             const pontosAtuais = jogador.pegarPontos();
             console.log("Verificando jogador " + jogador.Nome + " com pontos atuais: " + pontosAtuais);
             let ganho = 0;
             const bilhetesJogador : BilheteDestino[] = jogador.verBilhetesDestino()
-            if (this.Tabuleiro.verificarBilheteAtingido(cartaMaiorCaminho, jogador)) {
+            if (!cartaMaiorCaminhoAtingida && this.Tabuleiro.verificarBilheteAtingido(cartaMaiorCaminho, jogador)) {
                 ganho += cartaMaiorCaminho.Pontos;
+                cartaMaiorCaminhoAtingida = true;
                 console.log(`Jogador ${jogador.Nome} ganhou ${cartaMaiorCaminho.Pontos} pontos por ter conquistado o Maior Caminho Contínuo do tabuleiro.`);
             }
             for (let i = bilhetesJogador.length - 1; i >= 0; i--) {
@@ -130,7 +132,7 @@ export class Jogo {
                     bilhete.marcarObjetivoAtingido()
                 }
             }
-            // penalidades: todos os bilhetes que restaram na mão
+            // penalidades: todos os bilhetes de destino cujo objetivo não foi atingido
             let penalidade = 0;
             for (const bilhete of bilhetesJogador) {
                 if (!bilhete.objetivoFoiAtingido()) {
