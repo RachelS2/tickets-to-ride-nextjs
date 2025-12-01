@@ -157,7 +157,7 @@ const GamePage: React.FC = () => {
   };
 
   const handleDescartarCartaVagao = async (carta: CartaVagao) => {
-    if (jogadaSelecionada !== "ocupar-rota" || !rotaSelecionada || typeof(carta) == undefined || carta.Id in jogadorCartasVagaoDescartadas ) return;
+    if (jogadaSelecionada !== "ocupar-rota" || !rotaSelecionada || !carta || jogadorCartasVagaoDescartadas.includes(carta.Id) ) return;
     if ( jogador.pegarQtdeTrens() < rotaSelecionada?.QtdeEspacos ) {
       console.log("Você não tem trens suficientes para ocupar essa rota.");
       setJogadorCartasVagaoClicaveis([]);
@@ -350,31 +350,51 @@ const GamePage: React.FC = () => {
     setRotaSelecionada(null);
     setRotasPiscando(false);
     handleReporCartas();
-    if(jogo.verificarFimDeJogo() && !jogo.pegarRodadaFinal()) {
-      jogo.setRodadaFinal();      
+    // 1) Verifica se precisa ativar rodada final
+    if (jogo.verificarFimDeJogo() && jogo.pegarRodadaFinal() === null) {
+      jogo.setRodadaFinal(); 
     }
-    if(jogo.pegarRodadaFinal() === jogo.pegarRodada()) {
-      const jogadores : Jogador[] = jogo.calculaVencedor();
-      setResultadosFinaisData(jogadores);
-      // jogo.finalizaJogo();
-      console.log("Vencedor calculado!");
-      return;
-    }
+
+    const rodadaFinal = jogo.pegarRodadaFinal();
     const todos = jogo.pegaJogadores();
+
+    // -----------------------------
+    // 2) Se todos os jogadores já jogaram na rodada
+    // -----------------------------
     if (novosJogadoresRestantes.length === 0) {
-      setJogadoresRestantes(todos);
+      // Subiu a rodada depois do último jogador agir
       jogo.subirRodada();
-      setRodada(jogo.pegarRodada());
+      const rodadaAtual = jogo.pegarRodada();
+      setAvisoRodada(`Rodada ${rodadaAtual}`);
+
+      // 2.1) Se passamos da rodada final, acabou o jogo!
+      if (rodadaFinal !== null && rodadaAtual > rodadaFinal) {
+        const jogadores = jogo.calculaVencedor();
+        setAvisoRodada("Resultados do Jogo");
+        setResultadosFinaisData(jogadores);
+        return;
+      }
+
+      // 2.2) Reinicia a fila da nova rodada
+      setJogadoresRestantes(todos);
       setJogador(todos[0]);
       setProximoJogador(todos[1] ?? todos[0]);
-      if (jogo.pegarRodadaFinal() === jogo.pegarRodada()) {
-        setAvisoRodada(`Rodada ${jogo.pegarRodada()} - Última Rodada!`);
+      setRodada(rodadaAtual);
+
+      // 2.3) Se esta rodada é a última, mostra aviso
+      if (rodadaFinal !== null && rodadaAtual === rodadaFinal) {
+        setAvisoRodada(`Rodada ${rodadaAtual} - Última Rodada!`);
       }
-    } else {
-      setJogadoresRestantes(novosJogadoresRestantes);
-      setJogador(novosJogadoresRestantes[0]);
-      setProximoJogador(novosJogadoresRestantes[1] ?? todos[0]); //pega lista original
+
+      return;
     }
+
+    // -----------------------------
+    // 3) Se ainda há jogadores para jogar nesta rodada
+    // -----------------------------
+    setJogadoresRestantes(novosJogadoresRestantes);
+    setJogador(novosJogadoresRestantes[0]);
+    setProximoJogador(novosJogadoresRestantes[1] ?? novosJogadoresRestantes[0]);
   };
 
   const handleReporCartas = () => {

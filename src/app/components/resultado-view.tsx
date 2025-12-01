@@ -15,7 +15,7 @@ export default function ResultadoView({ jogadores }: ResultadoViewProps) {
 
     function finalizar() {
         resetarJogo();
-        router.push("./nova-aventura");
+        router.back();
     }
 
     return (
