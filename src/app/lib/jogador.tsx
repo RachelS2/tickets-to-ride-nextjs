@@ -53,12 +53,12 @@ export class Jogador {
     return this.QtdeTrens;
   }
 
-  public addCartaVagao(carta: CartaVagao): void {
-    this.CartasVagaoMaos.push(carta);
+  public addCartaVagao(c: CartaVagao): void {
+    this.CartasVagaoMaos.push(c);
   }
 
-  public addBilheteDestino(carta: BilheteDestino): void {
-    this.BilhetesDestinoMaos.push(carta);
+  public addBilheteDestino(d: BilheteDestino): void {
+    this.BilhetesDestinoMaos.push(d);
   }
 
   public removerCartaVagao(carta: CartaVagao): void {
