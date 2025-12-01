@@ -18,7 +18,7 @@ type TabuleiroProps = {
 
 
 export  const TabuleiroView = ({rotasClicaveis, rotaSelecionada, handleOcuparRota, rotasPiscando} : TabuleiroProps) => {
-  const jogo: Jogo = usarJogo();
+  const {jogo} = usarJogo();
   if (!jogo.foiIniciado()) {
     notFound();
   }

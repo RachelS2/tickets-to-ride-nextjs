@@ -10,7 +10,7 @@ export class Rota {
   private Dono : Jogador | null = null
 
   constructor(origem: Cidade, destino: Cidade, qtdeEspacos: number, cor: CoresDeRota) {
-    if (origem == destino) {
+    if (origem.Nome == destino.Nome) {
       throw new Error("A origem e o destino da rota não podem ser iguais.");}
 
     this.Origem = origem;
@@ -31,21 +31,7 @@ export class Rota {
   public pegarDono() : Jogador | null {
     return this.Dono;
   }
-  // public pegarQtdeEspacos(): number {
-  //   return this.QtdeEspacos;
-  // }
 
-  // public pegarCor(): CoresDeRota {
-  //   return this.Cor;
-  // }
-
-  // public pegarOrigem(): NomesDeCidades {
-  //   return this.Origem;
-  // }
-
-  // public pegarDestino(): NomesDeCidades {
-  //   return this.Destino;
-  // }
 
 }
 

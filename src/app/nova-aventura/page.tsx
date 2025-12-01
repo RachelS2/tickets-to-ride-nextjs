@@ -16,8 +16,8 @@ const NovaAventuraPagina = () => {
   const [nomeJogadorAtual, defineJogadorAtual] = useState("");
   const [jogadores, defineJogador] = useState<Jogador[]>([]);
   const router = useRouter();
-  const jogo = usarJogo();
-  
+  const {jogo} = usarJogo();
+
   const CoresTremDisponiveis : CoresDeTrem[] = ["Vermelho", "Azul", "Verde", "Amarelo", "Preto"]
 
 const findFirstAvailableColor = (existingPlayers: Jogador[]) => {

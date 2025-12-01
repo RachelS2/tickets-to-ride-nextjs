@@ -103,29 +103,33 @@ export class Jogo {
             throw new Error("O jogo não foi iniciado.");
         }
         if (this.Jogadores.some(jogador => jogador.pegarQtdeTrens() <= 2)) {
+            console.log("Um jogador tem 2 ou menos trens restantes. Iniciando a rodada final.");
             return true;
         }
+        console.log("Nenhum jogador com 2 ou menos trens restantes.");
         return false;
     }
 
     public calculaVencedor(): Jogador[] {
         console.log("Calculando vencedor...");
         const resultados: { jogador: Jogador; novoPontos: number }[] = [];
-
+        const cartaMaiorCaminho : CartaMaiorCaminhoContinuo = this.Tabuleiro.pegarCartaMaiorCaminhoContinuo();
         for (const jogador of this.Jogadores) {
             const pontosAtuais = jogador.pegarPontos();
             console.log("Verificando jogador " + jogador.Nome + " com pontos atuais: " + pontosAtuais);
             let ganho = 0;
             const bilhetesJogador : BilheteDestino[] = jogador.verBilhetesDestino()
+            if (this.Tabuleiro.verificarBilheteAtingido(cartaMaiorCaminho, jogador)) {
+                ganho += cartaMaiorCaminho.Pontos;
+                console.log(`Jogador ${jogador.Nome} ganhou ${cartaMaiorCaminho.Pontos} pontos por ter conquistado o Maior Caminho Contínuo do tabuleiro.`);
+            }
             for (let i = bilhetesJogador.length - 1; i >= 0; i--) {
                 const bilhete = bilhetesJogador[i];
-                if (this.Tabuleiro.verificarBilheteAtingido(bilhete.Origem.Nome, bilhete.Destino.Nome, jogador) || bilhete.objetivoFoiAtingido()) {
+                if (this.Tabuleiro.verificarBilheteAtingido(bilhete, jogador) || bilhete.objetivoFoiAtingido()) {
                     ganho += bilhete.Pontos;
                     bilhete.marcarObjetivoAtingido()
-                    console.log("Marcou pontos do bilhete: " + bilhete.Origem.Nome + " - " + bilhete.Destino.Nome);
                 }
             }
-
             // penalidades: todos os bilhetes que restaram na mão
             let penalidade = 0;
             for (const bilhete of bilhetesJogador) {
@@ -135,11 +139,8 @@ export class Jogo {
             }
 
             let novoTotal = pontosAtuais + ganho - penalidade;
-
             resultados.push({ jogador, novoPontos: novoTotal });
-
             jogador.marcarPontos(novoTotal - pontosAtuais); 
-
             console.log(`${jogador.Nome}: ${pontosAtuais} +${ganho} -${penalidade} => ${novoTotal}`);
         }
 
@@ -169,7 +170,12 @@ export class Jogo {
     }
 
     public verificarBilheteAtingido(bilhete: BilheteDestino, jogador: Jogador): boolean {
-        return this.Tabuleiro.verificarBilheteAtingido(bilhete.Origem.Nome, bilhete.Destino.Nome, jogador);
+        const bilheteAtingido = this.Tabuleiro.verificarBilheteAtingido(bilhete, jogador);
+        if (bilheteAtingido) {
+            bilhete.marcarObjetivoAtingido();
+            console.log("Bilhete atingido! " + bilhete.Origem.Nome + " - " + bilhete.Destino.Nome);
+        }
+        return bilheteAtingido;
     }
 
     public finalizaJogo(): void {

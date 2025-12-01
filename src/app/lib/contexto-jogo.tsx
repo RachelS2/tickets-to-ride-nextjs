@@ -1,22 +1,31 @@
-'use client';
-import { createContext, useContext, useRef } from "react";
-import { Jogo } from "@/app/lib/jogo";
+"use client";
 
-const ContextoJogo = createContext<Jogo | null>(null);
+import { createContext, useContext, useState } from "react";
+import { Jogo } from "./jogo";
+
+type ContextoJogoTipo = {
+  jogo: Jogo;
+  resetarJogo: () => void;
+};
+
+const ContextoJogo = createContext<ContextoJogoTipo | null>(null);
 
 export const ProvedorJogo = ({ children }: { children: React.ReactNode }) => {
-  const refJogo = useRef<Jogo | null>(null);
-  if (!refJogo.current) refJogo.current = new Jogo();
+  const [jogo, setJogo] = useState<Jogo>(() => new Jogo());
+
+  function resetarJogo() {
+    setJogo(new Jogo());
+  }
 
   return (
-    <ContextoJogo.Provider value={refJogo.current}>
+    <ContextoJogo.Provider value={{ jogo, resetarJogo }}>
       {children}
     </ContextoJogo.Provider>
   );
 };
 
-export const usarJogo = () => {
-  const tabuleiro = useContext(ContextoJogo);
-  if (!tabuleiro) throw new Error("usarJogo deve ser usado com um ProvedorJogo");
-  return tabuleiro;
-};
+export function usarJogo() {
+  const ctx = useContext(ContextoJogo);
+  if (!ctx) throw new Error("usarJogo deve ser usado com um ProvedorJogo");
+  return ctx;
+}

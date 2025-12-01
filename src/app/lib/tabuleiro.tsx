@@ -1,7 +1,7 @@
 import {Jogador} from "./jogador";
 import {Rota } from "./rota"
 import {CartaVagao, CartaMaiorCaminhoContinuo, BilheteDestino } from "./cartas-jogo";
-import { NomesDeCidades, CoresCartaVagao} from "./utils";
+import { CoresCartaVagao} from "./utils";
 import { Rotas, DestinosCidades, Seattle, Boston} from "./cidades";
 
 export class Tabuleiro {
@@ -61,12 +61,6 @@ export class Tabuleiro {
 
   public pegarCartaMaiorCaminhoContinuo(): CartaMaiorCaminhoContinuo {
     return this.CartaMaiorCaminhoContinuo;
-  }
-
-  private reporBaralhoCartasVagao() : void {
-    if (this.BaralhoCartasVagao.length > 0) return; //se ainda tiver cartas, não repõe  
-    this.BaralhoCartasVagao = this.CartasVagaoDescartadas
-    this.CartasVagaoDescartadas = []
   }
 
   public descartarC(cartas: CartaVagao[]): void {
@@ -151,14 +145,42 @@ export class Tabuleiro {
     }
   }
   
-  public verificarBilheteAtingido(origem: NomesDeCidades, destino: NomesDeCidades, jogador: Jogador): boolean {
-    const rotaConectada = this.Rotas.find(rota => 
-      (rota.Origem.Nome === origem && rota.Destino.Nome === destino && rota.pegarDono() === jogador) ||
-      (rota.Origem.Nome === destino && rota.Destino.Nome === origem && rota.pegarDono() === jogador)
-    );
-    if (rotaConectada !== undefined){
-      console.log("Rota conectada: " + rotaConectada.Destino.Nome + " - " + rotaConectada.Origem.Nome);
+  public verificarBilheteAtingido(bilhete: BilheteDestino, jogador: Jogador): boolean {
+    const origem = bilhete.Origem.Nome;
+    const destino = bilhete.Destino.Nome;
+
+    // constrói grafo:
+    const adj: Record<string, string[]> = {};
+
+    for (const rota of this.Rotas) {
+      if (rota.pegarDono() !== jogador) continue;
+
+      const A = rota.Origem.Nome;
+      const B = rota.Destino.Nome;
+
+      if (!adj[A]) adj[A] = [];
+      if (!adj[B]) adj[B] = [];
+
+      adj[A].push(B);
+      adj[B].push(A);
     }
-    return rotaConectada !== undefined;
+
+    // BFS para ver se existe caminho:
+    const fila = [origem];
+    const visitado = new Set<string>();
+
+    while (fila.length > 0) {
+      const atual = fila.shift()!;
+      if (atual === destino) return true;
+
+      visitado.add(atual);
+
+      for (const viz of adj[atual] || []) {
+        if (!visitado.has(viz)) fila.push(viz);
+      }
+    }
+
+    return false;
   }
+
 }

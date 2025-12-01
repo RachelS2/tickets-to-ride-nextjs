@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { cn } from "@/app/lib/utils";
 import { BordaDaCartaView } from "./borda-carta-view";
-import { CartaVagao } from "../lib/cartas-jogo";
 
 export type CartaProps = {
   size?: "sm" | "md" | "lg" | "responsive";
