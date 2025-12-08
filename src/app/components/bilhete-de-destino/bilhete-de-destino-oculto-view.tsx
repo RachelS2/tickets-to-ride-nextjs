@@ -1,6 +1,6 @@
 import React from "react";
 
-import { CartaOcultaView } from "../carta-de-vagao/carta-oculta-view";
+import { CartaOcultaView } from "../carta-oculta-view";
 
 export const BilheteDestinoOculto: React.FC<{
   size?: "sm" | "md" | "lg" | "responsive";
