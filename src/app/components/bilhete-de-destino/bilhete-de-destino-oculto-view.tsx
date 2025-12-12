@@ -9,7 +9,7 @@ export const BilheteDestinoOculto: React.FC<{
 }> = ({ size = "responsive", orientacao = "vertical"}) => {
 
   return (
-    <CartaOcultaView size={size} orientacao={orientacao}>
+    <CartaOcultaView orientacao={orientacao}>
         <div className="flex flex-col items-center justify-center gap-0 m-2">
             {"TICKET".split("").map((ch, i) => (
               <span

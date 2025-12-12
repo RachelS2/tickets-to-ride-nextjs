@@ -78,10 +78,6 @@
     background: var(--bg-bilhete-destino-oculto);
   }
 
-  .bg-carta-vagao-oculto {
-    background: var(--bg-carta-vagao-oculto);
-  }
-
   .bg-primary {
     background-color: var(--primary);
   }
