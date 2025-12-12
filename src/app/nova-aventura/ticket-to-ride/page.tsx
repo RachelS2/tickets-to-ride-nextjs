@@ -131,6 +131,7 @@ const GamePage: React.FC = () => {
       setCartasVagaoExpostasClicavel(false);
       setIdsCartaVagaoExpostasDestacadas([]);
       setCartasCompradas([]);
+      setJogadaSelecionada("passar-a-vez");
     }
   }, [cartasVagaoCompradas, jogadaSelecionada]);
 
@@ -192,7 +193,9 @@ const GamePage: React.FC = () => {
     rotaSelecionada?.ocupar(jogador);
     console.log("VERIFICANDO BILHETES ATINGIDOS...");
     for (const bilhete of jogador.verBilhetesDestino()) {
-      jogo.verificarBilheteAtingido(bilhete, jogador);
+      if (!bilhete.objetivoFoiAtingido()) {
+        jogo.verificarBilheteAtingido(bilhete, jogador);
+      }
     }
 
     jogador.pegarTrem(rotaSelecionada!.QtdeEspacos);
@@ -394,7 +397,7 @@ const GamePage: React.FC = () => {
     // -----------------------------
     setJogadoresRestantes(novosJogadoresRestantes);
     setJogador(novosJogadoresRestantes[0]);
-    setProximoJogador(novosJogadoresRestantes[1] ?? novosJogadoresRestantes[0]);
+    setProximoJogador(novosJogadoresRestantes[1] ?? todos[0]);
   };
 
   const handleReporCartas = () => {

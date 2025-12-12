@@ -1,14 +1,9 @@
-// CartaVagaoOcultaView.tsx
 import { CartaOcultaView } from "../carta-oculta-view";
 
-interface CartaVagaoOcultaProps {
-  size?: "sm" | "md" | "lg" | "responsive";
-}
 
-export const CartaVagaoOcultaView = ({ size = "md" }: { size?: "sm" | "md" | "lg" | "responsive" }) => {
+export const CartaVagaoOcultaView = () => {
   return (
-    // note a barra inicial — se arquivo estiver em public/assets/trem-bg-cartas-vagao.png
-    <CartaOcultaView size={size} corFundo="bg-vermelho-custom" img_url="/assets/trem-bg-cartas-vagao.png" imgObjectFit="cover" 
+    <CartaOcultaView corFundo="bg-carta-vagao-oculto" img_url="/assets/carta-vagao.png" imgObjectFit="contain" 
     imgAlt="Verso do vagão" />
   );
 };

@@ -1,16 +1,14 @@
 import React, { useState } from "react";
 import { cn } from "@/app/lib/utils";
 
+import Image from "next/image";
 
 type CommonProps = {
-  size?: "sm" | "md" | "lg" | "responsive";
   orientacao?: "vertical" | "horizontal";
   corFundo?: string;
   corCentro?: string;
   corCirculo?: string;
-  /** Como a imagem deve se ajustar: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down' */
   imgObjectFit?: React.CSSProperties["objectFit"];
-  /** Alt acessível para a imagem */
   imgAlt?: string;
 };
 
@@ -25,12 +23,10 @@ export type CartaOcultaProps =
 
 export const CartaOcultaView: React.FC<CartaOcultaProps> = (props) => {
   const {
-    size = "responsive",
     orientacao = "vertical",
     corFundo = "bg-bilhete-destino-oculto",
     corCentro = "rgba(255, 238, 205, 0.95)",
     corCirculo = "white",
-    imgObjectFit = "contain",
     imgAlt = "Carta",
   } = props as CommonProps;
 
@@ -39,14 +35,10 @@ export const CartaOcultaView: React.FC<CartaOcultaProps> = (props) => {
   const img_url = (props as any).img_url as string | undefined;
   const children = (props as any).children as React.ReactNode | undefined;
 
-  // estado para controle de carregamento/erro (opcional, melhora UX)
-  const [imgLoading, setImgLoading] = useState<boolean>(!!img_url);
   const [imgError, setImgError] = useState<boolean>(false);
 
   if (process.env.NODE_ENV !== "production") {
     if (modoImagem && children) {
-      // tipagem deveria impedir, mas ajuda em runtime caso JS puro tente usar
-      // eslint-disable-next-line no-console
       console.warn(
         "CartaOcultaView: você passou img_url e children ao mesmo tempo. children será ignorado."
       );
@@ -61,42 +53,20 @@ export const CartaOcultaView: React.FC<CartaOcultaProps> = (props) => {
       )}
     >
       {modoImagem ? (
-        // MODO IMAGEM: renderiza IMG centralizada, com object-fit e placeholder
         <>
           {/* imagem central */}
           {!imgError && (
-            <img
-              src={img_url}
-              alt={imgAlt}
-              loading="lazy"
-              onLoad={() => setImgLoading(false)}
-              onError={() => {
-                setImgLoading(false);
-                setImgError(true);
-              }}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: imgObjectFit,
-                objectPosition: "center",
-                display: imgLoading ? "none" : "block",
-              }}
-              className="select-none"
-            />
-          )}
-
-          {/* Placeholder enquanto carrega */}
-          {imgLoading && (
-            <div
-              className="flex items-center justify-center w-full h-full"
-              aria-hidden
-            >
-              {/* pequeno skeleton / spinner simples */}
-              <div className="animate-pulse w-3/5 h-3/5 rounded-md bg-gray-200/30" />
+            <div className="relative w-full h-full">
+              <Image
+                src={img_url!}
+                alt={imgAlt}
+                fill
+                style={{ objectFit: "contain" }}
+              />
             </div>
           )}
 
-          {/* Fallback visual em caso de erro (opcional) */}
+          {/* Fallback visual em caso de erro  */}
           {imgError && (
             <div className="flex flex-col items-center justify-center w-full h-full text-center px-2">
               <div className="text-xs text-white/80">Imagem indisponível</div>
