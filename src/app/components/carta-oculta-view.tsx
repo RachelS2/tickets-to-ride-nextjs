@@ -12,11 +12,6 @@ type CommonProps = {
   imgAlt?: string;
 };
 
-/**
- * Discriminated union:
- * - ModoImagem: tem img_url e proíbe children
- * - ModoConteudo: aceita children e não tem img_url
- */
 export type CartaOcultaProps =
   | (CommonProps & { img_url: string; children?: never })
   | (CommonProps & { img_url?: undefined; children?: React.ReactNode });
@@ -35,7 +30,6 @@ export const CartaOcultaView: React.FC<CartaOcultaProps> = (props) => {
   const img_url = (props as any).img_url as string | undefined;
   const children = (props as any).children as React.ReactNode | undefined;
 
-  const [imgError, setImgError] = useState<boolean>(false);
 
   if (process.env.NODE_ENV !== "production") {
     if (modoImagem && children) {
@@ -55,7 +49,7 @@ export const CartaOcultaView: React.FC<CartaOcultaProps> = (props) => {
       {modoImagem ? (
         <>
           {/* imagem central */}
-          {!imgError && (
+          {(
             <div className="relative w-full h-full">
               <Image
                 src={img_url!}
@@ -63,13 +57,6 @@ export const CartaOcultaView: React.FC<CartaOcultaProps> = (props) => {
                 fill
                 style={{ objectFit: "contain" }}
               />
-            </div>
-          )}
-
-          {/* Fallback visual em caso de erro  */}
-          {imgError && (
-            <div className="flex flex-col items-center justify-center w-full h-full text-center px-2">
-              <div className="text-xs text-white/80">Imagem indisponível</div>
             </div>
           )}
         </>

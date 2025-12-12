@@ -25,9 +25,8 @@
 
   --shadow-black: 0 20px 40px -12px hsl(0 0% 0% / 0.25);
 
-  --bg-bilhete-destino-oculto: linear-gradient(180deg, #a56114 0%, #d18445 40%, #eb9554 100%);
+  --bg-bilhete-destino-oculto: linear-gradient(180deg, #a56114 0%, #d18445 40%, #b6703a 100%);
 
-  --bg-carta-vagao-oculto: linear-gradient(180deg, #808080 0%, #9b9494 40%, #d3cece 100%);
   --bg-bilhete-destino: radial-gradient(
     circle at 30% 30%,
     #f0ddc0 0%,
