@@ -102,10 +102,18 @@ export class Jogo {
         if (!this.Iniciado) {
             throw new Error("O jogo não foi iniciado.");
         }
+        const todasRotasOcupadas : boolean = this.Tabuleiro.pegarRotas().every(rota => rota.estaOcupada());
+
+        if (todasRotasOcupadas) {
+            console.log("Todas as rotas foram ocupadas. Iniciando a rodada final.");
+            return true;
+        }
+        
         if (this.Jogadores.some(jogador => jogador.pegarQtdeTrens() <= 2)) {
             console.log("Um jogador tem 2 ou menos trens restantes. Iniciando a rodada final.");
             return true;
         }
+
         console.log("Nenhum jogador com 2 ou menos trens restantes.");
         return false;
     }

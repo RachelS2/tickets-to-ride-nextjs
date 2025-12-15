@@ -42,7 +42,7 @@ export const CartaVagaoView: React.FC<CartaVagaoProps> = ({
     </Card>
   );
 
-  const verso = <CartaVagaoOcultaView size={size} />;
+  const verso = <CartaVagaoOcultaView/>;
 
   return (
     <CartaView

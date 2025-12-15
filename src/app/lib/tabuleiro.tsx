@@ -68,8 +68,12 @@ export class Tabuleiro {
   }
 
   public descartarB(bilhetes: BilheteDestino[]) : void {
-    this.BaralhoBilhetesDestino.push(...bilhetes);
-    this.BaralhoBilhetesDestino = this.embaralharCartas(this.BaralhoBilhetesDestino);
+    for (const bilhete of bilhetes) {
+      if (!bilhete.objetivoFoiAtingido()) {
+        this.BaralhoBilhetesDestino.push(...bilhetes);
+        this.BaralhoBilhetesDestino = this.embaralharCartas(this.BaralhoBilhetesDestino);
+      }
+    }
   }
 
   public pegarRotas() : Rota[] {
