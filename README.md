@@ -1,13 +1,10 @@
-<<<<<<< HEAD
-# tickets-for-ride-nextjs
-=======
 ## Introduction
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 This project was used as the final work of the **Software Project** discipline, of the Information Systems course at Universidade Federal Fluminense. The goal of the project is to implement **Ticket to Ride, a board game**, using Next JS and OOP principles. 
 
-**Participants and Collaborators:** Rachel Barino, Gabrielle,
+**Group Members:** Rachel Barino, Gabrielle,
 Daniel Izu, Vinícius Jimenez, Caio Lima e Gabriel Machado.
 
 ### NOTE: currently the project is being developed in dev branch
@@ -61,4 +58,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
->>>>>>> dev
