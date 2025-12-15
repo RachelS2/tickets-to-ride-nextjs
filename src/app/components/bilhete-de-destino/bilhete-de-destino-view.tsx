@@ -70,7 +70,7 @@ export const BilheteDestinoView: React.FC<BilhetesDestinoProps> = ({
   </Card>
 );
 
-  const verso = <BilheteDestinoOculto size={size} orientacao={orientacao} />;
+  const verso = <BilheteDestinoOculto orientacao={orientacao} />;
 
   return (
     <CartaView
